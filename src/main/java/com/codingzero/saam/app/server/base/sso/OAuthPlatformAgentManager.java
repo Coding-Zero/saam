@@ -1,0 +1,31 @@
+package com.codingzero.saam.app.server.base.sso;
+
+import com.codingzero.saam.common.OAuthPlatform;
+import com.codingzero.saam.infrastructure.SSOAccessToken;
+import com.codingzero.saam.infrastructure.database.spi.OAuthPlatformAgent;
+
+import java.util.Collections;
+import java.util.Map;
+
+
+public class OAuthPlatformAgentManager implements OAuthPlatformAgent {
+
+    private final Map<OAuthPlatform, OAuthPlatformAgent> agents;
+
+    public OAuthPlatformAgentManager(Map<OAuthPlatform, OAuthPlatformAgent> agents) {
+        this.agents = Collections.unmodifiableMap(agents);
+    }
+
+    @Override
+    public String getAuthorizationUrl(OAuthPlatform platform,
+                                      Map<String, Object> configurations,
+                                      Map<String, Object> parameters) {
+        return agents.get(platform).getAuthorizationUrl(platform, configurations, parameters);
+    }
+
+    @Override
+    public SSOAccessToken requestAccessToken(
+            OAuthPlatform platform, Map<String, Object> configurations, Map<String, Object> parameters) {
+        return agents.get(platform).requestAccessToken(platform, configurations, parameters);
+    }
+}
