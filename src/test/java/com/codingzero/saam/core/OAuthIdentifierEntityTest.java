@@ -1,25 +1,17 @@
 package com.codingzero.saam.core;
 
-import com.codingzero.saam.core.application.EmailPolicyEntity;
-import com.codingzero.saam.core.application.IdentifierFactoryService;
-import com.codingzero.saam.core.application.IdentifierRepositoryService;
+import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.core.application.OAuthIdentifierEntity;
+import com.codingzero.saam.core.application.UserEntity;
 import com.codingzero.saam.core.application.UserRepositoryService;
-import com.codingzero.saam.core.application.UsernamePolicyEntity;
-import com.codingzero.saam.core.application.UsernamePolicyFactoryService;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierOS;
-import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
-import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -54,7 +46,65 @@ public class OAuthIdentifierEntityTest {
     }
 
     @Test
-    public void testSetConfigurations() {
+    public void testGetUser() {
+        UserEntity userEntity = mock(UserEntity.class);
+        String applicationId = "app";
+        String userId = "user";
+        Application application = mock(Application.class);
+        when(application.getId()).thenReturn(applicationId);
+        when(policy.getApplication()).thenReturn(application);
+        when(objectSegment.getUserId()).thenReturn(userId);
+        when(userRepository.findById(application, userId)).thenReturn(userEntity);
+        entity = new OAuthIdentifierEntity(
+                objectSegment,
+                policy,
+                null,
+                userRepository);
+        User user = entity.getUser();
+        assertEquals(userEntity, user);
+    }
+
+    @Test
+    public void testGetUser_NotNull() {
+        UserEntity userEntity = mock(UserEntity.class);
+        entity = new OAuthIdentifierEntity(
+                objectSegment,
+                policy,
+                userEntity,
+                userRepository);
+        User user = entity.getUser();
+        assertEquals(userEntity, user);
+    }
+
+    @Test
+    public void testGetPolicy() {
+        OAuthIdentifierPolicy policy = mock(OAuthIdentifierPolicy.class);
+        Application application = mock(Application.class);
+        when(objectSegment.getPlatform()).thenReturn(OAuthPlatform.GOOGLE);
+        when(user.getApplication()).thenReturn(application);
+        when(application.fetchOAuthIdentifierPolicy(OAuthPlatform.GOOGLE)).thenReturn(policy);
+        entity = new OAuthIdentifierEntity(
+                objectSegment,
+                null,
+                user,
+                userRepository);
+        OAuthIdentifierPolicy foundPolicy = entity.getPolicy();
+        assertEquals(policy, foundPolicy);
+    }
+
+    @Test
+    public void testGetPolicy_NotNull() {
+        entity = new OAuthIdentifierEntity(
+                objectSegment,
+                policy,
+                user,
+                userRepository);
+        OAuthIdentifierPolicy foundPolicy = entity.getPolicy();
+        assertEquals(policy, foundPolicy);
+    }
+
+    @Test
+    public void testSetProperties() {
         Map<String, Object> properties = new HashMap<>();
         properties.put("key1", "value1");
         when(objectSegment.getProperties()).thenReturn(new HashMap<>());
@@ -65,7 +115,7 @@ public class OAuthIdentifierEntityTest {
     }
 
     @Test
-    public void testSetConfigurations_SameValue() {
+    public void testSetProperties_SameValue() {
         Map<String, Object> properties = new HashMap<>();
         properties.put("key1", "value1");
         when(objectSegment.getProperties()).thenReturn(properties);

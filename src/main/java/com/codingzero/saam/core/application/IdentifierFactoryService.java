@@ -35,7 +35,9 @@ public class IdentifierFactoryService {
         Date currentDateTime = new Date(System.currentTimeMillis());
         IdentifierOS os = new IdentifierOS(
                 user.getApplication().getId(),
-                policy.getCode(), content, user.getId(),
+                policy.getCode(),
+                content,
+                user.getId(),
                 policy.getType(),
                 isVerified,
                 null,
