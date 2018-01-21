@@ -142,3 +142,5 @@ server.pid
 *.eml
 /dist/
 .cache
+
+dependency-reduced-pom.xml
