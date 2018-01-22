@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
 
 public class ResourceFactoryService {
 
-    private static final int NAME_MIN_LENGTH = 1;
-    private static final int NAME_MAX_LENGTH = 125;
+    public static final int NAME_MIN_LENGTH = 1;
+    public static final int NAME_MAX_LENGTH = 125;
     private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9]+[a-zA-Z0-9_-]+$");
 
     private ResourceAccess access;
@@ -33,22 +33,27 @@ public class ResourceFactoryService {
     }
 
     public ResourceEntity generate(Application application, String name, Principal owner, Resource parent) {
-        owner = getOwner(owner);
         checkForNameFormat(name);
-        String key;
-        if (null != parent) {
-            key = parent.getKey() + ResourceKeySeparator.VALUE + name;
-        } else {
-            key = name;
-        }
+        String key = getKey(name, parent);
         checkForDuplicateKey(application, key);
+        owner = getRealOwner(owner);
         ResourceOS os = new ResourceOS(application.getId(), key, owner.getId(), new Date());
         ResourceEntity entity = reconstitute(os, application, owner, parent);
         entity.markAsNew();
         return entity;
     }
 
-    Principal getOwner(Principal owner) {
+    private String getKey(String name, Resource parent) {
+        String key;
+        if (null != parent) {
+            key = parent.getKey() + ResourceKeySeparator.VALUE + name;
+        } else {
+            key = name;
+        }
+        return key;
+    }
+
+    public Principal getRealOwner(Principal owner) {
         if (owner.getType() == PrincipalType.API_KEY) {
             APIKey apiKey = (APIKey) owner;
             return apiKey.getOwner();
@@ -56,7 +61,7 @@ public class ResourceFactoryService {
         return owner;
     }
 
-    public void checkForDuplicateKey(Application application, String key) {
+    private void checkForDuplicateKey(Application application, String key) {
         if (access.isDuplicateKey(application.getId(), key)) {
             throw BusinessError.raise(Errors.DUPLICATE_RESOURCE_KEY)
                     .message("Resource name has been taken.")
@@ -71,8 +76,7 @@ public class ResourceFactoryService {
             throw new IllegalArgumentException("Resource name is missing");
         }
         name = name.trim();
-        if (null == name
-                || name.length() < NAME_MIN_LENGTH
+        if (name.length() < NAME_MIN_LENGTH
                 || name.length() > NAME_MAX_LENGTH) {
             throw BusinessError.raise(Errors.ILLEGAL_RESOURCE_NAME_FORMAT)
                     .message("Need to be greater than "

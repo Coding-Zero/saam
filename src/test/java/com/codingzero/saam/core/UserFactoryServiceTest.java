@@ -13,6 +13,7 @@ import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class UserFactoryServiceTest {
 
@@ -33,6 +34,19 @@ public class UserFactoryServiceTest {
                 principalAccess,
                 roleRepository,
                 passwordHelper);
+    }
+
+    @Test
+    public void testGenerate() {
+        String principalId = "principalId";
+        String applicationId = "appId";
+        Application application = mock(Application.class);
+        when(application.getId()).thenReturn(applicationId);
+        when(principalAccess.generateId(applicationId)).thenReturn(principalId);
+        UserEntity entity = service.generate(application);
+        assertEquals(application, entity.getApplication());
+        assertEquals(principalId, entity.getId());
+        assertEquals(true, entity.isNew());
     }
 
     @Test

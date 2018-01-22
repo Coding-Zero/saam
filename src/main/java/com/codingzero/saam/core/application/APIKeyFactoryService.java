@@ -13,8 +13,8 @@ import java.util.regex.Pattern;
 
 public class APIKeyFactoryService {
 
-    private static final int NAME_MIN_LENGTH = 2;
-    private static final int NAME_MAX_LENGTH = 46;
+    public static final int NAME_MIN_LENGTH = 2;
+    public static final int NAME_MAX_LENGTH = 46;
     private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9]+[a-zA-Z0-9 _.-]+$");
 
     private APIKeyAccess access;
@@ -43,9 +43,7 @@ public class APIKeyFactoryService {
         if (null == name) {
             throw new IllegalArgumentException("APIKey name is missing");
         }
-        name = name.trim();
-        if (null == name
-                || name.length() < NAME_MIN_LENGTH
+        if (name.length() < NAME_MIN_LENGTH
                 || name.length() > NAME_MAX_LENGTH) {
             throw BusinessError.raise(Errors.ILLEGAL_API_KEY_NAME_FORMAT)
                     .message("Need to be greater than "

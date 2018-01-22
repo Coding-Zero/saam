@@ -35,11 +35,10 @@ public class APIKeyEntity extends PrincipalEntity<APIKeyOS> implements APIKey {
 
     @Override
     public void setName(String name) {
-        name = name.trim();
+        factory.checkForNameFormat(name);
         if (name.equalsIgnoreCase(getName())) {
             return;
         }
-        factory.checkForNameFormat(name);
         getObjectSegment().setName(name);
         markAsDirty();
     }
