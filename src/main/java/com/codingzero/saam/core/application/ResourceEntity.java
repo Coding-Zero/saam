@@ -80,10 +80,10 @@ public class ResourceEntity extends EntityObject<ResourceOS> implements Resource
 
     @Override
     public void setOwner(Principal principal) {
+        principal = factory.getRealOwner(principal);
         if (getObjectSegment().getPrincipalId().equalsIgnoreCase(principal.getId())) {
             return;
         }
-        principal = factory.getOwner(principal);
         getObjectSegment().setPrincipalId(principal.getId());
         owner = null;
         markAsDirty();
