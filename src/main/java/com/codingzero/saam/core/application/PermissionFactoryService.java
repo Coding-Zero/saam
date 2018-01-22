@@ -32,8 +32,7 @@ public class PermissionFactoryService {
         this.principalRepository = principalRepository;
     }
 
-    public PermissionEntity generate(Resource resource,
-                                     Principal principal, List<Action> actions) {
+    public PermissionEntity generate(Resource resource, Principal principal, List<Action> actions) {
         checkForExistingPermission(resource, principal);
         checkForIllegalType(principal, actions);
         checkForIllegalActionCode(actions);
@@ -83,9 +82,7 @@ public class PermissionFactoryService {
         if (null == code) {
             throw new IllegalArgumentException("Action name is missing");
         }
-        code = code.trim();
-        if (null == code
-                || code.length() < CODE_MIN_LENGTH
+        if (code.length() < CODE_MIN_LENGTH
                 || code.length() > CODE_MAX_LENGTH) {
             throw BusinessError.raise(Errors.ILLEGAL_ACTION_CODE_FORMAT)
                     .message("Action code need to be greater than "
