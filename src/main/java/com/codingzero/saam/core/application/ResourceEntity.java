@@ -160,8 +160,8 @@ public class ResourceEntity extends EntityObject<ResourceOS> implements Resource
             return checkPermissionForAPIKey((APIKey) principal, actionCode);
         } else if (principal.getType() == PrincipalType.USER) {
             return checkPermissionForUser((User) principal, actionCode);
-        } else if (principal.getType() == PrincipalType.USER) {
-            return checkPermissionForRole((Role) principal, actionCode);
+        } else if (principal.getType() == PrincipalType.ROLE) {
+            return checkPermissionForPrincipal(principal, actionCode);
         }
         throw new IllegalArgumentException("Unsupported principal type, " + principal.getType());
     }
@@ -207,16 +207,12 @@ public class ResourceEntity extends EntityObject<ResourceOS> implements Resource
     private PermissionType checkPermissionForPlayingRole(User user, String actionCode) {
         List<Role> roles = user.getPlayingRoles();
         for (Role role : roles) {
-            PermissionType result = checkPermissionForRole(role, actionCode);
+            PermissionType result = checkPermissionForPrincipal(role, actionCode);
             if (PermissionType.NONE != result) {
                 return result;
             }
         }
         return PermissionType.NONE;
-    }
-
-    private PermissionType checkPermissionForRole(Role role, String actionCode) {
-        return checkPermissionForPrincipal(role, actionCode);
     }
 
     private Action getAction(Permission permission, String actionCode) {
