@@ -18,7 +18,8 @@ public class PermissionEntity extends EntityObject<PermissionOS> implements Perm
     private PrincipalRepositoryService principalRepository;
 
     public PermissionEntity(PermissionOS objectSegment,
-                            Resource resource, Principal principal,
+                            Resource resource,
+                            Principal principal,
                             PermissionFactoryService factory,
                             PrincipalRepositoryService principalRepository) {
         super(objectSegment);

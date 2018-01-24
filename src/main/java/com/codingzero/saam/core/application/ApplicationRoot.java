@@ -134,7 +134,6 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void setName(String name) {
-        name = name.trim();
         if (name.equalsIgnoreCase(getName())) {
             return;
         }
@@ -289,7 +288,6 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void removeUser(User user) {
-//        checkForRelatedPermissions(user);
         PrincipalEntity entity = (PrincipalEntity) user;
         entity.markAsVoid();
         dirtyPrincipals.put(entity.getId(), entity);

@@ -264,19 +264,28 @@ public class ResourceEntityTest {
     }
 
     @Test
-    public void testCheckPermission_User_ActionNotAllowed() {
+    public void testCheckPermission_User_IsOwner() {
+        String actionCode = "READ";
+        String principalId = "principal-id";
+        User principal = mock(User.class);
+        when(principal.getType()).thenReturn(PrincipalType.USER);
+        when(principal.getId()).thenReturn(principalId);
+        when(owner.getId()).thenReturn(principalId);
+        PermissionType type = entity.checkPermission(principal, actionCode);
+        assertEquals(PermissionType.ALLOW, type);
+    }
+
+    @Test
+    public void testCheckPermission_User_NoPermissionFound() {
         String actionCode = "READ";
         String principalId = "principal-id";
         User principal = mock(User.class);
         when(principal.getType()).thenReturn(PrincipalType.USER);
         when(principal.getId()).thenReturn(principalId);
         when(owner.getId()).thenReturn("owner-id");
-        List<Action> actions = Arrays.asList(new Action(actionCode, false));
-        Permission permission = mock(Permission.class);
-        when(permission.getActions()).thenReturn(actions);
-        when(permissionRepository.findById(entity, principal)).thenReturn(permission);
+        when(permissionRepository.findById(entity, principal)).thenReturn(null);
         PermissionType type = entity.checkPermission(principal, actionCode);
-        assertEquals(PermissionType.DENY, type);
+        assertEquals(PermissionType.NONE, type);
     }
 
     @Test
@@ -296,29 +305,19 @@ public class ResourceEntityTest {
     }
 
     @Test
-    public void testCheckPermission_User_NoPermissionFound() {
+    public void testCheckPermission_User_ActionNotAllowed() {
         String actionCode = "READ";
         String principalId = "principal-id";
         User principal = mock(User.class);
         when(principal.getType()).thenReturn(PrincipalType.USER);
         when(principal.getId()).thenReturn(principalId);
         when(owner.getId()).thenReturn("owner-id");
-        Permission permission = null;
+        List<Action> actions = Arrays.asList(new Action(actionCode, false));
+        Permission permission = mock(Permission.class);
+        when(permission.getActions()).thenReturn(actions);
         when(permissionRepository.findById(entity, principal)).thenReturn(permission);
         PermissionType type = entity.checkPermission(principal, actionCode);
-        assertEquals(PermissionType.NONE, type);
-    }
-
-    @Test
-    public void testCheckPermission_User_IsOwner() {
-        String actionCode = "READ";
-        String principalId = "principal-id";
-        User principal = mock(User.class);
-        when(principal.getType()).thenReturn(PrincipalType.USER);
-        when(principal.getId()).thenReturn(principalId);
-        when(owner.getId()).thenReturn(principalId);
-        PermissionType type = entity.checkPermission(principal, actionCode);
-        assertEquals(PermissionType.ALLOW, type);
+        assertEquals(PermissionType.DENY, type);
     }
 
     @Test
@@ -338,19 +337,28 @@ public class ResourceEntityTest {
     }
 
     @Test
-    public void testCheckPermission_Role_ActionNotAllowed() {
+    public void testCheckPermission_Role_IsOwner() {
+        String actionCode = "READ";
+        String principalId = "principal-id";
+        Role principal = mock(Role.class);
+        when(principal.getType()).thenReturn(PrincipalType.ROLE);
+        when(principal.getId()).thenReturn(principalId);
+        when(owner.getId()).thenReturn(principalId);
+        PermissionType type = entity.checkPermission(principal, actionCode);
+        assertEquals(PermissionType.ALLOW, type);
+    }
+
+    @Test
+    public void testCheckPermission_Role_NoPermissionFound() {
         String actionCode = "READ";
         String principalId = "principal-id";
         Role principal = mock(Role.class);
         when(principal.getType()).thenReturn(PrincipalType.ROLE);
         when(principal.getId()).thenReturn(principalId);
         when(owner.getId()).thenReturn("owner-id");
-        List<Action> actions = Arrays.asList(new Action(actionCode, false));
-        Permission permission = mock(Permission.class);
-        when(permission.getActions()).thenReturn(actions);
-        when(permissionRepository.findById(entity, principal)).thenReturn(permission);
+        when(permissionRepository.findById(entity, principal)).thenReturn(null);
         PermissionType type = entity.checkPermission(principal, actionCode);
-        assertEquals(PermissionType.DENY, type);
+        assertEquals(PermissionType.NONE, type);
     }
 
     @Test
@@ -370,29 +378,125 @@ public class ResourceEntityTest {
     }
 
     @Test
-    public void testCheckPermission_Role_NoPermissionFound() {
+    public void testCheckPermission_Role_ActionNotAllowed() {
         String actionCode = "READ";
         String principalId = "principal-id";
         Role principal = mock(Role.class);
         when(principal.getType()).thenReturn(PrincipalType.ROLE);
         when(principal.getId()).thenReturn(principalId);
         when(owner.getId()).thenReturn("owner-id");
-        Permission permission = null;
+        List<Action> actions = Arrays.asList(new Action(actionCode, false));
+        Permission permission = mock(Permission.class);
+        when(permission.getActions()).thenReturn(actions);
         when(permissionRepository.findById(entity, principal)).thenReturn(permission);
+        PermissionType type = entity.checkPermission(principal, actionCode);
+        assertEquals(PermissionType.DENY, type);
+    }
+
+    @Test
+    public void testCheckPermission_APIKey() {
+        String actionCode = "READ";
+        String principalId = "principal-id";
+        APIKey principal = mock(APIKey.class);
+        when(principal.getType()).thenReturn(PrincipalType.API_KEY);
+        when(principal.getId()).thenReturn(principalId);
+        when(owner.getId()).thenReturn("owner-id");
+        List<Action> actions = Arrays.asList(new Action(actionCode, true));
+        Permission permission = mock(Permission.class);
+        when(permission.getActions()).thenReturn(actions);
+        when(permissionRepository.findById(entity, principal)).thenReturn(permission);
+        PermissionType type = entity.checkPermission(principal, actionCode);
+        assertEquals(PermissionType.ALLOW, type);
+    }
+
+    @Test
+    public void testCheckPermission_APIKey_Owner_IsOwner() {
+        String ownerId = "owner-id";
+        String actionCode = "READ";
+        String principalId = "principal-id";
+        APIKey principal = mock(APIKey.class);
+        when(principal.getType()).thenReturn(PrincipalType.API_KEY);
+        when(principal.getId()).thenReturn(principalId);
+        when(owner.getId()).thenReturn(ownerId);
+        when(permissionRepository.findById(entity, principal)).thenReturn(null);
+
+        User apiKeyOwner = mock(User.class);
+        when(apiKeyOwner.getId()).thenReturn(ownerId);
+        when(principal.getOwner()).thenReturn(apiKeyOwner);
+        PermissionType type = entity.checkPermission(principal, actionCode);
+        assertEquals(PermissionType.ALLOW, type);
+    }
+
+    @Test
+    public void testCheckPermission_APIKey_IsOwner() {
+        String actionCode = "READ";
+        String principalId = "principal-id";
+        APIKey principal = mock(APIKey.class);
+        when(principal.getType()).thenReturn(PrincipalType.API_KEY);
+        when(principal.getId()).thenReturn(principalId);
+        when(owner.getId()).thenReturn(principalId);
+        PermissionType type = entity.checkPermission(principal, actionCode);
+        assertEquals(PermissionType.ALLOW, type);
+    }
+
+    @Test
+    public void testCheckPermission_APIKey_NoPermissionFound() {
+        String actionCode = "READ";
+        String principalId = "principal-id";
+        APIKey principal = mock(APIKey.class);
+        when(principal.getType()).thenReturn(PrincipalType.API_KEY);
+        when(principal.getId()).thenReturn(principalId);
+        when(owner.getId()).thenReturn("owner-id");
+        when(permissionRepository.findById(entity, principal)).thenReturn(null);
+
+        User apiKeyOwner = mock(User.class);
+        when(apiKeyOwner.getId()).thenReturn("api-key-owner");
+        when(principal.getOwner()).thenReturn(apiKeyOwner);
+        when(permissionRepository.findById(entity, apiKeyOwner)).thenReturn(null);
+
         PermissionType type = entity.checkPermission(principal, actionCode);
         assertEquals(PermissionType.NONE, type);
     }
 
     @Test
-    public void testCheckPermission_Role_IsOwner() {
+    public void testCheckPermission_APIKey_NoActionFound() {
         String actionCode = "READ";
         String principalId = "principal-id";
-        Role principal = mock(Role.class);
-        when(principal.getType()).thenReturn(PrincipalType.ROLE);
+        APIKey principal = mock(APIKey.class);
+        when(principal.getType()).thenReturn(PrincipalType.API_KEY);
         when(principal.getId()).thenReturn(principalId);
-        when(owner.getId()).thenReturn(principalId);
+        when(owner.getId()).thenReturn("owner-id");
+        List<Action> actions = Arrays.asList(new Action("act", true));
+        Permission permission = mock(Permission.class);
+        when(permission.getActions()).thenReturn(actions);
+        when(permissionRepository.findById(entity, principal)).thenReturn(permission);
+
+        User apiKeyOwner = mock(User.class);
+        when(apiKeyOwner.getId()).thenReturn("api-key-owner");
+        when(principal.getOwner()).thenReturn(apiKeyOwner);
+        List<Action> apiKeyOwnerActions = Arrays.asList(new Action("act2", true));
+        Permission apiKeyOwnerPermission = mock(Permission.class);
+        when(apiKeyOwnerPermission.getActions()).thenReturn(apiKeyOwnerActions);
+        when(permissionRepository.findById(entity, apiKeyOwner)).thenReturn(apiKeyOwnerPermission);
+
         PermissionType type = entity.checkPermission(principal, actionCode);
-        assertEquals(PermissionType.ALLOW, type);
+        assertEquals(PermissionType.NONE, type);
+    }
+
+    @Test
+    public void testCheckPermission_APIKey_ActionNotAllowed() {
+        String actionCode = "READ";
+        String principalId = "principal-id";
+        APIKey principal = mock(APIKey.class);
+        when(principal.getType()).thenReturn(PrincipalType.API_KEY);
+        when(principal.getId()).thenReturn(principalId);
+        when(owner.getId()).thenReturn("owner-id");
+        List<Action> actions = Arrays.asList(new Action(actionCode, false));
+        Permission permission = mock(Permission.class);
+        when(permission.getActions()).thenReturn(actions);
+        when(permissionRepository.findById(entity, principal)).thenReturn(permission);
+        PermissionType type = entity.checkPermission(principal, actionCode);
+        assertEquals(PermissionType.DENY, type);
     }
 
 }
