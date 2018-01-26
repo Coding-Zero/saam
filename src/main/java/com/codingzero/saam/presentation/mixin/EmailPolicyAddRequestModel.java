@@ -7,7 +7,6 @@ import java.util.List;
 public abstract class EmailPolicyAddRequestModel {
 
     public EmailPolicyAddRequestModel(@JsonProperty("applicationId") String applicationId,
-                                      @JsonProperty("code") String code,
                                       @JsonProperty("verificationRequired") boolean isVerificationRequired,
                                       @JsonProperty("domains") List<String> domains) {}
     

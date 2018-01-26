@@ -1,5 +1,6 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.infrastructure.database.IdentifierOS;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.transaction.TransactionalService;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public interface IdentifierAccess  extends TransactionalService {
 
-    boolean isDuplicateContent(String applicationId, String policyCode, String content);
+    boolean isDuplicateContent(String applicationId, IdentifierType type, String content);
 
     void insert(IdentifierOS os);
 
@@ -16,16 +17,16 @@ public interface IdentifierAccess  extends TransactionalService {
 
     void delete(IdentifierOS os);
 
-    void deleteByPolicyCode(String applicationId, String policyCode);
+    void deleteByType(String applicationId, IdentifierType type);
 
-    void deleteByPolicyCodeAndUserId(String applicationId, String policyCode, String userId);
+    void deleteByTypeAndUserId(String applicationId, IdentifierType type, String userId);
 
     void deleteByApplicationId(String id);
 
-    IdentifierOS selectByPolicyCodeAndContent(String applicationId, String policyCode, String content);
+    IdentifierOS selectByTypeAndContent(String applicationId, IdentifierType type, String content);
 
-    List<IdentifierOS> selectByPolicyCodeAndUserId(String applicationId, String policyCode, String userId);
+    List<IdentifierOS> selectByTypeAndUserId(String applicationId, IdentifierType type, String userId);
 
-    PaginatedResult<List<IdentifierOS>> selectByPolicyCode(String applicationId, String policyCode);
+    PaginatedResult<List<IdentifierOS>> selectByPolicyCode(String applicationId, IdentifierType type);
 
 }

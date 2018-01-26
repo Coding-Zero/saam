@@ -9,24 +9,22 @@ import java.util.Date;
 public class IdentifierOS {
 
     private String applicationId;
-    private String identifierPolicyCode;
+    private IdentifierType identifierType;
     private String content;
     private String userId;
-    private IdentifierType type;
     private boolean isVerified;
     private IdentifierVerificationCode verificationCode;
     private long creationTime;
     private long updateTime;
 
-    public IdentifierOS(String applicationId, String identifierPolicyCode, String content,
-                        String userId, IdentifierType type, boolean isVerified,
+    public IdentifierOS(String applicationId, IdentifierType identifierType, String content,
+                        String userId, boolean isVerified,
                         IdentifierVerificationCode verificationCode, Date creationTime,
                         Date updateTime) {
         this.applicationId = applicationId;
         this.userId = userId;
-        this.identifierPolicyCode = identifierPolicyCode;
+        this.identifierType = identifierType;
         this.content = content;
-        this.type = type;
         this.isVerified = isVerified;
         this.verificationCode = verificationCode;
         this.creationTime = creationTime.getTime();
@@ -37,8 +35,8 @@ public class IdentifierOS {
         return applicationId;
     }
 
-    public String getIdentifierPolicyCode() {
-        return identifierPolicyCode;
+    public IdentifierType getIdentifierType() {
+        return identifierType;
     }
 
     public String getUserId() {
@@ -47,10 +45,6 @@ public class IdentifierOS {
 
     public String getContent() {
         return content;
-    }
-
-    public IdentifierType getType() {
-        return type;
     }
 
     public boolean isVerified() {

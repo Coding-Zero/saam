@@ -1,5 +1,6 @@
 package com.codingzero.saam.app;
 
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 
 import java.util.Collections;
@@ -78,21 +79,21 @@ public class UserResponse {
 
     public static class Identifier {
 
-        private String code;
+        private IdentifierType type;
         private String content;
         private boolean isVerified;
         private long creationTime;
 
-        public Identifier(String code, String content, boolean isVerified,
+        public Identifier(IdentifierType type, String content, boolean isVerified,
                           Date creationTime) {
-            this.code = code;
+            this.type = type;
             this.content = content;
             this.isVerified = isVerified;
             this.creationTime = creationTime.getTime();
         }
 
-        public String getCode() {
-            return code;
+        public IdentifierType getType() {
+            return type;
         }
 
         public String getContent() {

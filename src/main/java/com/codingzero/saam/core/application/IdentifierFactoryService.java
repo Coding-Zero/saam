@@ -35,10 +35,9 @@ public class IdentifierFactoryService {
         Date currentDateTime = new Date(System.currentTimeMillis());
         IdentifierOS os = new IdentifierOS(
                 user.getApplication().getId(),
-                policy.getCode(),
+                policy.getType(),
                 content,
                 user.getId(),
-                policy.getType(),
                 isVerified,
                 null,
                 currentDateTime,
@@ -57,17 +56,17 @@ public class IdentifierFactoryService {
             throw BusinessError.raise(Errors.IDENTIFIER_POLICY_UNAVAILABLE)
                     .message("Identifier policy is unavailable.")
                     .details("applicationId", policy.getApplication().getId())
-                    .details("code", policy.getCode())
+                    .details("type", policy.getType())
                     .build();
         }
     }
 
     private void checkForDuplicateIdentifierContent(IdentifierPolicy policy, String content) {
-        if (access.isDuplicateContent(policy.getApplication().getId(), policy.getCode(), content)) {
+        if (access.isDuplicateContent(policy.getApplication().getId(), policy.getType(), content)) {
             throw BusinessError.raise(Errors.DUPLICATE_IDENTIFIER)
                     .message("Identifier, " + content + " has already been taken")
                     .details("applicationId", policy.getApplication().getId())
-                    .details("policyCode", policy.getCode())
+                    .details("type", policy.getType())
                     .details("content", content)
                     .build();
         }

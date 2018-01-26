@@ -1,19 +1,21 @@
 package com.codingzero.saam.app;
 
 
+import com.codingzero.saam.common.IdentifierType;
+
 public class IdentifierVerifyRequest {
 
     private String applicationId;
     private String userId;
-    private String code;
+    private IdentifierType identifierType;
     private String identifier;
     private String verificationCode;
 
-    public IdentifierVerifyRequest(String applicationId, String userId, String code,
+    public IdentifierVerifyRequest(String applicationId, String userId, IdentifierType identifierType,
                                    String identifier, String verificationCode) {
         this.applicationId = applicationId;
         this.userId = userId;
-        this.code = code;
+        this.identifierType = identifierType;
         this.identifier = identifier;
         this.verificationCode = verificationCode;
     }
@@ -26,8 +28,8 @@ public class IdentifierVerifyRequest {
         return userId;
     }
 
-    public String getCode() {
-        return code;
+    public IdentifierType getIdentifierType() {
+        return identifierType;
     }
 
     public String getIdentifier() {

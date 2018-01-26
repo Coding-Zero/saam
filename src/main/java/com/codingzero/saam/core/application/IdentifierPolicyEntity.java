@@ -47,11 +47,6 @@ public abstract class IdentifierPolicyEntity<T extends IdentifierPolicyOS>
     }
 
     @Override
-    public String getCode() {
-        return getObjectSegment().getCode();
-    }
-
-    @Override
     public IdentifierType getType() {
         return getObjectSegment().getType();
     }

@@ -1,6 +1,7 @@
 package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.ApplicationStatus;
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.common.PasswordPolicy;
 import com.codingzero.utilities.pagination.PaginatedResult;
@@ -35,20 +36,19 @@ public interface Application {
 
     /**Identifier Policy**/
 
-    UsernamePolicy createUsernamePolicy(String code);
+    UsernamePolicy createUsernamePolicy();
 
-    EmailPolicy createEmailPolicy(
-            String code, boolean isVerificationRequired, List<String> domains);
+    EmailPolicy createEmailPolicy(boolean isVerificationRequired, List<String> domains);
 
     void updateIdentifierPolicy(IdentifierPolicy policy);
 
     void removeIdentifierPolicy(IdentifierPolicy policy);
 
-    IdentifierPolicy fetchIdentifierPolicy(String code);
+    IdentifierPolicy fetchIdentifierPolicy(IdentifierType type);
 
-    List<UsernamePolicy> fetchUsernamePolicies();
+    UsernamePolicy fetchUsernamePolicy();
 
-    List<EmailPolicy> fetchEmailPolicies();
+    EmailPolicy fetchEmailPolicy();
 
     List<IdentifierPolicy> fetchAllIdentifierPolicies();
 

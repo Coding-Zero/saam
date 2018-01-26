@@ -1,17 +1,19 @@
 package com.codingzero.saam.app;
 
 
+import com.codingzero.saam.common.IdentifierType;
+
 public class IdentifierAssignRequest {
 
     private String applicationId;
     private String userId;
-    private String code;
+    private IdentifierType type;
     private String identifier;
 
-    public IdentifierAssignRequest(String applicationId, String userId, String code, String identifier) {
+    public IdentifierAssignRequest(String applicationId, String userId, IdentifierType type, String identifier) {
         this.applicationId = applicationId;
         this.userId = userId;
-        this.code = code;
+        this.type = type;
         this.identifier = identifier;
     }
 
@@ -23,8 +25,8 @@ public class IdentifierAssignRequest {
         return userId;
     }
 
-    public String getCode() {
-        return code;
+    public IdentifierType getType() {
+        return type;
     }
 
     public String getIdentifier() {

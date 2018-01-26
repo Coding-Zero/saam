@@ -1,5 +1,6 @@
 package com.codingzero.saam.app.server.base.mysql;
 
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.infrastructure.database.IdentifierOS;
 import com.codingzero.saam.infrastructure.database.spi.IdentifierAccess;
 import com.codingzero.utilities.key.HMACKey;
@@ -30,7 +31,7 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
 
 
     @Override
-    public boolean isDuplicateContent(String applicationId, String policyCode, String content) {
+    public boolean isDuplicateContent(String applicationId, IdentifierType type, String content) {
         String contentHash = hash(content);
         Connection conn = getConnection();
         PreparedStatement stmt = null;
@@ -38,11 +39,11 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
         try {
             String sql = String.format(
                     "SELECT COUNT(*) FROM %s WHERE "
-                            + "application_id=? AND identifier_policy_code=? AND content_hash=? LIMIT 1;",
+                            + "application_id=? AND identifier_type=? AND content_hash=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareCall(sql);
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, policyCode);
+            stmt.setString(2, type.name());
             stmt.setBytes(3, Key.fromHexString(contentHash).getKey());
             rs = stmt.executeQuery();
             rs.next();
@@ -70,20 +71,19 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
         try {
             String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
                     TABLE,
-                    "application_id, identifier_policy_code, content_hash, content, user_id,"
-                            + " type, is_verified, verification_code, creation_time, update_time ",
-                    "?, ?, ?, ?, ?, ?, ?, ?, ?, ?");
+                    "application_id, identifier_type, content_hash, content, user_id,"
+                            + " is_verified, verification_code, creation_time, update_time ",
+                    "?, ?, ?, ?, ?, ?, ?, ?, ?");
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(2, os.getIdentifierPolicyCode());
+            stmt.setString(2, os.getIdentifierType().name());
             stmt.setBytes(3, Key.fromHexString(contentHash).getKey());
             stmt.setString(4, os.getContent());
             stmt.setBytes(5, Key.fromHexString(os.getUserId()).getKey());
-            stmt.setString(6, os.getType().name());
-            stmt.setBoolean(7, os.isVerified());
-            stmt.setString(8, getObjectSegmentMapper().toJson(os.getVerificationCode()));
-            stmt.setTimestamp(9, new Timestamp(os.getCreationTime().getTime()));
-            stmt.setTimestamp(10, new Timestamp(os.getUpdateTime().getTime()));
+            stmt.setBoolean(6, os.isVerified());
+            stmt.setString(7, getObjectSegmentMapper().toJson(os.getVerificationCode()));
+            stmt.setTimestamp(8, new Timestamp(os.getCreationTime().getTime()));
+            stmt.setTimestamp(9, new Timestamp(os.getUpdateTime().getTime()));
             stmt.executeUpdate();
         } catch (SQLException | JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -100,14 +100,14 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
         PreparedStatement stmt = null;
         try {
             String sql = String.format("UPDATE %s SET is_verified=?, verification_code=?, update_time=? "
-                            + " WHERE application_id=? AND identifier_policy_code=? AND content_hash=? LIMIT 1;",
+                            + " WHERE application_id=? AND identifier_type=? AND content_hash=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareStatement(sql);
             stmt.setBoolean(1, os.isVerified());
             stmt.setString(2, getObjectSegmentMapper().toJson(os.getVerificationCode()));
             stmt.setTimestamp(3, new Timestamp(os.getUpdateTime().getTime()));
             stmt.setBytes(4, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(5, os.getIdentifierPolicyCode());
+            stmt.setString(5, os.getIdentifierType().name());
             stmt.setBytes(6, Key.fromHexString(contentHash).getKey());
             stmt.executeUpdate();
         } catch (SQLException | JsonProcessingException e) {
@@ -125,11 +125,11 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
         PreparedStatement stmt=null;
         try {
             String sql = String.format("DELETE FROM %s WHERE "
-                            + "application_id=? AND identifier_policy_code=? AND content_hash=? LIMIT 1;",
+                            + "application_id=? AND identifier_type=? AND content_hash=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(2, os.getIdentifierPolicyCode());
+            stmt.setString(2, os.getIdentifierType().name());
             stmt.setBytes(3, Key.fromHexString(contentHash).getKey());
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -141,15 +141,15 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
     }
 
     @Override
-    public void deleteByPolicyCode(String applicationId, String policyCode) {
+    public void deleteByType(String applicationId, IdentifierType type) {
         Connection conn = getConnection();
         PreparedStatement stmt=null;
         try {
-            String sql = String.format("DELETE FROM %s WHERE application_id=? AND identifier_policy_code=? LIMIT 10000;",
+            String sql = String.format("DELETE FROM %s WHERE application_id=? AND identifier_type=? LIMIT 10000;",
                     TABLE);
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, policyCode);
+            stmt.setString(2, type.name());
 
             int deletedRows = stmt.executeUpdate();
             while (deletedRows > 0) {
@@ -164,15 +164,15 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
     }
 
     @Override
-    public void deleteByPolicyCodeAndUserId(String applicationId, String policyCode, String userId) {
+    public void deleteByTypeAndUserId(String applicationId, IdentifierType type, String userId) {
         Connection conn = getConnection();
         PreparedStatement stmt=null;
         try {
-            String sql = String.format("DELETE FROM %s WHERE application_id=? AND identifier_policy_code=? AND user_id=?;",
+            String sql = String.format("DELETE FROM %s WHERE application_id=? AND identifier_type=? AND user_id=?;",
                     TABLE);
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, policyCode);
+            stmt.setString(2, type.name());
             stmt.setBytes(3, Key.fromHexString(userId).getKey());
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -206,18 +206,18 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
     }
 
     @Override
-    public IdentifierOS selectByPolicyCodeAndContent(String applicationId, String policyCode, String content) {
+    public IdentifierOS selectByTypeAndContent(String applicationId, IdentifierType type, String content) {
         String contentHash = hash(content);
         Connection conn = getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             String sql = String.format("SELECT * FROM %s WHERE"
-                            + " application_id=? AND identifier_policy_code=? AND content_hash=? LIMIT 1;",
+                            + " application_id=? AND identifier_type=? AND content_hash=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareCall(sql);
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, policyCode);
+            stmt.setString(2, type.name());
             stmt.setBytes(3, Key.fromHexString(contentHash).getKey());
             rs = stmt.executeQuery();
             if (!rs.next()) {
@@ -235,17 +235,17 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
     }
 
     @Override
-    public List<IdentifierOS> selectByPolicyCodeAndUserId(String applicationId, String policyCode, String userId) {
+    public List<IdentifierOS> selectByTypeAndUserId(String applicationId, IdentifierType type, String userId) {
         Connection conn = getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             String sql = String.format("SELECT * FROM %s WHERE "
-                            + " application_id=? AND identifier_policy_code=? AND user_id=? ",
+                            + " application_id=? AND identifier_type=? AND user_id=? ",
                     TABLE);
             stmt = conn.prepareCall(sql.toString());
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, policyCode);
+            stmt.setString(2, type.name());
             stmt.setBytes(3, Key.fromHexString(userId).getKey());
             rs = stmt.executeQuery();
             return toOSList(rs, 5);
@@ -259,27 +259,27 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
     }
 
     @Override
-    public PaginatedResult<List<IdentifierOS>> selectByPolicyCode(String applicationId, String policyCode) {
-        return new PaginatedResult<>(request -> _selectByPolicyCode(request), applicationId, policyCode);
+    public PaginatedResult<List<IdentifierOS>> selectByPolicyCode(String applicationId, IdentifierType type) {
+        return new PaginatedResult<>(request -> _selectByPolicyCode(request), applicationId, type);
     }
 
     private List<IdentifierOS> _selectByPolicyCode(ResultFetchRequest request) {
         String applicationId = (String) request.getArguments()[0];
-        String policyCode = (String) request.getArguments()[1];
+        IdentifierType type = (IdentifierType) request.getArguments()[1];
         Connection conn = getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             StringBuilder sql = new StringBuilder();
             sql.append(String.format("SELECT * FROM %s WHERE "
-                    + " application_id=? AND identifier_policy_code=?",
+                    + " application_id=? AND identifier_type=?",
                     TABLE));
             sql.append(MySQLHelper.buildSortingQuery(request.getSorting()));
             sql.append(" ");
             sql.append(MySQLHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
             stmt = conn.prepareCall(sql.toString());
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, policyCode);
+            stmt.setString(2, type.name());
             rs = stmt.executeQuery();
             return toOSList(rs, request.getPage().getSize());
         } catch (SQLException | IOException e) {

@@ -76,8 +76,8 @@ public class IdentifierPolicyRepositoryService {
         access.deleteByApplicationId(application.getId());
     }
 
-    public IdentifierPolicyEntity findByCode(Application application, String code) {
-        IdentifierPolicyOS os = access.selectByCode(application.getId(), code);
+    public IdentifierPolicyEntity findByType(Application application, IdentifierType type) {
+        IdentifierPolicyOS os = access.selectByType(application.getId(), type);
         return load(application, os);
     }
 

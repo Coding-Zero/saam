@@ -46,6 +46,7 @@ import com.codingzero.saam.app.UserSessionCreateRequest;
 import com.codingzero.saam.app.UserSessionResponse;
 import com.codingzero.saam.app.UsernamePolicyAddRequest;
 import com.codingzero.saam.app.UsernamePolicyUpdateRequest;
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.common.PasswordResetCode;
 import com.codingzero.saam.common.PermissionType;
@@ -220,7 +221,7 @@ public class SAAMServer implements SAAM {
     public ApplicationResponse addUsernamePolicy(UsernamePolicyAddRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
         UsernamePolicy policy = application.createUsernamePolicy(
-                request.getCode());
+        );
         application = storeApplication(application);
         return responseMapper.toResponse(application);
     }
@@ -228,7 +229,7 @@ public class SAAMServer implements SAAM {
     @Override
     public ApplicationResponse updateUsernamePolicy(UsernamePolicyUpdateRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
-        UsernamePolicy policy = (UsernamePolicy) application.fetchIdentifierPolicy(request.getCode());
+        UsernamePolicy policy = application.fetchUsernamePolicy();
         policy.setActive(request.isActive());
         application.updateIdentifierPolicy(policy);
         application = storeApplication(application);
@@ -238,8 +239,8 @@ public class SAAMServer implements SAAM {
     @Override
     public ApplicationResponse addEmailPolicy(EmailPolicyAddRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
-        EmailPolicy policy = application.createEmailPolicy(
-                request.getCode(), request.isVerificationRequired(), request.getDomains());
+        application.createEmailPolicy(
+                request.isVerificationRequired(), request.getDomains());
         application = storeApplication(application);
         return responseMapper.toResponse(application);
     }
@@ -247,7 +248,7 @@ public class SAAMServer implements SAAM {
     @Override
     public ApplicationResponse updateEmailPolicy(EmailPolicyUpdateRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
-        EmailPolicy policy = (EmailPolicy) application.fetchIdentifierPolicy(request.getCode());
+        EmailPolicy policy = application.fetchEmailPolicy();
         policy.setActive(request.isActive());
         policy.setDomains(request.getDomains());
         policy.setVerificationRequired(request.isVerificationRequired());
@@ -257,9 +258,9 @@ public class SAAMServer implements SAAM {
     }
 
     @Override
-    public ApplicationResponse removeIdentifierPolicy(String applicationId, String code) {
+    public ApplicationResponse removeIdentifierPolicy(String applicationId, IdentifierType type) {
         Application application = getCheckedApplicationById(applicationId);
-        IdentifierPolicy policy = application.fetchIdentifierPolicy(code);
+        IdentifierPolicy policy = application.fetchIdentifierPolicy(type);
         application.removeIdentifierPolicy(policy);
         application = storeApplication(application);
         return responseMapper.toResponse(application);
@@ -301,14 +302,14 @@ public class SAAMServer implements SAAM {
         user.changePassword(request.getPassword(), request.getPassword());
         user.setPlayingRoles(getRoles(application, request.getRoleIds()));
         application.updateUser(user);
-        Map<String, String> identifiers = request.getIdentifiers();
-        for (Map.Entry<String, String> entry: identifiers.entrySet()) {
+        Map<IdentifierType, String> identifiers = request.getIdentifiers();
+        for (Map.Entry<IdentifierType, String> entry: identifiers.entrySet()) {
             IdentifierPolicy policy = application.fetchIdentifierPolicy(entry.getKey());
             if (null == policy) {
                 throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
                         .message("No such identifier policy found, " + entry.getKey())
-                        .details("type", "IdentifierPolicy")
-                        .details("policyCode", entry.getKey())
+                        .details("entity", "IdentifierPolicy")
+                        .details("type", entry.getKey())
                         .build();
             }
             policy.addIdentifier(entry.getValue(), user);
@@ -325,7 +326,7 @@ public class SAAMServer implements SAAM {
             if (null == role) {
                 throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
                         .message("No such role found, " + id)
-                        .details("type", "Role")
+                        .details("entity", "Role")
                         .details("id", id)
                         .build();
             }
@@ -425,47 +426,18 @@ public class SAAMServer implements SAAM {
     public UserResponse assignIdentifier(IdentifierAssignRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
-        IdentifierPolicy policy = application.fetchIdentifierPolicy(request.getCode());
+        IdentifierPolicy policy = application.fetchIdentifierPolicy(request.getType());
         policy.addIdentifier(request.getIdentifier(), user);
         application.updateIdentifierPolicy(policy);
         storeApplication(application);
         return responseMapper.toResponse(user);
     }
 
-//    @Override
-//    public UserResponse updateIdentifier(IdentifierUpdateRequest request) {
-//        Application application = getCheckedApplicationById(request.getApplicationId());
-//        User user = application.fetchUserById(request.getUserId());
-//        IdentifierPolicy policy = application.fetchIdentifierPolicy(request.getCode());
-//        Identifier identifier = policy.fetchIdentifierByUserAndId(user, request.getCurrentIdentifier());
-//        if (null == identifier) {
-//            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
-//                    .message("No such identifier found, " + request.getCurrentIdentifier() + " for user, " + user.getId())
-//                    .details("type", "Identifier")
-//                    .details("userId", user.getId())
-//                    .details("identifier", request.getCurrentIdentifier())
-//                    .build();
-//        }
-//        updateIdentifier(policy, user, identifier, request.getNewIdentifier());
-//        application.updateIdentifierPolicy(policy);
-//        storeApplication(application);
-//        return responseMapper.toResponse(user);
-//    }
-
-    private void updateIdentifier(IdentifierPolicy policy, User user,
-                                  Identifier currentIdentifier, String newIdentifier) {
-        if (currentIdentifier.getContent().equalsIgnoreCase(newIdentifier)) {
-            return;
-        }
-        policy.removeIdentifier(currentIdentifier);
-        policy.addIdentifier(newIdentifier, user); //add new identifier
-    }
-
     @Override
     public UserResponse unassignIdentifier(IdentifierRemoveRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
-        IdentifierPolicy policy = application.fetchIdentifierPolicy(request.getCode());
+        IdentifierPolicy policy = application.fetchIdentifierPolicy(request.getType());
         Identifier identifier = policy.fetchIdentifierByUserAndId(user, request.getIdentifier());
         if (null == identifier) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
@@ -486,7 +458,7 @@ public class SAAMServer implements SAAM {
             IdentifierVerificationCodeGenerateRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
-        IdentifierPolicy policy = application.fetchIdentifierPolicy(request.getIdentifierPolicyCode());
+        IdentifierPolicy policy = application.fetchIdentifierPolicy(request.getIdentifierType());
         Identifier identifier = policy.fetchIdentifierByUserAndId(user, request.getIdentifier());
         if (null == identifier) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
@@ -507,7 +479,7 @@ public class SAAMServer implements SAAM {
     public UserResponse verifyIdentifier(IdentifierVerifyRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
-        IdentifierPolicy policy = application.fetchIdentifierPolicy(request.getCode());
+        IdentifierPolicy policy = application.fetchIdentifierPolicy(request.getIdentifierType());
         Identifier identifier = policy.fetchIdentifierByUserAndId(user, request.getIdentifier());
         if (null == identifier) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
@@ -601,7 +573,7 @@ public class SAAMServer implements SAAM {
     @Override
     public PasswordResetCodeResponse generateResetCode(PasswordResetCodeGenerateRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
-        IdentifierPolicy policy = application.fetchIdentifierPolicy(request.getIdentifierPolicyCode());
+        IdentifierPolicy policy = application.fetchIdentifierPolicy(request.getIdentifierType());
         User user = application.fetchUserById(request.getUserId());
         Identifier identifier = policy.fetchIdentifierByUserAndId(user, request.getIdentifier());
         if (null == identifier) {

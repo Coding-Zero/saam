@@ -1,5 +1,7 @@
 package com.codingzero.saam.app;
 
+import com.codingzero.saam.common.IdentifierType;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -8,15 +10,15 @@ import java.util.Map;
 public class CredentialRegisterRequest {
 
     private String applicationId;
-    private Map<String, String> identifiers; //<code, content>
+    private Map<IdentifierType, String> identifiers;
     private String password;
     private List<String> roleIds;
 
-    public CredentialRegisterRequest(String applicationId, Map<String, String> identifiers, String password) {
+    public CredentialRegisterRequest(String applicationId, Map<IdentifierType, String> identifiers, String password) {
         this(applicationId, identifiers, password, Collections.emptyList());
     }
 
-    public CredentialRegisterRequest(String applicationId, Map<String, String> identifiers,
+    public CredentialRegisterRequest(String applicationId, Map<IdentifierType, String> identifiers,
                                      String password, List<String> roleIds) {
         this.applicationId = applicationId;
         this.identifiers = Collections.unmodifiableMap(identifiers);
@@ -28,7 +30,7 @@ public class CredentialRegisterRequest {
         return applicationId;
     }
 
-    public Map<String, String> getIdentifiers() {
+    public Map<IdentifierType, String> getIdentifiers() {
         return identifiers;
     }
 

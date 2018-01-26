@@ -8,7 +8,6 @@ import java.util.Date;
 public class IdentifierPolicyOS {
 
     private String applicationId;
-    private String code;
     private IdentifierType type;
     private boolean verificationRequired;
     private int minLength;
@@ -18,7 +17,6 @@ public class IdentifierPolicyOS {
     private long updateTime;
 
     public IdentifierPolicyOS(String applicationId,
-                              String code,
                               IdentifierType type,
                               boolean verificationRequired,
                               int minLength,
@@ -27,7 +25,6 @@ public class IdentifierPolicyOS {
                               Date creationTime,
                               Date updateTime) {
         this.applicationId = applicationId;
-        this.code = code;
         this.type = type;
         this.verificationRequired = verificationRequired;
         this.minLength = minLength;
@@ -39,10 +36,6 @@ public class IdentifierPolicyOS {
 
     public String getApplicationId() {
         return applicationId;
-    }
-
-    public String getCode() {
-        return code;
     }
 
     public IdentifierType getType() {

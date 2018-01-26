@@ -171,6 +171,7 @@ public class ApplicationRootTest {
         IdentifierPolicy emailPolicy = mock(IdentifierPolicy.class);
         List<IdentifierPolicy> policies = Arrays.asList(usernamePolicy, emailPolicy);
         when(identifierPolicyRepository.findAll(entity)).thenReturn(policies);
+//        entity.fetchUserByIdentifier()
     }
 
 }

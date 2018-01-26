@@ -1,5 +1,6 @@
 package com.codingzero.saam.app;
 
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.utilities.pagination.PaginatedResult;
 
@@ -39,7 +40,7 @@ public interface SAAM {
 
     ApplicationResponse updateEmailPolicy(EmailPolicyUpdateRequest request);
 
-    ApplicationResponse removeIdentifierPolicy(String applicationId, String code);
+    ApplicationResponse removeIdentifierPolicy(String applicationId, IdentifierType type);
 
     ApplicationResponse addOAuthIdentifierPolicy(OAuthIdentifierPolicyAddRequest request);
 

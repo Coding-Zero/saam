@@ -35,11 +35,11 @@ public class IdentifierRepositoryService {
     }
 
     public void remove(IdentifierPolicyEntity policy) {
-        access.deleteByPolicyCode(policy.getApplication().getId(), policy.getCode());
+        access.deleteByType(policy.getApplication().getId(), policy.getType());
     }
 
     public void remove(IdentifierPolicyEntity policy, User user) {
-        access.deleteByPolicyCodeAndUserId(policy.getApplication().getId(), policy.getCode(), user.getId());
+        access.deleteByTypeAndUserId(policy.getApplication().getId(), policy.getType(), user.getId());
     }
 
     public void removeAll(Application application) {
@@ -47,14 +47,14 @@ public class IdentifierRepositoryService {
     }
 
     public IdentifierEntity findByContent(IdentifierPolicy policy, String content) {
-        IdentifierOS os = access.selectByPolicyCodeAndContent(
-                policy.getApplication().getId(), policy.getCode(), content);
+        IdentifierOS os = access.selectByTypeAndContent(
+                policy.getApplication().getId(), policy.getType(), content);
         return factory.reconstitute(os, policy, null);
     }
 
     public List<Identifier> findByPolicyAndUser(IdentifierPolicy policy, User user) {
-        List<IdentifierOS> osList = access.selectByPolicyCodeAndUserId(
-                policy.getApplication().getId(), policy.getCode(), user.getId());
+        List<IdentifierOS> osList = access.selectByTypeAndUserId(
+                policy.getApplication().getId(), policy.getType(), user.getId());
         List<Identifier> identifiers = new ArrayList<>(osList.size());
         for (IdentifierOS os: osList) {
             identifiers.add(factory.reconstitute(os, policy, user));
@@ -64,7 +64,7 @@ public class IdentifierRepositoryService {
 
     public PaginatedResult<List<Identifier>> findByPolicy(IdentifierPolicy policy) {
         PaginatedResult<List<IdentifierOS>> result = access.selectByPolicyCode(
-                policy.getApplication().getId(), policy.getCode());
+                policy.getApplication().getId(), policy.getType());
         return new PaginatedResult<>(new PaginatedResultMapper<List<Identifier>, List<IdentifierOS>>() {
             @Override
             protected List<Identifier> toResult(List<IdentifierOS> source, Object[] arguments) {

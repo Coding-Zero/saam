@@ -10,8 +10,6 @@ public interface IdentifierPolicy {
 
     Application getApplication();
 
-    String getCode();
-
     IdentifierType getType();
 
     boolean isVerificationRequired();
@@ -47,8 +45,6 @@ public interface IdentifierPolicy {
     Identifier fetchIdentifierById(String content);
 
     Identifier fetchIdentifierByUserAndId(User user, String content);
-
-//    Identifier fetchDefaultIdentifier(User user);
 
     List<Identifier> fetchIdentifiersByUser(User user);
 

@@ -42,24 +42,15 @@ public class ResponseMapper {
                 source.getName(),
                 source.getDescription(),
                 source.getCreatedDateTime(),
-                source.getStatus(), source.getPasswordPolicy(),
-                toUsernamePolicies(source),
-                toEmailPolicies(source));
-    }
-
-    private List<ApplicationResponse.UsernamePolicy> toUsernamePolicies(Application source) {
-        List<UsernamePolicy> policies = source.fetchUsernamePolicies();
-        List<ApplicationResponse.UsernamePolicy> responses = new ArrayList<>(policies.size());
-        for (UsernamePolicy entity: policies) {
-            responses.add(toUsernamePolicy(entity));
-        }
-        return responses;
+                source.getStatus(),
+                source.getPasswordPolicy(),
+                toUsernamePolicy(source.fetchUsernamePolicy()),
+                toEmailPolicy(source.fetchEmailPolicy()),
+                toOAuthIdentifierPolicies(source));
     }
 
     private ApplicationResponse.UsernamePolicy toUsernamePolicy(UsernamePolicy source) {
         return new ApplicationResponse.UsernamePolicy(
-                source.getApplication().getId(),
-                source.getCode(),
                 source.isVerificationRequired(),
                 source.getMinLength(),
                 source.getMaxLength(),
@@ -70,19 +61,8 @@ public class ResponseMapper {
                 );
     }
 
-    private List<ApplicationResponse.EmailPolicy> toEmailPolicies(Application source) {
-        List<EmailPolicy> policies = source.fetchEmailPolicies();
-        List<ApplicationResponse.EmailPolicy> responses = new ArrayList<>(policies.size());
-        for (EmailPolicy entity: policies) {
-            responses.add(toEmailPolicy(entity));
-        }
-        return responses;
-    }
-
     private ApplicationResponse.EmailPolicy toEmailPolicy(EmailPolicy source) {
         return new ApplicationResponse.EmailPolicy(
-                source.getApplication().getId(),
-                source.getCode(),
                 source.isVerificationRequired(),
                 source.getMinLength(),
                 source.getMaxLength(),
@@ -90,6 +70,23 @@ public class ResponseMapper {
                 source.getCreationTime(),
                 source.getUpdateTime(),
                 source.getDomains()
+        );
+    }
+
+    private List<ApplicationResponse.OAuthIdentifierPolicy> toOAuthIdentifierPolicies(Application application) {
+        List<OAuthIdentifierPolicy> policies = application.fetchAllOAuthIdentifierPolicies();
+        List<ApplicationResponse.OAuthIdentifierPolicy> responses = new ArrayList<>(policies.size());
+        for (OAuthIdentifierPolicy policy: policies) {
+            responses.add(toOAuthIdentifierPolicy(policy));
+        }
+        return responses;
+    }
+
+    private ApplicationResponse.OAuthIdentifierPolicy toOAuthIdentifierPolicy(OAuthIdentifierPolicy source) {
+        return new ApplicationResponse.OAuthIdentifierPolicy(
+                source.getPlatform(),
+                source.getConfigurations(),
+                source.isActive()
         );
     }
 
@@ -122,7 +119,7 @@ public class ResponseMapper {
             for (Identifier identifier: identifiers) {
                 responses.add(
                         new UserResponse.Identifier(
-                                identifier.getPolicy().getCode(),
+                                identifier.getPolicy().getType(),
                                 identifier.getContent(),
                                 identifier.isVerified(),
                                 identifier.getCreationTime()
@@ -156,7 +153,7 @@ public class ResponseMapper {
         return new IdentifierVerificationCodeResponse(
                 identifier.getUser().getApplication().getId(),
                 identifier.getUser().getId(),
-                identifier.getPolicy().getCode(),
+                identifier.getPolicy().getType(),
                 identifier.getContent(),
                 identifier.getVerificationCode().getCode(),
                 identifier.getVerificationCode().getExpirationTime());
@@ -166,7 +163,7 @@ public class ResponseMapper {
         return new PasswordResetCodeResponse(
                 user.getApplication().getId(),
                 user.getId(),
-                identifier.getPolicy().getCode(),
+                identifier.getPolicy().getType(),
                 identifier.getContent(),
                 code.getCode(),
                 code.getExpirationTime());

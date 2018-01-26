@@ -1,19 +1,22 @@
 package com.codingzero.saam.app;
 
 
+import com.codingzero.saam.common.IdentifierType;
+
 public class IdentifierVerificationCodeGenerateRequest {
 
     private String applicationId;
     private String userId;
-    private String identifierPolicyCode;
+    private IdentifierType identifierType;
     private String identifier;
     private long timeout;
 
     public IdentifierVerificationCodeGenerateRequest(String applicationId, String userId,
-                                                     String identifierPolicyCode, String identifier, long timeout) {
+                                                     IdentifierType identifierType,
+                                                     String identifier, long timeout) {
         this.applicationId = applicationId;
         this.userId = userId;
-        this.identifierPolicyCode = identifierPolicyCode;
+        this.identifierType = identifierType;
         this.identifier = identifier;
         this.timeout = timeout;
     }
@@ -26,8 +29,8 @@ public class IdentifierVerificationCodeGenerateRequest {
         return userId;
     }
 
-    public String getIdentifierPolicyCode() {
-        return identifierPolicyCode;
+    public IdentifierType getIdentifierType() {
+        return identifierType;
     }
 
     public String getIdentifier() {

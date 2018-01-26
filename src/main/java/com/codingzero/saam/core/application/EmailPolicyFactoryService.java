@@ -1,6 +1,7 @@
 package com.codingzero.saam.core.application;
 
 import com.codingzero.saam.common.Errors;
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
 import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
@@ -38,15 +39,13 @@ public class EmailPolicyFactoryService {
     }
 
     public EmailPolicyEntity generate(
-            Application application, String code, boolean isVerificationRequired, List<String> domains) {
-        identifierPolicyHelper.checkForCodeFormat(code);
-        identifierPolicyHelper.checkForDuplicateCode(application, code);
+            Application application, boolean isVerificationRequired, List<String> domains) {
+        identifierPolicyHelper.checkForDuplicateType(application, IdentifierType.EMAIL);
         deduplicateDomains(domains);
         checkForDomainFormat(domains);
         Date currentDateTime = new Date(System.currentTimeMillis());
         EmailPolicyOS os = new EmailPolicyOS(
                 application.getId(),
-                code,
                 isVerificationRequired,
                 MIN_LENGTH,
                 MAX_LENGTH,

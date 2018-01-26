@@ -12,7 +12,6 @@ public class EmailPolicyOS extends IdentifierPolicyOS {
     private List<String> domains;
 
     public EmailPolicyOS(String applicationId,
-                         String code,
                          boolean isVerificationRequired,
                          int minLength,
                          int maxLength,
@@ -20,7 +19,7 @@ public class EmailPolicyOS extends IdentifierPolicyOS {
                          Date creationTime,
                          Date updateTime,
                          List<String> domains) {
-        super(applicationId, code, IdentifierType.EMAIL, isVerificationRequired,
+        super(applicationId, IdentifierType.EMAIL, isVerificationRequired,
                 minLength, maxLength, isActive, creationTime, updateTime);
         setDomains(domains);
     }

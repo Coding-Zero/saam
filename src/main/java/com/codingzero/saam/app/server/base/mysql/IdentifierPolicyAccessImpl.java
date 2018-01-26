@@ -25,17 +25,17 @@ public class IdentifierPolicyAccessImpl extends AbstractAccess implements Identi
     }
 
     @Override
-    public boolean isDuplicateCode(String applicationId, String code) {
+    public boolean isDuplicateType(String applicationId, IdentifierType type) {
         Connection conn = getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             String sql = String.format(
-                    "SELECT COUNT(*) FROM %s WHERE application_id=? AND code=? LIMIT 1;",
+                    "SELECT COUNT(*) FROM %s WHERE application_id=? AND type=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareCall(sql);
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, code);
+            stmt.setString(2, type.name());
             rs = stmt.executeQuery();
             rs.next();
             return rs.getInt(1) > 0;
@@ -56,19 +56,18 @@ public class IdentifierPolicyAccessImpl extends AbstractAccess implements Identi
         try {
             String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
                     TABLE,
-                    "application_id, code, type, is_verification_required, " +
+                    "application_id, type, is_verification_required, " +
                             "min_length, max_length, is_active, creation_time, update_time",
-                    "?, ?, ?, ?, ?, ?, ?, ?, ?");
+                    "?, ?, ?, ?, ?, ?, ?, ?");
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(2, os.getCode());
-            stmt.setString(3, os.getType().name());
-            stmt.setBoolean(4, os.isVerificationRequired());
-            stmt.setInt(5, os.getMinLength());
-            stmt.setInt(6, os.getMaxLength());
-            stmt.setBoolean(7, os.isActive());
-            stmt.setTimestamp(8, new Timestamp(os.getCreationTime().getTime()));
-            stmt.setTimestamp(9, new Timestamp(os.getUpdateTime().getTime()));
+            stmt.setString(2, os.getType().name());
+            stmt.setBoolean(3, os.isVerificationRequired());
+            stmt.setInt(4, os.getMinLength());
+            stmt.setInt(5, os.getMaxLength());
+            stmt.setBoolean(6, os.isActive());
+            stmt.setTimestamp(7, new Timestamp(os.getCreationTime().getTime()));
+            stmt.setTimestamp(8, new Timestamp(os.getUpdateTime().getTime()));
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -86,7 +85,7 @@ public class IdentifierPolicyAccessImpl extends AbstractAccess implements Identi
         try {
             String sql = String.format("UPDATE %s SET is_verification_required=?,"
                             + " min_length=?, max_length=?, is_active=?, update_time=? "
-                            + " WHERE application_id=? AND code=? LIMIT 1;",
+                            + " WHERE application_id=? AND type=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareStatement(sql);
             stmt.setBoolean(1, os.isVerificationRequired());
@@ -95,7 +94,7 @@ public class IdentifierPolicyAccessImpl extends AbstractAccess implements Identi
             stmt.setBoolean(4, os.isActive());
             stmt.setTimestamp(5, new Timestamp(os.getUpdateTime().getTime()));
             stmt.setBytes(6, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(7, os.getCode());
+            stmt.setString(7, os.getType().name());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -110,11 +109,11 @@ public class IdentifierPolicyAccessImpl extends AbstractAccess implements Identi
         Connection conn = getConnection();
         PreparedStatement stmt=null;
         try {
-            String sql = String.format("DELETE FROM %s WHERE application_id=? AND code=? LIMIT 1;",
+            String sql = String.format("DELETE FROM %s WHERE application_id=? AND type=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(2, os.getCode());
+            stmt.setString(2, os.getType().name());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -143,43 +142,22 @@ public class IdentifierPolicyAccessImpl extends AbstractAccess implements Identi
     }
 
     @Override
-    public IdentifierPolicyOS selectByCode(String applicationId, String code) {
+    public IdentifierPolicyOS selectByType(String applicationId, IdentifierType type) {
         Connection conn = getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            String sql = String.format("SELECT * FROM %s WHERE application_id=? AND code=? LIMIT 1;",
+            String sql = String.format("SELECT * FROM %s WHERE application_id=? AND type=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareCall(sql);
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, code);
+            stmt.setString(2, type.name());
             rs = stmt.executeQuery();
             if (!rs.next()) {
                 return null;
             } else {
                 return getObjectSegmentMapper().toIdentifierPolicyOS(rs);
             }
-        } catch (SQLException | IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            closeResultSet(rs);
-            closePreparedStatement(stmt);
-            closeConnection(conn);
-        }
-    }
-
-    @Override
-    public List<IdentifierPolicyOS> selectByApplicationIdAndType(String applicationId, IdentifierType type) {
-        Connection conn = getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            String sql = String.format("SELECT * FROM %s WHERE application_id=? AND type=? ", TABLE);
-            stmt = conn.prepareCall(sql);
-            stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, type.name());
-            rs = stmt.executeQuery();
-            return toOSList(rs);
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         } finally {

@@ -42,7 +42,7 @@ public class IdentifierEntity extends EntityObject<IdentifierOS> implements Iden
     @Override
     public IdentifierPolicy getPolicy() {
         if (null == policy) {
-            policy = getUser().getApplication().fetchIdentifierPolicy(getObjectSegment().getIdentifierPolicyCode());
+            policy = getUser().getApplication().fetchIdentifierPolicy(getObjectSegment().getIdentifierType());
         }
         return policy;
     }
@@ -59,7 +59,7 @@ public class IdentifierEntity extends EntityObject<IdentifierOS> implements Iden
 
     @Override
     public IdentifierVerificationCode generateVerificationCode(long timeout) {
-        String code = verificationCodeGenerator.generate(getObjectSegment().getType());
+        String code = verificationCodeGenerator.generate(getObjectSegment().getIdentifierType());
         Date expirationTime = new Date(System.currentTimeMillis() + timeout);
         getObjectSegment().setVerificationCode(
                 new IdentifierVerificationCode(code, expirationTime));

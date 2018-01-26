@@ -2,12 +2,14 @@ package com.codingzero.saam.app;
 
 import com.codingzero.saam.common.ApplicationStatus;
 import com.codingzero.saam.common.IdentifierType;
+import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.common.PasswordPolicy;
 import com.codingzero.saam.common.UsernameFormat;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 public class ApplicationResponse {
@@ -18,8 +20,9 @@ public class ApplicationResponse {
     private long creationTime;
     private ApplicationStatus status;
     private PasswordPolicy passwordPolicy;
-    private List<UsernamePolicy> usernamePolicies;
-    private List<EmailPolicy> emailPolicies;
+    private UsernamePolicy usernamePolicy;
+    private EmailPolicy emailPolicy;
+    private List<OAuthIdentifierPolicy> oAuthIdentifierPolicies;
 
     public ApplicationResponse(String id,
                                String name,
@@ -27,16 +30,18 @@ public class ApplicationResponse {
                                Date creationTime,
                                ApplicationStatus status,
                                PasswordPolicy passwordPolicy,
-                               List<UsernamePolicy> usernamePolicies,
-                               List<EmailPolicy> emailPolicies) {
+                               UsernamePolicy usernamePolicy,
+                               EmailPolicy emailPolicy,
+                               List<OAuthIdentifierPolicy> oAuthIdentifierPolicies) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.creationTime = creationTime.getTime();
         this.status = status;
         this.passwordPolicy = passwordPolicy;
-        this.usernamePolicies = Collections.unmodifiableList(usernamePolicies);
-        this.emailPolicies = Collections.unmodifiableList(emailPolicies);
+        this.usernamePolicy = usernamePolicy;
+        this.emailPolicy = emailPolicy;
+        this.oAuthIdentifierPolicies = Collections.unmodifiableList(oAuthIdentifierPolicies);
     }
 
     public String getId() {
@@ -63,17 +68,20 @@ public class ApplicationResponse {
         return passwordPolicy;
     }
 
-    public List<UsernamePolicy> getUsernamePolicies() {
-        return usernamePolicies;
+    public UsernamePolicy getUsernamePolicy() {
+        return usernamePolicy;
     }
 
-    public List<EmailPolicy> getEmailPolicies() {
-        return emailPolicies;
+    public EmailPolicy getEmailPolicy() {
+        return emailPolicy;
+    }
+
+    public List<OAuthIdentifierPolicy> getoAuthIdentifierPolicies() {
+        return oAuthIdentifierPolicies;
     }
 
     public static abstract class IdentifierPolicy {
 
-        private String code;
         private IdentifierType type;
         private boolean isVerificationRequired;
         private int minLength;
@@ -82,15 +90,13 @@ public class ApplicationResponse {
         private long creationTime;
         private long updateTime;
 
-        public IdentifierPolicy(String code,
-                                IdentifierType type,
+        public IdentifierPolicy(IdentifierType type,
                                 boolean isVerificationRequired,
                                 int minLength,
                                 int maxLength,
                                 boolean isActive,
                                 Date creationTime,
                                 Date updateTime) {
-            this.code = code;
             this.type = type;
             this.isVerificationRequired = isVerificationRequired;
             this.minLength = minLength;
@@ -98,10 +104,6 @@ public class ApplicationResponse {
             this.isActive = isActive;
             this.creationTime = creationTime.getTime();
             this.updateTime = updateTime.getTime();
-        }
-
-        public String getCode() {
-            return code;
         }
 
         public IdentifierType getType() {
@@ -138,9 +140,7 @@ public class ApplicationResponse {
 
         private UsernameFormat format;
 
-        public UsernamePolicy(String applicationId,
-                              String code,
-                              boolean isVerificationRequired,
+        public UsernamePolicy(boolean isVerificationRequired,
                               int minLength,
                               int maxLength,
                               boolean isActive,
@@ -148,7 +148,6 @@ public class ApplicationResponse {
                               Date updateTime,
                               UsernameFormat format) {
             super(
-                    code,
                     IdentifierType.USERNAME,
                     isVerificationRequired,
                     minLength,
@@ -168,9 +167,7 @@ public class ApplicationResponse {
 
         private List<String> domains;
 
-        public EmailPolicy(String applicationId,
-                           String code,
-                           boolean isVerificationRequired,
+        public EmailPolicy(boolean isVerificationRequired,
                            int minLength,
                            int maxLength,
                            boolean isActive,
@@ -178,7 +175,6 @@ public class ApplicationResponse {
                            Date updateTime,
                            List<String> domains) {
             super(
-                    code,
                     IdentifierType.EMAIL,
                     isVerificationRequired,
                     minLength,
@@ -193,5 +189,32 @@ public class ApplicationResponse {
             return domains;
         }
 
+    }
+
+    public static class OAuthIdentifierPolicy {
+
+        private OAuthPlatform platform;
+        private Map<String, Object> configurations;
+        private boolean isActive;
+
+        public OAuthIdentifierPolicy(OAuthPlatform platform,
+                                     Map<String, Object> configurations,
+                                     boolean isActive) {
+            this.platform = platform;
+            this.configurations = Collections.unmodifiableMap(configurations);
+            this.isActive = isActive;
+        }
+
+        public OAuthPlatform getPlatform() {
+            return platform;
+        }
+
+        public Map<String, Object> getConfigurations() {
+            return configurations;
+        }
+
+        public boolean isActive() {
+            return isActive;
+        }
     }
 }

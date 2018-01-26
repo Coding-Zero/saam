@@ -1,5 +1,6 @@
 package com.codingzero.saam.core;
 
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.core.application.IdentifierEntity;
 import com.codingzero.saam.core.application.IdentifierFactoryService;
 import com.codingzero.saam.core.application.UserRepositoryService;
@@ -43,13 +44,12 @@ public class IdentifierFactoryServiceTest {
         String applicationId = "applicationId";
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
-        String policyCode = "USERNAME";
         IdentifierPolicy policy = mock(IdentifierPolicy.class);
         when(policy.isVerificationRequired()).thenReturn(true);
         when(policy.isActive()).thenReturn(true);
         when(policy.getApplication()).thenReturn(application);
-        when(policy.getCode()).thenReturn(policyCode);
-        when(access.isDuplicateContent(applicationId, policyCode, content)).thenReturn(false);
+        when(policy.getType()).thenReturn(IdentifierType.USERNAME);
+        when(access.isDuplicateContent(applicationId, IdentifierType.USERNAME, content)).thenReturn(false);
         User user = mock(User.class);
         when(user.getApplication()).thenReturn(application);
         IdentifierEntity identifier = service.generate(policy, content, user);
@@ -68,13 +68,12 @@ public class IdentifierFactoryServiceTest {
         String applicationId = "applicationId";
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
-        String policyCode = "USERNAME";
         IdentifierPolicy policy = mock(IdentifierPolicy.class);
         when(policy.isVerificationRequired()).thenReturn(false);
         when(policy.isActive()).thenReturn(true);
         when(policy.getApplication()).thenReturn(application);
-        when(policy.getCode()).thenReturn(policyCode);
-        when(access.isDuplicateContent(applicationId, policyCode, content)).thenReturn(false);
+        when(policy.getType()).thenReturn(IdentifierType.USERNAME);
+        when(access.isDuplicateContent(applicationId, IdentifierType.USERNAME, content)).thenReturn(false);
         User user = mock(User.class);
         when(user.getApplication()).thenReturn(application);
         IdentifierEntity identifier = service.generate(policy, content, user);
@@ -113,13 +112,12 @@ public class IdentifierFactoryServiceTest {
         String applicationId = "applicationId";
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
-        String policyCode = "USERNAME";
         IdentifierPolicy policy = mock(IdentifierPolicy.class);
         when(policy.isVerificationRequired()).thenReturn(true);
         when(policy.isActive()).thenReturn(true);
         when(policy.getApplication()).thenReturn(application);
-        when(policy.getCode()).thenReturn(policyCode);
-        when(access.isDuplicateContent(applicationId, policyCode, content)).thenReturn(true);
+        when(policy.getType()).thenReturn(IdentifierType.USERNAME);
+        when(access.isDuplicateContent(applicationId, IdentifierType.USERNAME, content)).thenReturn(true);
         User user = mock(User.class);
         when(user.getApplication()).thenReturn(application);
         thrown.expect(BusinessError.class);

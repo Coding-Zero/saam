@@ -1,6 +1,7 @@
 package com.codingzero.saam.core.application;
 
 import com.codingzero.saam.common.ApplicationStatus;
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.common.PasswordPolicy;
 import com.codingzero.saam.common.PrincipalType;
@@ -49,7 +50,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     private RoleRepositoryService roleRepository;
     private ResourceFactoryService resourceFactory;
     private ResourceRepositoryService resourceRepository;
-    private Map<String, IdentifierPolicyEntity> dirtyIdentifierPolicies;
+    private Map<IdentifierType, IdentifierPolicyEntity> dirtyIdentifierPolicies;
     private Map<OAuthPlatform, OAuthIdentifierPolicyEntity> dirtyOAuthIdentifierPolicies;
     private Map<String, PrincipalEntity> dirtyPrincipals;
     private Map<String, UserSessionEntity> dirtyUserSessions;
@@ -189,48 +190,48 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     }
 
     @Override
-    public UsernamePolicy createUsernamePolicy(String code) {
+    public UsernamePolicy createUsernamePolicy() {
         UsernamePolicyEntity entity =
-                usernameIdentifierPolicyFactory.generate(this, code);
-        dirtyIdentifierPolicies.put(entity.getCode(), entity);
+                usernameIdentifierPolicyFactory.generate(this);
+        dirtyIdentifierPolicies.put(entity.getType(), entity);
         return entity;
     }
 
     @Override
     public EmailPolicy createEmailPolicy(
-            String code, boolean isVerificationRequired, List<String> domains) {
+            boolean isVerificationRequired, List<String> domains) {
         EmailPolicyEntity entity =
-                emailIdentifierPolicyFactory.generate(this, code, isVerificationRequired, domains);
-        dirtyIdentifierPolicies.put(entity.getCode(), entity);
+                emailIdentifierPolicyFactory.generate(this, isVerificationRequired, domains);
+        dirtyIdentifierPolicies.put(entity.getType(), entity);
         return entity;
     }
 
     @Override
     public void updateIdentifierPolicy(IdentifierPolicy policy) {
         IdentifierPolicyEntity entity = (IdentifierPolicyEntity) policy;
-        dirtyIdentifierPolicies.put(entity.getCode(), entity);
+        dirtyIdentifierPolicies.put(entity.getType(), entity);
     }
 
     @Override
     public void removeIdentifierPolicy(IdentifierPolicy policy) {
         IdentifierPolicyEntity entity = (IdentifierPolicyEntity) policy;
         entity.markAsVoid();
-        dirtyIdentifierPolicies.put(entity.getCode(), entity);
+        dirtyIdentifierPolicies.put(entity.getType(), entity);
     }
 
     @Override
-    public IdentifierPolicy fetchIdentifierPolicy(String code) {
-        return identifierPolicyRepository.findByCode(this, code);
+    public IdentifierPolicy fetchIdentifierPolicy(IdentifierType type) {
+        return identifierPolicyRepository.findByType(this, type);
     }
 
     @Override
-    public List<UsernamePolicy> fetchUsernamePolicies() {
-        return usernameIdentifierPolicyRepository.findAll(this);
+    public UsernamePolicy fetchUsernamePolicy() {
+        return (UsernamePolicy) fetchIdentifierPolicy(IdentifierType.USERNAME);
     }
 
     @Override
-    public List<EmailPolicy> fetchEmailPolicies() {
-        return emailIdentifierPolicyRepository.findAll(this);
+    public EmailPolicy fetchEmailPolicy() {
+        return (EmailPolicy) fetchIdentifierPolicy(IdentifierType.EMAIL);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.codingzero.saam.app;
 
+import com.codingzero.saam.common.IdentifierType;
+
 import java.util.Date;
 
 
@@ -7,16 +9,16 @@ public class PasswordResetCodeResponse {
 
     private String applicationId;
     private String userId;
-    private String identifierPolicyCode;
+    private IdentifierType identifierType;
     private String identifier;
     private String code;
     private long expirationTime;
 
-    public PasswordResetCodeResponse(String applicationId, String userId, String identifierPolicyCode,
+    public PasswordResetCodeResponse(String applicationId, String userId, IdentifierType identifierType,
                                      String identifier, String code, Date expirationTime) {
         this.applicationId = applicationId;
         this.userId = userId;
-        this.identifierPolicyCode = identifierPolicyCode;
+        this.identifierType = identifierType;
         this.identifier = identifier;
         this.code = code;
         this.expirationTime = expirationTime.getTime();
@@ -30,8 +32,8 @@ public class PasswordResetCodeResponse {
         return userId;
     }
 
-    public String getIdentifierPolicyCode() {
-        return identifierPolicyCode;
+    public IdentifierType getIdentifierType() {
+        return identifierType;
     }
 
     public String getIdentifier() {

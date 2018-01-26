@@ -1,5 +1,6 @@
 package com.codingzero.saam.core.application;
 
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.UsernameFormat;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
@@ -30,14 +31,11 @@ public class UsernamePolicyFactoryService {
         this.identifierRepository = identifierRepository;
     }
 
-    public UsernamePolicyEntity generate(
-            Application application, String code) {
-        identifierPolicyHelper.checkForCodeFormat(code);
-        identifierPolicyHelper.checkForDuplicateCode(application, code);
+    public UsernamePolicyEntity generate(Application application) {
+        identifierPolicyHelper.checkForDuplicateType(application, IdentifierType.USERNAME);
         Date currentDateTime = new Date(System.currentTimeMillis());
         UsernamePolicyOS os = new UsernamePolicyOS(
                 application.getId(),
-                code,
                 MIN_LENGTH,
                 MAX_LENGTH,
                 true,

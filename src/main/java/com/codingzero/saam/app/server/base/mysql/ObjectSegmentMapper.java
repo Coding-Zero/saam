@@ -168,7 +168,6 @@ public class ObjectSegmentMapper {
     public IdentifierPolicyOS toIdentifierPolicyOS(ResultSet rs) throws SQLException, IOException {
         return new IdentifierPolicyOS(
                 Key.fromBytes(rs.getBytes("application_id")).toHexString(),
-                rs.getString("code"),
                 IdentifierType.valueOf(rs.getString("type").toUpperCase()),
                 rs.getBoolean("is_verification_required"),
                 rs.getInt("min_length"),
@@ -185,7 +184,6 @@ public class ObjectSegmentMapper {
                 rs.getString("domains"), new TypeReference<List<String>>() {});
         return new EmailPolicyOS(
                 identifierPolicyOS.getApplicationId(),
-                identifierPolicyOS.getCode(),
                 identifierPolicyOS.isVerificationRequired(),
                 identifierPolicyOS.getMinLength(),
                 identifierPolicyOS.getMaxLength(),
@@ -200,7 +198,6 @@ public class ObjectSegmentMapper {
                 rs.getString("domains"), new TypeReference<List<String>>() {});
         return new EmailPolicyOS(
                 Key.fromBytes(rs.getBytes("application_id")).toHexString(),
-                rs.getString("code"),
                 rs.getBoolean("is_verification_required"),
                 rs.getInt("min_length"),
                 rs.getInt("max_length"),
@@ -214,7 +211,6 @@ public class ObjectSegmentMapper {
             throws SQLException, IOException {
         return new UsernamePolicyOS(
                 identifierPolicyOS.getApplicationId(),
-                identifierPolicyOS.getCode(),
                 identifierPolicyOS.getMinLength(),
                 identifierPolicyOS.getMaxLength(),
                 identifierPolicyOS.isActive(),
@@ -227,7 +223,6 @@ public class ObjectSegmentMapper {
     public UsernamePolicyOS toUsernamePolicyOS(ResultSet rs) throws SQLException, IOException {
         return new UsernamePolicyOS(
                 Key.fromBytes(rs.getBytes("application_id")).toHexString(),
-                rs.getString("code"),
                 rs.getInt("min_length"),
                 rs.getInt("max_length"),
                 rs.getBoolean("is_active"),
@@ -238,16 +233,15 @@ public class ObjectSegmentMapper {
     }
 
     public IdentifierOS toIdentifierOS(ResultSet rs) throws SQLException, IOException {
-        IdentifierVerificationCode code = objectMapper.readValue(
+        IdentifierVerificationCode verificationCode = objectMapper.readValue(
                 rs.getString("verification_code"), IdentifierVerificationCode.class);
         return new IdentifierOS(
                 Key.fromBytes(rs.getBytes("application_id")).toHexString(),
-                rs.getString("identifier_policy_code"),
+                IdentifierType.valueOf(rs.getString("identifier_type")),
                 rs.getString("content"),
                 Key.fromBytes(rs.getBytes("user_id")).toHexString(),
-                IdentifierType.valueOf(rs.getString("type")),
                 rs.getBoolean("is_verified"),
-                code,
+                verificationCode,
                 new Date(rs.getTimestamp("creation_time").getTime()),
                 new Date(rs.getTimestamp("update_time").getTime())
         );

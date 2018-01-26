@@ -95,10 +95,10 @@ public class ApplicationResource extends AbstractResource {
     }
 
     @POST
-    @Path("/{id}/identifier-policies")
+    @Path("/{id}/identifier-policies/{type}")
     @Timed(name = "create-identifier-policy")
     public Response createIdentifierPolicy(@PathParam("id") String id,
-                                           @QueryParam("type") String type,
+                                           @PathParam("type") String type,
                                            ObjectNode requestBody) throws IOException {
         if (IdentifierType.USERNAME.name().equalsIgnoreCase(type)) {
             return createUsernamePolicy(id, requestBody);
@@ -126,33 +126,30 @@ public class ApplicationResource extends AbstractResource {
     }
 
     @PUT
-    @Path("/{id}/identifier-policies/{code}")
+    @Path("/{id}/identifier-policies/{type}")
     @Timed(name = "update-identifier-policy")
     public Response updateIdentifierPolicy(@PathParam("id") String id,
-                                           @PathParam("code") String code,
-                                           @QueryParam("type") String type,
+                                           @PathParam("type") String type,
                                            ObjectNode requestBody) throws IOException {
         if (IdentifierType.USERNAME.name().equalsIgnoreCase(type)) {
-            return updateUsernamePolicy(id, code, requestBody);
+            return updateUsernamePolicy(id, requestBody);
         }
         if (IdentifierType.EMAIL.name().equalsIgnoreCase(type)) {
-            return updateEmailPolicy(id, code, requestBody);
+            return updateEmailPolicy(id, requestBody);
         }
         throw new IllegalArgumentException("Unsupported type, " + type);
     }
 
-    private Response updateUsernamePolicy(String applicationId, String code, ObjectNode requestBody) throws IOException {
+    private Response updateUsernamePolicy(String applicationId, ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", applicationId);
-        requestBody.put("code", code);
         UsernamePolicyUpdateRequest request = getObjectMapper().readValue(
                 requestBody.toString(), UsernamePolicyUpdateRequest.class);
         ApplicationResponse response = getApp().updateUsernamePolicy(request);
         return ok(response);
     }
 
-    private Response updateEmailPolicy(String applicationId, String code, ObjectNode requestBody) throws IOException {
+    private Response updateEmailPolicy(String applicationId, ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", applicationId);
-        requestBody.put("code", code);
         EmailPolicyUpdateRequest request = getObjectMapper().readValue(
                 requestBody.toString(), EmailPolicyUpdateRequest.class);
         ApplicationResponse response = getApp().updateEmailPolicy(request);
@@ -160,11 +157,11 @@ public class ApplicationResource extends AbstractResource {
     }
 
     @DELETE
-    @Path("/{id}/identifier-policies/{code}")
+    @Path("/{id}/identifier-policies/{type}")
     @Timed(name = "delete-identifier-policy")
     public Response deleteIdentifierPolicy(@PathParam("id") String id,
-                                           @PathParam("code") String code) {
-        getApp().removeIdentifierPolicy(id, code);
+                                           @PathParam("type") String type) {
+        getApp().removeIdentifierPolicy(id, IdentifierType.valueOf(type));
         return noContent();
     }
 

@@ -29,11 +29,11 @@ public class EmailPolicyAccessImpl extends AbstractAccess implements EmailPolicy
         try {
             String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
                     TABLE,
-                    "application_id, code, domains",
+                    "application_id, type, domains",
                     "?, ?, ?");
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(2, os.getCode());
+            stmt.setString(2, os.getType().name());
             stmt.setString(3, getObjectSegmentMapper().toJson(os.getDomains()));
             stmt.executeUpdate();
         } catch (SQLException | JsonProcessingException e) {
@@ -50,12 +50,12 @@ public class EmailPolicyAccessImpl extends AbstractAccess implements EmailPolicy
         PreparedStatement stmt = null;
         try {
             String sql = String.format("UPDATE %s SET domains=? "
-                            + " WHERE application_id=? AND code=? LIMIT 1;",
+                            + " WHERE application_id=? AND type=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, getObjectSegmentMapper().toJson(os.getDomains()));
             stmt.setBytes(2, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(3, os.getCode());
+            stmt.setString(3, os.getType().name());
             stmt.executeUpdate();
         } catch (SQLException | JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -70,11 +70,11 @@ public class EmailPolicyAccessImpl extends AbstractAccess implements EmailPolicy
         Connection conn = getConnection();
         PreparedStatement stmt=null;
         try {
-            String sql = String.format("DELETE FROM %s WHERE application_id=? AND code=? LIMIT 1;",
+            String sql = String.format("DELETE FROM %s WHERE application_id=? AND type=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(2, os.getCode());
+            stmt.setString(2, os.getType().name());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -108,11 +108,11 @@ public class EmailPolicyAccessImpl extends AbstractAccess implements EmailPolicy
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            String sql = String.format("SELECT * FROM %s WHERE application_id=? AND code=? LIMIT 1;",
+            String sql = String.format("SELECT * FROM %s WHERE application_id=? AND type=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareCall(sql);
             stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(2, os.getCode());
+            stmt.setString(2, os.getType().name());
             rs = stmt.executeQuery();
             if (!rs.next()) {
                 return null;

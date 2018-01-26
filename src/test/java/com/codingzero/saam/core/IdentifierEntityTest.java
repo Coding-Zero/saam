@@ -1,12 +1,11 @@
 package com.codingzero.saam.core;
 
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.IdentifierVerificationCode;
 import com.codingzero.saam.core.application.IdentifierEntity;
-import com.codingzero.saam.core.application.OAuthIdentifierEntity;
 import com.codingzero.saam.core.application.UserEntity;
 import com.codingzero.saam.core.application.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.IdentifierOS;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierOS;
 import com.codingzero.saam.infrastructure.database.spi.IdentifierVerificationCodeGenerator;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
@@ -15,13 +14,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -87,12 +83,11 @@ public class IdentifierEntityTest {
 
     @Test
     public void testGetPolicy() {
-        String policyCode = "USERNAME";
         IdentifierPolicy policy = mock(IdentifierPolicy.class);
         Application application = mock(Application.class);
-        when(objectSegment.getIdentifierPolicyCode()).thenReturn(policyCode);
+        when(objectSegment.getIdentifierType()).thenReturn(IdentifierType.USERNAME);
         when(user.getApplication()).thenReturn(application);
-        when(application.fetchIdentifierPolicy(policyCode)).thenReturn(policy);
+        when(application.fetchIdentifierPolicy(IdentifierType.USERNAME)).thenReturn(policy);
         entity = new IdentifierEntity(
                 objectSegment,
                 null,

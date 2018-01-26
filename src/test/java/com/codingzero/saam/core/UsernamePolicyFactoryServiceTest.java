@@ -2,25 +2,16 @@ package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.UsernameFormat;
-import com.codingzero.saam.core.application.EmailPolicyEntity;
-import com.codingzero.saam.core.application.EmailPolicyFactoryService;
 import com.codingzero.saam.core.application.IdentifierFactoryService;
-import com.codingzero.saam.core.application.IdentifierPolicyHelper;
 import com.codingzero.saam.core.application.IdentifierRepositoryService;
 import com.codingzero.saam.core.application.UsernamePolicyEntity;
 import com.codingzero.saam.core.application.UsernamePolicyFactoryService;
-import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
 import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
 import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
-import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -51,10 +42,9 @@ public class UsernamePolicyFactoryServiceTest {
     public void testGenerate() {
         Application application = mock(Application.class);
         when(application.getId()).thenReturn("APP_1");
-        String code = "USERNAME_1";
-        UsernamePolicyEntity entity = service.generate(application, code);
+        UsernamePolicyEntity entity = service.generate(application);
         assertEquals(application, entity.getApplication());
-        assertEquals(code, entity.getCode());
+        assertEquals(IdentifierType.USERNAME, entity.getType());
         assertEquals(false, entity.isVerificationRequired());
         assertNewPolicy(entity);
     }

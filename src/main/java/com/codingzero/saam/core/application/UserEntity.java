@@ -113,7 +113,7 @@ public class UserEntity extends PrincipalEntity<UserOS> implements User {
                     .message("Identifier has not been verified.")
                     .details("applicationId",
                             identifier.getPolicy().getApplication().getId())
-                    .details("policyCode", identifier.getPolicy().getCode())
+                    .details("type", identifier.getPolicy().getType())
                     .details("identifier", identifier.getContent())
                     .build();
 

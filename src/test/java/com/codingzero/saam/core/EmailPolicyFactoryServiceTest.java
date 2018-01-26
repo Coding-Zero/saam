@@ -49,12 +49,10 @@ public class EmailPolicyFactoryServiceTest {
     public void testGenerate() {
         Application application = mock(Application.class);
         when(application.getId()).thenReturn("APP_1");
-        String code = "EMAIL_1";
         boolean isVerificationRequired = false;
         List<String> domains = new ArrayList<>();
-        EmailPolicyEntity entity = service.generate(application, code, isVerificationRequired, domains);
+        EmailPolicyEntity entity = service.generate(application, isVerificationRequired, domains);
         assertEquals(application, entity.getApplication());
-        assertEquals(code, entity.getCode());
         assertEquals(isVerificationRequired, entity.isVerificationRequired());
         assertEquals(domains, entity.getDomains());
         assertNewPolicy(entity);

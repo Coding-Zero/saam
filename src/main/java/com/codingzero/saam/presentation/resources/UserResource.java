@@ -14,6 +14,7 @@ import com.codingzero.saam.app.PasswordResetRequest;
 import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.UserResponse;
 import com.codingzero.saam.app.UserRoleUpdateRequest;
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
@@ -171,15 +172,15 @@ public class UserResource extends AbstractResource {
     }
 
     @POST
-    @Path("/{id}/identifiers/{code}")
+    @Path("/{id}/identifiers/{type}")
     @Timed(name = "create-identifier")
     public Response createIdentifier(@PathParam("applicationId") String applicationId,
                                      @PathParam("id") String id,
-                                     @PathParam("code") String code,
+                                     @PathParam("type") String type,
                                      ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", applicationId);
         requestBody.put("userId", id);
-        requestBody.put("code", code);
+        requestBody.put("type", type);
         IdentifierAssignRequest request = getObjectMapper().readValue(
                 requestBody.toString(), IdentifierAssignRequest.class);
         UserResponse response = getApp().assignIdentifier(request);
@@ -187,29 +188,29 @@ public class UserResource extends AbstractResource {
     }
 
     @DELETE
-    @Path("/{id}/identifiers/{code}/{content}")
+    @Path("/{id}/identifiers/{type}/{content}")
     @Timed(name = "delete-identifier")
     public Response removeIdentifier(@PathParam("applicationId") String applicationId,
                                      @PathParam("id") String id,
-                                     @PathParam("code") String code,
+                                     @PathParam("type") String type,
                                      @PathParam("content") String content) {
         IdentifierRemoveRequest request =
-                new IdentifierRemoveRequest(applicationId, id, code, content);
+                new IdentifierRemoveRequest(applicationId, id, IdentifierType.valueOf(type), content);
         UserResponse response = getApp().unassignIdentifier(request);
         return ok(response);
     }
 
     @PATCH
-    @Path("/{id}/identifiers/{code}/{content}/_verify")
+    @Path("/{id}/identifiers/{type}/{content}/_verify")
     @Timed(name = "verify-identifier")
     public Response verifyIdentifier(@PathParam("applicationId") String applicationId,
                                      @PathParam("id") String id,
-                                     @PathParam("code") String code,
+                                     @PathParam("type") String type,
                                      @PathParam("content") String content,
                                      ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", applicationId);
         requestBody.put("userId", id);
-        requestBody.put("code", code);
+        requestBody.put("type", type);
         requestBody.put("identifier", content);
         IdentifierVerifyRequest request = getObjectMapper().readValue(
                 requestBody.toString(), IdentifierVerifyRequest.class);

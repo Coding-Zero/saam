@@ -3,8 +3,12 @@
 --
 ALTER TABLE `saam`.`identifier_policies`
 DROP COLUMN `name`,
+DROP COLUMN `code`,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (`application_id`, `type`),
 CHANGE COLUMN `is_need_to_verify` `is_verification_required` BIT(1) NOT NULL DEFAULT b'0' ,
 ADD COLUMN `update_time` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) AFTER `creation_time`,
+DROP INDEX `type_INDEX` ;
 
 --
 -- Table structure for table `identifiers`
@@ -17,6 +21,9 @@ DROP PRIMARY KEY,
 ADD PRIMARY KEY (`application_id`, `identifier_policy_code`, `content_hash`),
 ADD INDEX `user_id_INDEX` (`application_id` ASC, `user_id` ASC),
 DROP INDEX `content_hash_UNIQUE` ;
+CHANGE COLUMN `identifier_policy_code` `identifier_type` VARCHAR(25) NOT NULL ;
+DROP COLUMN `type`,
+DROP INDEX `type_INDEX` ;
 
 --
 -- Table structure for table `sso_identifier_policies`
@@ -60,3 +67,15 @@ DROP INDEX `resource_key_hash_INDEX` ,
 ADD INDEX `principal_id_INDEX` (`application_id` ASC, `principal_id` ASC),
 DROP INDEX `type_INDEX` ;
 CHANGE COLUMN `action_codes` `action_codes` JSON NULL ;
+
+--
+-- Table structure for table `email_policies`
+--
+ALTER TABLE `saam`.`email_policies`
+CHANGE COLUMN `code` `type` VARCHAR(45) NOT NULL ;
+
+--
+-- Table structure for table `username_policies`
+--
+ALTER TABLE `saam`.`username_policies`
+CHANGE COLUMN `code` `type` VARCHAR(45) NOT NULL ;

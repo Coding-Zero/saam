@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IdentifierPolicyAccess extends TransactionalService {
 
-    boolean isDuplicateCode(String applicationId, String code);
+    boolean isDuplicateType(String applicationId, IdentifierType type);
 
     void insert(IdentifierPolicyOS os);
 
@@ -18,9 +18,7 @@ public interface IdentifierPolicyAccess extends TransactionalService {
 
     void deleteByApplicationId(String applicationId);
 
-    IdentifierPolicyOS selectByCode(String applicationId, String code);
-
-    List<IdentifierPolicyOS> selectByApplicationIdAndType(String applicationId, IdentifierType type);
+    IdentifierPolicyOS selectByType(String applicationId, IdentifierType type);
 
     List<IdentifierPolicyOS> selectByApplicationId(String applicationId);
 

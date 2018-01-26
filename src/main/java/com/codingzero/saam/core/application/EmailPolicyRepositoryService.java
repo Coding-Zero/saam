@@ -1,15 +1,10 @@
 package com.codingzero.saam.core.application;
 
-import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
 import com.codingzero.saam.infrastructure.database.spi.EmailPolicyAccess;
 import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
-import com.codingzero.saam.core.EmailPolicy;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class EmailPolicyRepositoryService {
 
@@ -39,16 +34,6 @@ public class EmailPolicyRepositoryService {
 
     public void removeAll(Application application) {
         access.deleteByApplicationId(application.getId());
-    }
-
-    public List<EmailPolicy> findAll(Application application) {
-        List<IdentifierPolicyOS> osList =
-                identifierPolicyAccess.selectByApplicationIdAndType(application.getId(), IdentifierType.EMAIL);
-        List<EmailPolicy> entities = new ArrayList<>(osList.size());
-        for (IdentifierPolicyOS os: osList) {
-            entities.add(load(application, os));
-        }
-        return entities;
     }
 
     public EmailPolicyEntity load(Application application, IdentifierPolicyOS identifierPolicyOS) {
