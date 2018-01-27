@@ -11,21 +11,33 @@ import java.util.Map;
 public class UserAuthenticator {
 
     public UserSession login(User user, String password, Map<String, Object> details, long timeout) {
-        if (null == user || !user.verifyPassword(password)) {
-            throw BusinessError.raise(Errors.AUTHENTICATION_FAILED)
-                    .message("Invalid credential to login")
-                    .build();
-        }
-        Application application = user.getApplication();
-        return application.createUserSession(user, details, timeout);
+        checkNullValue(user);
+        verifyPassword(user, password);
+        return getUserSession(user, details, timeout);
     }
 
     public UserSession login(User user, Map<String, Object> details, long timeout) {
+        checkNullValue(user);
+        return getUserSession(user, details, timeout);
+    }
+
+    private void checkNullValue(User user) {
         if (null == user) {
             throw BusinessError.raise(Errors.AUTHENTICATION_FAILED)
-                    .message("Failed to login with OAuth.")
+                    .message("Failed to login.")
                     .build();
         }
+    }
+
+    private void verifyPassword(User user, String password) {
+        if (!user.verifyPassword(password)) {
+            throw BusinessError.raise(Errors.AUTHENTICATION_FAILED)
+                    .message("Failed to login.")
+                    .build();
+        }
+    }
+
+    private UserSession getUserSession(User user, Map<String, Object> details, long timeout) {
         Application application = user.getApplication();
         return application.createUserSession(user, details, timeout);
     }

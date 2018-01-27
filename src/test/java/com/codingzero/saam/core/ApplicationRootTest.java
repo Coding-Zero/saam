@@ -1,7 +1,7 @@
 package com.codingzero.saam.core;
 
-import com.codingzero.saam.common.Action;
 import com.codingzero.saam.common.ApplicationStatus;
+import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.core.application.APIKeyFactoryService;
 import com.codingzero.saam.core.application.APIKeyRepositoryService;
 import com.codingzero.saam.core.application.ApplicationFactoryService;
@@ -9,11 +9,9 @@ import com.codingzero.saam.core.application.ApplicationRoot;
 import com.codingzero.saam.core.application.EmailPolicyFactoryService;
 import com.codingzero.saam.core.application.EmailPolicyRepositoryService;
 import com.codingzero.saam.core.application.IdentifierPolicyRepositoryService;
+import com.codingzero.saam.core.application.OAuthIdentifierPolicyEntity;
 import com.codingzero.saam.core.application.OAuthIdentifierPolicyFactoryService;
 import com.codingzero.saam.core.application.OAuthIdentifierPolicyRepositoryService;
-import com.codingzero.saam.core.application.PermissionEntity;
-import com.codingzero.saam.core.application.PermissionFactoryService;
-import com.codingzero.saam.core.application.PrincipalEntity;
 import com.codingzero.saam.core.application.PrincipalRepositoryService;
 import com.codingzero.saam.core.application.ResourceFactoryService;
 import com.codingzero.saam.core.application.ResourceRepositoryService;
@@ -26,7 +24,6 @@ import com.codingzero.saam.core.application.UserSessionRepositoryService;
 import com.codingzero.saam.core.application.UsernamePolicyFactoryService;
 import com.codingzero.saam.core.application.UsernamePolicyRepositoryService;
 import com.codingzero.saam.infrastructure.database.ApplicationOS;
-import com.codingzero.saam.infrastructure.database.PermissionOS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -97,9 +94,7 @@ public class ApplicationRootTest {
                 factory,
                 identifierPolicyRepository,
                 usernameIdentifierPolicyFactory,
-                usernameIdentifierPolicyRepository,
                 emailIdentifierPolicyFactory,
-                emailIdentifierPolicyRepository,
                 oAuthIdentifierPolicyFactory,
                 oAuthIdentifierPolicyRepository,
                 principalRepository,
@@ -165,13 +160,57 @@ public class ApplicationRootTest {
 
     @Test
     public void testFetchUserByIdentifier() {
-        String identifier = "foo@foo.com";
+        String identifierContent = "foo@foo.com";
         IdentifierPolicy usernamePolicy = mock(IdentifierPolicy.class);
-        when(usernamePolicy.fetchIdentifierById(identifier)).thenReturn(null);
+        when(usernamePolicy.fetchIdentifierById(identifierContent)).thenReturn(null);
         IdentifierPolicy emailPolicy = mock(IdentifierPolicy.class);
         List<IdentifierPolicy> policies = Arrays.asList(usernamePolicy, emailPolicy);
         when(identifierPolicyRepository.findAll(entity)).thenReturn(policies);
-//        entity.fetchUserByIdentifier()
+        Identifier identifier = mock(Identifier.class);
+        when(emailPolicy.fetchIdentifierById(identifierContent)).thenReturn(identifier);
+        User user = mock(User.class);
+        when(identifier.getUser()).thenReturn(user);
+        User actualUser = entity.fetchUserByIdentifier(identifierContent);
+        assertEquals(user, actualUser);
+    }
+
+    @Test
+    public void testFetchUserByIdentifier_NotFound() {
+        String identifierContent = "foo@foo.com";
+        IdentifierPolicy usernamePolicy = mock(IdentifierPolicy.class);
+        when(usernamePolicy.fetchIdentifierById(identifierContent)).thenReturn(null);
+        IdentifierPolicy emailPolicy = mock(IdentifierPolicy.class);
+        List<IdentifierPolicy> policies = Arrays.asList(usernamePolicy, emailPolicy);
+        when(identifierPolicyRepository.findAll(entity)).thenReturn(policies);
+        Identifier identifier = mock(Identifier.class);
+        when(emailPolicy.fetchIdentifierById(identifierContent)).thenReturn(identifier);
+        User actualUser = entity.fetchUserByIdentifier("foo");
+        assertEquals(null, actualUser);
+    }
+
+    @Test
+    public void testFetchUserByOAuthIdentifier() {
+        OAuthPlatform platform = OAuthPlatform.GOOGLE;
+        String identifierContent = "google-oauth-id-1234567890";
+        OAuthIdentifierPolicyEntity policy = mock(OAuthIdentifierPolicyEntity.class);
+        when(oAuthIdentifierPolicyRepository.findByPlatform(entity, platform)).thenReturn(policy);
+        OAuthIdentifier identifier = mock(OAuthIdentifier.class);
+        when(policy.fetchIdentifierById(identifierContent)).thenReturn(identifier);
+        User user = mock(User.class);
+        when(identifier.getUser()).thenReturn(user);
+        User actualUser = entity.fetchUserByOAuthIdentifier(platform, identifierContent);
+        assertEquals(user, actualUser);
+    }
+
+    @Test
+    public void testFetchUserByOAuthIdentifier_NotFound() {
+        OAuthPlatform platform = OAuthPlatform.GOOGLE;
+        String identifierContent = "google-oauth-id-1234567890";
+        OAuthIdentifierPolicyEntity policy = mock(OAuthIdentifierPolicyEntity.class);
+        when(oAuthIdentifierPolicyRepository.findByPlatform(entity, platform)).thenReturn(policy);
+        when(policy.fetchIdentifierById(identifierContent)).thenReturn(null);
+        User actualUser = entity.fetchUserByOAuthIdentifier(platform, identifierContent);
+        assertEquals(null, actualUser);
     }
 
 }

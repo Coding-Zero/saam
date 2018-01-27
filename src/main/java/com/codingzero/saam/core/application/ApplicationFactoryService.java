@@ -13,15 +13,13 @@ import java.util.regex.Pattern;
 
 public class ApplicationFactoryService implements ApplicationFactory {
 
-    private static final int NAME_MIN_LENGTH = 2;
-    private static final int NAME_MAX_LENGTH = 46;
+    public static final int NAME_MIN_LENGTH = 2;
+    public static final int NAME_MAX_LENGTH = 46;
     private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9]+[a-zA-Z0-9 _.-]+$");
 
     private ApplicationAccess access;
     private UsernamePolicyFactoryService usernamePolicyFactory;
-    private UsernamePolicyRepositoryService usernamePolicyRepository;
     private EmailPolicyFactoryService emailPolicyFactory;
-    private EmailPolicyRepositoryService emailPolicyRepository;
     private IdentifierPolicyRepositoryService identifierPolicyRepository;
     private OAuthIdentifierPolicyFactoryService ssoIdentifierPolicyFactory;
     private OAuthIdentifierPolicyRepositoryService ssoIdentifierPolicyRepository;
@@ -39,9 +37,7 @@ public class ApplicationFactoryService implements ApplicationFactory {
 
     public ApplicationFactoryService(ApplicationAccess access,
                                      UsernamePolicyFactoryService usernamePolicyFactory,
-                                     UsernamePolicyRepositoryService usernamePolicyRepository,
                                      EmailPolicyFactoryService emailPolicyFactory,
-                                     EmailPolicyRepositoryService emailPolicyRepository,
                                      IdentifierPolicyRepositoryService identifierPolicyRepository,
                                      OAuthIdentifierPolicyFactoryService ssoIdentifierPolicyFactory,
                                      OAuthIdentifierPolicyRepositoryService ssoIdentifierPolicyRepository,
@@ -58,9 +54,7 @@ public class ApplicationFactoryService implements ApplicationFactory {
                                      ResourceRepositoryService resourceRepository) {
         this.access = access;
         this.usernamePolicyFactory = usernamePolicyFactory;
-        this.usernamePolicyRepository = usernamePolicyRepository;
         this.emailPolicyFactory = emailPolicyFactory;
-        this.emailPolicyRepository = emailPolicyRepository;
         this.identifierPolicyRepository = identifierPolicyRepository;
         this.ssoIdentifierPolicyFactory = ssoIdentifierPolicyFactory;
         this.ssoIdentifierPolicyRepository = ssoIdentifierPolicyRepository;
@@ -82,7 +76,13 @@ public class ApplicationFactoryService implements ApplicationFactory {
         checkForNameFormat(name);
         checkForDuplicateName(name);
         String id = access.generateId();
-        ApplicationOS os = new ApplicationOS(id, name, description, new Date(), null, ApplicationStatus.ACTIVE);
+        ApplicationOS os = new ApplicationOS(
+                id,
+                name,
+                description,
+                new Date(),
+                null,
+                ApplicationStatus.ACTIVE);
         ApplicationRoot entity = reconstitute(os);
         entity.markAsNew();
         return entity;
@@ -93,8 +93,7 @@ public class ApplicationFactoryService implements ApplicationFactory {
             throw new IllegalArgumentException("Application name is missing");
         }
         name = name.trim();
-        if (null == name
-                || name.length() < NAME_MIN_LENGTH
+        if (name.length() < NAME_MIN_LENGTH
                 || name.length() > NAME_MAX_LENGTH) {
             throw BusinessError.raise(Errors.ILLEGAL_APPLICATION_NAME_FORMAT)
                     .message("Need to be greater than "
@@ -132,9 +131,7 @@ public class ApplicationFactoryService implements ApplicationFactory {
                 this,
                 identifierPolicyRepository,
                 usernamePolicyFactory,
-                usernamePolicyRepository,
                 emailPolicyFactory,
-                emailPolicyRepository,
                 ssoIdentifierPolicyFactory,
                 ssoIdentifierPolicyRepository,
                 principalRepository,

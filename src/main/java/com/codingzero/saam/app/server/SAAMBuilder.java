@@ -627,9 +627,7 @@ public class SAAMBuilder {
             applicationFactory = new ApplicationFactoryService(
                     getApplicationAccess(),
                     getUsernamePolicyFactory(),
-                    getUsernamePolicyRepository(),
                     getEmailPolicyFactory(),
-                    getEmailPolicyRepository(),
                     getIdentifierPolicyRepository(),
                     getOAuthIdentifierPolicyFactory(),
                     getOAuthIdentifierPolicyRepository(),

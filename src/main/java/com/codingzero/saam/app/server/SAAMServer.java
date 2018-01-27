@@ -662,7 +662,6 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserSessionResponse login(CredentialLoginRequest request) {
-        //TODO: This part of logic could be moved into domain layer.
         Application application = getCheckedApplicationById(request.getApplicationId());
         User user = application.fetchUserByIdentifier(request.getIdentifier());
         UserSession session = userAuthenticator.login(

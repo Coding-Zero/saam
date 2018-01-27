@@ -34,9 +34,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     private ApplicationFactoryService factory;
     private IdentifierPolicyRepositoryService identifierPolicyRepository;
     private UsernamePolicyFactoryService usernameIdentifierPolicyFactory;
-    private UsernamePolicyRepositoryService usernameIdentifierPolicyRepository;
     private EmailPolicyFactoryService emailIdentifierPolicyFactory;
-    private EmailPolicyRepositoryService emailIdentifierPolicyRepository;
     private OAuthIdentifierPolicyFactoryService oAuthIdentifierPolicyFactory;
     private OAuthIdentifierPolicyRepositoryService oAuthIdentifierPolicyRepository;
     private PrincipalRepositoryService principalRepository;
@@ -60,9 +58,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
                            ApplicationFactoryService factory,
                            IdentifierPolicyRepositoryService identifierPolicyRepository,
                            UsernamePolicyFactoryService usernameIdentifierPolicyFactory,
-                           UsernamePolicyRepositoryService usernameIdentifierPolicyRepository,
                            EmailPolicyFactoryService emailIdentifierPolicyFactory,
-                           EmailPolicyRepositoryService emailIdentifierPolicyRepository,
                            OAuthIdentifierPolicyFactoryService oAuthIdentifierPolicyFactory,
                            OAuthIdentifierPolicyRepositoryService oAuthIdentifierPolicyRepository,
                            PrincipalRepositoryService principalRepository,
@@ -80,9 +76,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
         this.factory = factory;
         this.identifierPolicyRepository = identifierPolicyRepository;
         this.usernameIdentifierPolicyFactory = usernameIdentifierPolicyFactory;
-        this.usernameIdentifierPolicyRepository = usernameIdentifierPolicyRepository;
         this.emailIdentifierPolicyFactory = emailIdentifierPolicyFactory;
-        this.emailIdentifierPolicyRepository = emailIdentifierPolicyRepository;
         this.oAuthIdentifierPolicyFactory = oAuthIdentifierPolicyFactory;
         this.oAuthIdentifierPolicyRepository = oAuthIdentifierPolicyRepository;
         this.principalRepository = principalRepository;
@@ -342,7 +336,6 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void removeAPIKey(APIKey apiKey) {
-//        checkForRelatedPermissions(apiKey);
         APIKeyEntity entity = (APIKeyEntity) apiKey;
         entity.markAsVoid();
         dirtyPrincipals.put(entity.getId(), entity);
@@ -402,20 +395,10 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void removeRole(Role role) {
-//        checkForRelatedPermissions(role);
         RoleEntity entity = (RoleEntity) role;
         entity.markAsVoid();
         dirtyPrincipals.put(entity.getId(), entity);
     }
-
-//    private void checkForRelatedPermissions(Principal principal) {
-//        PaginatedResult<List<Permission>> permissionResult = fetchPermissionsByPrincipal(principal);
-//        List<Permission> permissions = permissionResult.start(1).getResult();
-//        if (permissions.size() > 0) {
-//            throw new IllegalStateException(
-//                    "Resource cannot be removed due to there is at least one permission related to it.");
-//        }
-//    }
 
     @Override
     public Role fetchRoleById(String id) {
@@ -446,30 +429,10 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void removeResource(Resource resource) {
-//        checkForRelatedActions(resource);
-//        checkForRelatedPermissions(resource);
         ResourceEntity entity = (ResourceEntity) resource;
         entity.markAsVoid();
         dirtyResources.put(entity.getKey(), entity);
     }
-
-//    private void checkForRelatedActions(Resource resource) {
-//        PaginatedResult<List<Action>> actionResult = fetchActionsByResource(resource);
-//        List<Action> actions = actionResult.start(1).getResult();
-//        if (actions.size() > 0) {
-//            throw new IllegalStateException(
-//                    "Resource cannot be removed due to there is at least one action related to it.");
-//        }
-//    }
-//
-//    private void checkForRelatedPermissions(Resource resource) {
-//        PaginatedResult<List<Permission>> permissionResult = fetchPermissionsByResource(resource);
-//        List<Permission> permissions = permissionResult.start(1).getResult();
-//        if (permissions.size() > 0) {
-//            throw new IllegalStateException(
-//                    "Resource cannot be removed due to there is at least one permission related to it.");
-//        }
-//    }
 
     @Override
     public Resource fetchResourceByKey(String key) {
@@ -490,192 +453,5 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     public PaginatedResult<List<Resource>> fetchAllResources(Resource parentResource) {
         return resourceRepository.findAll(this, parentResource);
     }
-
-//    @Override
-//    public Action createAction(String code, String name, Resource resource) {
-//        ActionEntity entity = actionFactory.generate(this, code, name, resource);
-//        dirtyActions.put(entity.getCode(), entity);
-//        return entity;
-//    }
-//
-//    @Override
-//    public void updateAction(Action action) {
-//        ActionEntity entity = (ActionEntity) action;
-//        dirtyActions.put(entity.getCode(), entity);
-//    }
-//
-//    @Override
-//    public void removeAction(Action action) {
-//        ActionEntity entity = (ActionEntity) action;
-//        entity.markAsVoid();
-//        dirtyActions.put(entity.getCode(), entity);
-//    }
-//
-//    @Override
-//    public Action fetchAction(String code) {
-//        return actionRepository.findByCode(this, code);
-//    }
-//
-//    @Override
-//    public PaginatedResult<List<Action>> fetchActionsByResource(Resource resource) {
-//        return actionRepository.findByResource(this, resource);
-//    }
-//
-//    @Override
-//    public PaginatedResult<List<Action>> fetchAllActions() {
-//        return actionRepository.findAll(this);
-//    }
-//
-//    @Override
-//    public Permission addPermission(Principal principal, Resource resource,
-//                                    PermissionType type, List<Action> actions) {
-//        checkForUndefinedPermissionForAPIKey(principal, resource, actions);
-//        PermissionEntity entity = permissionFactory.generate(resource, principal, actions);
-//        dirtyPermissions.put(entity.getResource().getKey(), entity);
-//        return entity;
-//    }
-//
-//    private void checkForUndefinedPermissionForAPIKey(Principal principal, Resource resource, List<Action> actions) {
-//        if (principal.getType() != PrincipalType.API_KEY) {
-//            return;
-//        }
-//        APIKey apiKey = (APIKey) principal;
-//        User owner = apiKey.getOwner();
-//        Permission permission = fetchPermission(owner, resource);
-//        if (null == permission) {
-//            throw new IllegalArgumentException(
-//                    "Owner " + owner.getId()
-//                            + " of APIKey, " + apiKey.getKey()
-//                            + " doesn't have permission granted for resource, " + resource.getKey());
-//        }
-//        for (Action action: actions) {
-//            if (!permission.containAction(action)) {
-//                throw new IllegalArgumentException(
-//                        "Owner " + owner.getId()
-//                                + " of APIKey, " + apiKey.getKey()
-//                                + " doesn't have action " + action.getCode()
-//                                + " granted for resource, " + resource.getKey());
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public void updatePermission(Permission permission) {
-//        PermissionEntity entity = (PermissionEntity) permission;
-//        dirtyPermissions.put(entity.getResource().getKey(), entity);
-//    }
-//
-//    @Override
-//    public void removePermission(Permission permission) {
-//        PermissionEntity entity = (PermissionEntity) permission;
-//        entity.markAsVoid();
-//        dirtyPermissions.put(entity.getResource().getKey(), entity);
-//    }
-//
-//    @Override
-//    public Permission fetchPermission(Principal principal, Resource resource) {
-//        return permissionRepository.findByIds(this, principal, resource);
-//    }
-//
-//    @Override
-//    public PaginatedResult<List<Permission>> fetchPermissionsByPrincipal(Principal principal) {
-//        return permissionRepository.findByPrincipal(this, principal);
-//    }
-//
-//    @Override
-//    public PaginatedResult<List<Permission>> fetchPermissionsByResource(Resource resource) {
-//        return permissionRepository.findByResource(resource);
-//    }
-//
-//    @Override
-//    public PermissionType checkPermission(Principal principal, Resource resource, Action action) {
-//        if (principal.getType() == PrincipalType.API_KEY) {
-//            return checkPermissionForAPIKey((APIKey) principal, resource, action);
-//        }
-//        return checkPermissionForPrincipal(principal, resource, action);
-//    }
-//
-//    private PermissionType checkPermissionForAPIKey(APIKey apiKey, Resource resource, Action action) {
-//
-//        //check permission for the owner of the given APIkey.
-//        PermissionType apiKeyOwnerResult = checkPermission(apiKey.getOwner(), resource, action);
-//        if (PermissionType.ALLOW != apiKeyOwnerResult) {
-//            return apiKeyOwnerResult;
-//        }
-//
-//        //check permission for the given APIkey
-//        PermissionType apiKeyResult = checkPermissionForPrincipal(apiKey, resource, action);
-//        if (PermissionType.NONE == apiKeyResult
-//                || PermissionType.ALLOW == apiKeyResult) {
-//            return apiKeyOwnerResult;
-//        }
-//        return apiKeyResult;
-//    }
-//
-//    private PermissionType checkPermissionForPrincipal(Principal principal, Resource resource, Action action) {
-//        if (!isLegalAttachedResource(resource, action)) {
-//            return PermissionType.DENY;
-//        }
-//        PermissionType result = checkPermissionInternally(principal, resource, action);
-//        if (PermissionType.NONE != result) {
-//            return result;
-//        }
-//        if (principal.getType() == PrincipalType.USER) {
-//            return checkPermissionForUser((User) principal, resource, action);
-//        }
-//        return PermissionType.NONE;
-//    }
-//
-//    private boolean isLegalAttachedResource(Resource resource, Action action) {
-//        if (action.getAttachedResource() == null) {
-//            return true;
-//        }
-//        return action.getAttachedResource().getKey().equalsIgnoreCase(resource.getKey());
-//    }
-//
-//    /**
-//     *
-//     * @param principal
-//     * @param resource
-//     * @param action
-//     * @return Allowed is 1, Denied is -1, Uncertain is 0
-//     */
-//    private PermissionType checkPermissionInternally(Principal principal, Resource resource, Action action) {
-//
-//        //check ownership
-//        boolean isOwner = isOwner(principal, resource);
-//        if (isOwner) {
-//            return PermissionType.ALLOW;
-//        }
-//
-//        //check permission
-//        Permission permission = fetchPermission(principal, resource);
-//        if (null == permission) {
-//            return PermissionType.NONE;
-//        }
-//        boolean isFoundAction = permission.containAction(action);
-//        if (!isFoundAction) {
-//            return PermissionType.NONE;
-//        }
-//        if (permission.getType() == PermissionType.DENY) {
-//            return PermissionType.DENY;
-//        }
-//        return PermissionType.ALLOW;
-//    }
-//
-//    private PermissionType checkPermissionForUser(User user, Resource resource, Action action) {
-//        List<Role> roles = user.getPlayingRoles();
-//        for (Role role : roles) {
-//            PermissionType result = checkPermission(role, resource, action);
-//            if (PermissionType.NONE != result) {
-//                return result;
-//            }
-//        }
-//        return PermissionType.NONE;
-//    }
-//
-//    private boolean isOwner(Principal principal, Resource resource) {
-//        return resource.getOwner().getId().equalsIgnoreCase(principal.getId());
-//    }
 
 }
