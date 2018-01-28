@@ -4,18 +4,14 @@ import com.codingzero.saam.core.Application;
 import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
 import com.codingzero.saam.infrastructure.database.spi.EmailPolicyAccess;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
 
 public class EmailPolicyRepositoryService {
 
-    private IdentifierPolicyAccess identifierPolicyAccess;
     private EmailPolicyAccess access;
     private EmailPolicyFactoryService factory;
 
-    public EmailPolicyRepositoryService(IdentifierPolicyAccess identifierPolicyAccess,
-                                        EmailPolicyAccess access,
+    public EmailPolicyRepositoryService(EmailPolicyAccess access,
                                         EmailPolicyFactoryService factory) {
-        this.identifierPolicyAccess = identifierPolicyAccess;
         this.access = access;
         this.factory = factory;
     }

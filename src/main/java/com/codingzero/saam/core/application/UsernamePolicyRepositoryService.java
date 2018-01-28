@@ -3,19 +3,15 @@ package com.codingzero.saam.core.application;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
 import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
 import com.codingzero.saam.infrastructure.database.spi.UsernamePolicyAccess;
 
 public class UsernamePolicyRepositoryService {
 
-    private IdentifierPolicyAccess identifierPolicyAccess;
     private UsernamePolicyAccess access;
     private UsernamePolicyFactoryService factory;
 
-    public UsernamePolicyRepositoryService(IdentifierPolicyAccess identifierPolicyAccess,
-                                           UsernamePolicyAccess access,
+    public UsernamePolicyRepositoryService(UsernamePolicyAccess access,
                                            UsernamePolicyFactoryService factory) {
-        this.identifierPolicyAccess = identifierPolicyAccess;
         this.access = access;
         this.factory = factory;
     }

@@ -45,14 +45,15 @@ public class UserSessionRepositoryService {
         return factory.reconstitute(os, application, null);
     }
 
-    public PaginatedResult<List<UserSession>> findByOwner(Application application, User user) {
-        PaginatedResult<List<UserSessionOS>> result = access.selectByUserId(application.getId(), user.getId());
+    public PaginatedResult<List<UserSession>> findByOwner(User user) {
+        PaginatedResult<List<UserSessionOS>> result =
+                access.selectByUserId(user.getApplication().getId(), user.getId());
         return new PaginatedResult<>(new PaginatedResultMapper<List<UserSession>, List<UserSessionOS>>() {
             @Override
             protected List<UserSession> toResult(List<UserSessionOS> source, Object[] arguments) {
                 return _toResult(source, arguments);
             }
-        }, result, application, user);
+        }, result, user.getApplication(), user);
     }
 
     private List<UserSession> _toResult(List<UserSessionOS> source, Object[] arguments) {

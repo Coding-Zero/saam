@@ -19,12 +19,12 @@ public class UserSessionFactoryService {
         this.userRepository = userRepository;
     }
 
-    public UserSessionEntity generate(Application application, User user, Map<String, Object> details, long timeout) {
-        String key = access.generateKey(application.getId());
+    public UserSessionEntity generate(User user, Map<String, Object> details, long timeout) {
+        String key = access.generateKey(user.getApplication().getId());
         Date expirationTime = new Date(System.currentTimeMillis() + timeout);
         UserSessionOS os = new UserSessionOS(
-                application.getId(), key, user.getId(), expirationTime, new Date(), details);
-        UserSessionEntity entity = reconstitute(os, application, user);
+                user.getApplication().getId(), key, user.getId(), expirationTime, new Date(), details);
+        UserSessionEntity entity = reconstitute(os, user.getApplication(), user);
         entity.markAsNew();
         return entity;
     }

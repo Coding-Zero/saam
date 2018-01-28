@@ -2,9 +2,9 @@ package com.codingzero.saam.core.application;
 
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.core.Application;
+import com.codingzero.saam.core.IdentifierPolicy;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
 import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
-import com.codingzero.saam.core.IdentifierPolicy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +32,6 @@ public class IdentifierPolicyRepositoryService {
             usernameIdentifierPolicyRepository.store((UsernamePolicyEntity) entity);
         } else if (entity.getType() == IdentifierType.EMAIL) {
             emailIdentifierPolicyRepository.store((EmailPolicyEntity) entity);
-        } else {
-            throw new UnsupportedOperationException("Unsupported identifier type, " + entity.getType());
         }
         flushDirtyIdentifiers(entity);
     }
@@ -64,8 +62,6 @@ public class IdentifierPolicyRepositoryService {
             usernameIdentifierPolicyRepository.remove((UsernamePolicyEntity) entity);
         } else if (entity.getType() == IdentifierType.EMAIL) {
             emailIdentifierPolicyRepository.remove((EmailPolicyEntity) entity);
-        } else {
-            throw new UnsupportedOperationException("Unsupported identifier type, " + entity.getType());
         }
     }
 
@@ -91,9 +87,6 @@ public class IdentifierPolicyRepositoryService {
     }
 
     private IdentifierPolicyEntity load(Application application, IdentifierPolicyOS os) {
-        if (null == os) {
-            return null;
-        }
         if (os.getType() == IdentifierType.EMAIL) {
             return emailIdentifierPolicyRepository.load(application, os);
         } else if (os.getType() == IdentifierType.USERNAME) {

@@ -353,7 +353,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public UserSession createUserSession(User user, Map<String, Object> details, long timeout) {
-        UserSessionEntity entity = userSessionFactory.generate(this, user, details, timeout);
+        UserSessionEntity entity = userSessionFactory.generate(user, details, timeout);
         dirtyUserSessions.put(entity.getKey(), entity);
         return entity;
     }
@@ -377,7 +377,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public PaginatedResult<List<UserSession>> fetchUserSessionsByUser(User user) {
-        return userSessionRepository.findByOwner(this, user);
+        return userSessionRepository.findByOwner(user);
     }
 
     @Override

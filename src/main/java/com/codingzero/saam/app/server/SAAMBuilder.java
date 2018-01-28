@@ -449,7 +449,7 @@ public class SAAMBuilder {
     public UsernamePolicyRepositoryService getUsernamePolicyRepository() {
         if (null == usernamePolicyRepository) {
             usernamePolicyRepository = new UsernamePolicyRepositoryService(
-                    getIdentifierPolicyAccess(), getUsernamePolicyAccess(), getUsernamePolicyFactory());
+                    getUsernamePolicyAccess(), getUsernamePolicyFactory());
         }
         return usernamePolicyRepository;
     }
@@ -477,7 +477,6 @@ public class SAAMBuilder {
     public EmailPolicyRepositoryService getEmailPolicyRepository() {
         if (null == emailPolicyRepository) {
             emailPolicyRepository = new EmailPolicyRepositoryService(
-                    getIdentifierPolicyAccess(),
                     getEmailPolicyAccess(),
                     getEmailPolicyFactory());
         }

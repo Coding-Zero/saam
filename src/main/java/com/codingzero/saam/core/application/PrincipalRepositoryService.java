@@ -1,9 +1,9 @@
 package com.codingzero.saam.core.application;
 
-import com.codingzero.saam.infrastructure.database.PrincipalOS;
-import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
 import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.core.Application;
+import com.codingzero.saam.infrastructure.database.PrincipalOS;
+import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
 
 public class PrincipalRepositoryService {
 
@@ -34,8 +34,6 @@ public class PrincipalRepositoryService {
             roleRepository.store((RoleEntity) entity);
         } else if (entity.getType() == PrincipalType.API_KEY) {
             apiKeyRepository.store((APIKeyEntity) entity);
-        } else {
-            throw new UnsupportedOperationException("Unsupported principal type, " + entity.getType());
         }
     }
 
@@ -47,16 +45,14 @@ public class PrincipalRepositoryService {
             roleRepository.remove((RoleEntity) entity);
         } else if (entity.getType() == PrincipalType.API_KEY) {
             apiKeyRepository.remove((APIKeyEntity) entity);
-        } else {
-            throw new UnsupportedOperationException("Unsupported principal type, " + entity.getType());
         }
     }
 
     public void removeAll(Application application) {
         access.deleteByApplicationId(application.getId());
-        apiKeyRepository.removeAll(application);
-        roleRepository.removeAll(application);
         userRepository.removeAll(application);
+        roleRepository.removeAll(application);
+        apiKeyRepository.removeAll(application);
     }
 
     public PrincipalEntity findById(Application application, String id) {
