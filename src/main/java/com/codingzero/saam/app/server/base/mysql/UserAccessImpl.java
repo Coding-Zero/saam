@@ -75,8 +75,12 @@ public class UserAccessImpl extends AbstractAccess implements UserAccess {
         Connection conn = getConnection();
         PreparedStatement stmt=null;
         try {
-            String sql = String.format("DELETE FROM %s WHERE application_id=? AND id=? LIMIT 1;",
-                    TABLE);
+            String sql = String.format("DELETE ur, ppl FROM %S ur"
+                            + " LEFT JOIN %S ppl"
+                            + " ON ur.application_id = ppl.application_id AND ur.id = ppl.id"
+                            + " WHERE ur.application_id=? AND ur.id=? LIMIT 1;",
+                    TABLE,
+                    PrincipalAccessImpl.TABLE);
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
             stmt.setBytes(2, Key.fromHexString(os.getId()).getKey());
@@ -94,8 +98,12 @@ public class UserAccessImpl extends AbstractAccess implements UserAccess {
         Connection conn = getConnection();
         PreparedStatement stmt=null;
         try {
-            String sql = String.format("DELETE FROM %s WHERE application_id=? LIMIT 10000;",
-                    TABLE);
+            String sql = String.format("DELETE ur, ppl FROM %S ur"
+                            + " LEFT JOIN %S ppl"
+                            + " ON ur.application_id = ppl.application_id AND ur.id = ppl.id"
+                            + " WHERE ur.application_id=?;",
+                    TABLE,
+                    PrincipalAccessImpl.TABLE);
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(id).getKey());
             int deletedRows = stmt.executeUpdate();

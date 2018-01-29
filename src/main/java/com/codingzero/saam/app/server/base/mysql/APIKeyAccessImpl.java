@@ -146,7 +146,7 @@ public class APIKeyAccessImpl extends AbstractAccess implements APIKeyAccess {
             String sql = String.format("DELETE ak, ppl FROM %S ak"
                             + " LEFT JOIN %S ppl"
                             + " ON ak.application_id = ppl.application_id AND ak.id = ppl.id"
-                            + " WHERE ak.application_id=? AND ak.user_id=? LIMIT 10000;",
+                            + " WHERE ak.application_id=?;",
                     TABLE,
                     PrincipalAccessImpl.TABLE);
             stmt = conn.prepareStatement(sql);

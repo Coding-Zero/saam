@@ -128,7 +128,7 @@ public class RoleAccessImpl extends AbstractAccess implements RoleAccess {
             String sql = String.format("DELETE rl, ppl FROM %S rl"
                             + " LEFT JOIN %S ppl"
                             + " ON rl.application_id = ppl.application_id AND rl.id = ppl.id"
-                            + " WHERE rl.application_id=? AND rl.user_id=? LIMIT 10000;",
+                            + " WHERE rl.application_id=?;",
                     TABLE,
                     PrincipalAccessImpl.TABLE);
             stmt = conn.prepareStatement(sql);

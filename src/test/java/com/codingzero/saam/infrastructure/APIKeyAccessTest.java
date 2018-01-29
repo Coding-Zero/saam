@@ -3,6 +3,8 @@ package com.codingzero.saam.infrastructure;
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
 import com.codingzero.saam.infrastructure.database.spi.APIKeyAccess;
 import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
+import com.codingzero.utilities.pagination.OffsetBasedResultPage;
+import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.transaction.TransactionManager;
 import com.codingzero.utilities.transaction.TransactionManagerBuilder;
 import org.junit.After;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public abstract class APIKeyAccessTest {
 
@@ -70,7 +73,7 @@ public abstract class APIKeyAccessTest {
     }
 
     @Test
-    public void testInsert_Transaction() {
+    public void testInsert_Transaction_Commit() {
         TransactionManager manager = TransactionManagerBuilder.create().build();
         manager.register("apikey-access", access);
 
@@ -84,7 +87,21 @@ public abstract class APIKeyAccessTest {
     }
 
     @Test
-    public void testInsert_Transaction_DuplicateKey() {
+    public void testInsert_Transaction_Rollback() {
+        TransactionManager manager = TransactionManagerBuilder.create().build();
+        manager.register("apikey-access", access);
+
+        APIKeyOS os = createObjectSegment();
+        manager.start();
+        access.insert(os);
+        manager.rollback();
+
+        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        assertEquals(null, actualOS);
+    }
+
+    @Test
+    public void testInsert_DuplicateKey_Transaction() {
         TransactionManager manager = TransactionManagerBuilder.create().build();
         manager.register("apikey-access", access);
 
@@ -115,22 +132,39 @@ public abstract class APIKeyAccessTest {
     }
 
     @Test
-    public void testUpdate_Transaction() {
+    public void testUpdate_Transaction_Commit() {
         TransactionManager manager = TransactionManagerBuilder.create().build();
         manager.register("apikey-access", access);
 
         String newName = generateName();
         APIKeyOS os = createObjectSegment();
 
-        manager.start();
         access.insert(os);
-
+        manager.start();
         os.setName(newName);
         access.update(os);
         manager.commit();
 
         APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
         assertEquals(newName, actualOS.getName());
+    }
+
+    @Test
+    public void testUpdate_Transaction_Rollback() {
+        TransactionManager manager = TransactionManagerBuilder.create().build();
+        manager.register("apikey-access", access);
+
+        String newName = generateName();
+        APIKeyOS os = createObjectSegment();
+
+        access.insert(os);
+        manager.start();
+        os.setName(newName);
+        access.update(os);
+        manager.rollback();
+
+        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        assertNotEquals(newName, actualOS.getName());
     }
 
     @Test
@@ -144,14 +178,12 @@ public abstract class APIKeyAccessTest {
     }
 
     @Test
-    public void testDelete_Transaction() {
+    public void testDelete_Transaction_Commit() {
         TransactionManager manager = TransactionManagerBuilder.create().build();
         manager.register("apikey-access", access);
 
         APIKeyOS os = createObjectSegment();
-        manager.start();
         access.insert(os);
-        manager.commit();
 
         manager.start();
         access.delete(os);
@@ -159,6 +191,22 @@ public abstract class APIKeyAccessTest {
 
         APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
         assertEquals(null, actualOS);
+    }
+
+    @Test
+    public void testDelete_Transaction_Rollback() {
+        TransactionManager manager = TransactionManagerBuilder.create().build();
+        manager.register("apikey-access", access);
+
+        APIKeyOS os = createObjectSegment();
+        access.insert(os);
+
+        manager.start();
+        access.delete(os);
+        manager.rollback();
+
+        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        assertOS(os, actualOS);
     }
 
     @Test
@@ -170,7 +218,158 @@ public abstract class APIKeyAccessTest {
             access.insert(os);
         }
         access.deleteByUserId(applicationId, userId);
+        List<APIKeyOS> actualOSList = access.selectByUserId(applicationId, userId);
+        assertEquals(0, actualOSList.size());
+    }
 
+    @Test
+    public void testDeleteByUserId_Transaction_Commit() {
+        TransactionManager manager = TransactionManagerBuilder.create().build();
+        manager.register("apikey-access", access);
+
+        String applicationId = getApplicationId();
+        String userId = getUserId(applicationId);
+        for (int i = 0; i < 3; i ++) {
+            APIKeyOS os = createObjectSegment(applicationId, userId);
+            access.insert(os);
+        }
+        manager.start();
+        access.deleteByUserId(applicationId, userId);
+        manager.commit();
+        List<APIKeyOS> actualOSList = access.selectByUserId(applicationId, userId);
+        assertEquals(0, actualOSList.size());
+    }
+
+    @Test
+    public void testDeleteByUserId_Transaction_Rollback() {
+        TransactionManager manager = TransactionManagerBuilder.create().build();
+        manager.register("apikey-access", access);
+
+        String applicationId = getApplicationId();
+        String userId = getUserId(applicationId);
+        for (int i = 0; i < 3; i ++) {
+            APIKeyOS os = createObjectSegment(applicationId, userId);
+            access.insert(os);
+        }
+        manager.start();
+        access.deleteByUserId(applicationId, userId);
+        manager.rollback();
+        List<APIKeyOS> actualOSList = access.selectByUserId(applicationId, userId);
+        assertEquals(3, actualOSList.size());
+    }
+
+    @Test
+    public void testDeleteByApplicationId() {
+        String applicationId = getApplicationId();
+        String userId = getUserId(applicationId);
+        for (int i = 0; i < 3; i ++) {
+            APIKeyOS os = createObjectSegment(applicationId, userId);
+            access.insert(os);
+        }
+        access.deleteByApplicationId(applicationId);
+        List<APIKeyOS> actualOSList = access.selectByUserId(applicationId, userId);
+        assertEquals(0, actualOSList.size());
+    }
+
+    @Test
+    public void testDeleteByApplicationId_Transaction_Commit() {
+        TransactionManager manager = TransactionManagerBuilder.create().build();
+        manager.register("apikey-access", access);
+
+        String applicationId = getApplicationId();
+        String userId = getUserId(applicationId);
+        for (int i = 0; i < 3; i ++) {
+            APIKeyOS os = createObjectSegment(applicationId, userId);
+            access.insert(os);
+        }
+        manager.start();
+        access.deleteByApplicationId(applicationId);
+        manager.commit();
+        List<APIKeyOS> actualOSList = access.selectByUserId(applicationId, userId);
+        assertEquals(0, actualOSList.size());
+    }
+
+    @Test
+    public void testDeleteByApplicationId_Transaction_Rollback() {
+        TransactionManager manager = TransactionManagerBuilder.create().build();
+        manager.register("apikey-access", access);
+
+        String applicationId = getApplicationId();
+        String userId = getUserId(applicationId);
+        for (int i = 0; i < 3; i ++) {
+            APIKeyOS os = createObjectSegment(applicationId, userId);
+            access.insert(os);
+        }
+        manager.start();
+        access.deleteByApplicationId(applicationId);
+        manager.rollback();
+        List<APIKeyOS> actualOSList = access.selectByUserId(applicationId, userId);
+        assertEquals(3, actualOSList.size());
+    }
+
+    @Test
+    public void testSelectByKey() {
+        APIKeyOS os = createObjectSegment();
+        access.insert(os);
+        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        assertOS(os, actualOS);
+    }
+
+    @Test
+    public void testSelectByPrincipalOS() {
+        APIKeyOS os = createObjectSegment();
+        access.insert(os);
+        APIKeyOS actualOS = access.selectByPrincipalOS(os);
+        assertOS(os, actualOS);
+    }
+
+    @Test
+    public void testSelectByUserId() {
+        String applicationId = getApplicationId();
+        String userId = getUserId(applicationId);
+        for (int i = 0; i < 3; i ++) {
+            APIKeyOS os = createObjectSegment(applicationId, userId);
+            access.insert(os);
+        }
+        String userId2 = getUserId(applicationId);
+        for (int i = 0; i < 2; i ++) {
+            APIKeyOS os = createObjectSegment(applicationId, userId2);
+            access.insert(os);
+        }
+        List<APIKeyOS> actualOSList = access.selectByUserId(applicationId, userId);
+        assertEquals(3, actualOSList.size());
+        for (APIKeyOS actualOS: actualOSList) {
+            for (APIKeyOS os: generatedAPIKeys) {
+                if (os.getKey().equals(actualOS.getKey())) {
+                    assertOS(os, actualOS);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testSelectByApplicationId() {
+        String applicationId = getApplicationId();
+        String userId = getUserId(applicationId);
+        for (int i = 0; i < 3; i ++) {
+            APIKeyOS os = createObjectSegment(applicationId, userId);
+            access.insert(os);
+        }
+        String userId2 = getUserId(applicationId);
+        for (int i = 0; i < 2; i ++) {
+            APIKeyOS os = createObjectSegment(applicationId, userId2);
+            access.insert(os);
+        }
+        PaginatedResult<List<APIKeyOS>> result = access.selectByApplicationId(applicationId);
+        List<APIKeyOS> actualOSList = result.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(5, actualOSList.size());
+        for (APIKeyOS actualOS: actualOSList) {
+            for (APIKeyOS os: generatedAPIKeys) {
+                if (os.getKey().equals(actualOS.getKey())) {
+                    assertOS(os, actualOS);
+                }
+            }
+        }
     }
 
     private APIKeyOS createObjectSegment() {
