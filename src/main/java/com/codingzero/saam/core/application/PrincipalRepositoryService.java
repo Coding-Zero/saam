@@ -23,33 +23,37 @@ public class PrincipalRepositoryService {
     }
 
     public void store(PrincipalEntity entity) {
-        if (entity.isNew()) {
-            access.insert((PrincipalOS) entity.getObjectSegment());
-        } else if (entity.isDirty()) {
-            access.update((PrincipalOS) entity.getObjectSegment());
-        }
+//        if (entity.isNew()) {
+//            access.insert((PrincipalOS) entity.getObjectSegment());
+//        } else if (entity.isDirty()) {
+//            access.update((PrincipalOS) entity.getObjectSegment());
+//        }
         if (entity.getType() == PrincipalType.USER) {
             userRepository.store((UserEntity) entity);
         } else if (entity.getType() == PrincipalType.ROLE) {
             roleRepository.store((RoleEntity) entity);
         } else if (entity.getType() == PrincipalType.API_KEY) {
             apiKeyRepository.store((APIKeyEntity) entity);
+        } else {
+            throw new IllegalArgumentException("Unsupported principal type, " + entity.getType());
         }
     }
 
     public void remove(PrincipalEntity entity) {
-        access.delete((PrincipalOS) entity.getObjectSegment());
+//        access.delete((PrincipalOS) entity.getObjectSegment());
         if (entity.getType() == PrincipalType.USER) {
             userRepository.remove((UserEntity) entity);
         } else if (entity.getType() == PrincipalType.ROLE) {
             roleRepository.remove((RoleEntity) entity);
         } else if (entity.getType() == PrincipalType.API_KEY) {
             apiKeyRepository.remove((APIKeyEntity) entity);
+        } else {
+            throw new IllegalArgumentException("Unsupported principal type, " + entity.getType());
         }
     }
 
     public void removeAll(Application application) {
-        access.deleteByApplicationId(application.getId());
+//        access.deleteByApplicationId(application.getId());
         userRepository.removeAll(application);
         roleRepository.removeAll(application);
         apiKeyRepository.removeAll(application);

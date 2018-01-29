@@ -16,7 +16,9 @@ public interface RoleAccess extends TransactionalService {
 
     void deleteByApplicationId(String id);
 
-    RoleOS selectByName(String applicationId, String name, PrincipalAccess principalAccess);
+    RoleOS selectByName(String applicationId, String name);
+
+//    RoleOS selectByName(String applicationId, String name, PrincipalAccess principalAccess);
 
     RoleOS selectByPrincipalOS(PrincipalOS os);
 

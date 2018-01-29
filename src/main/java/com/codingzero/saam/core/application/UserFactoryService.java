@@ -1,5 +1,6 @@
 package com.codingzero.saam.core.application;
 
+import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.infrastructure.database.UserOS;
 import com.codingzero.saam.infrastructure.database.spi.PasswordHelper;
@@ -28,7 +29,7 @@ public class UserFactoryService {
     }
 
     public UserEntity generate(Application application) {
-        String id = principalAccess.generateId(application.getId());
+        String id = principalAccess.generateId(application.getId(), PrincipalType.USER);
         UserOS os = new UserOS(
                 application.getId(),
                 id,

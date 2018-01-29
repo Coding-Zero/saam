@@ -41,6 +41,11 @@
             <artifactId>dropwizard-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-testing</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <version>4.7</version>
@@ -63,7 +68,7 @@
         <dependency>
             <groupId>com.codingzero.utilities</groupId>
             <artifactId>utilities-transaction</artifactId>
-            <version>0.2.3</version>
+            <version>0.2.4</version>
         </dependency>
         <dependency>
             <groupId>com.codingzero.utilities</groupId>

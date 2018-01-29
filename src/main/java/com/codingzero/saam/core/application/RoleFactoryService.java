@@ -1,6 +1,7 @@
 package com.codingzero.saam.core.application;
 
 import com.codingzero.saam.common.Errors;
+import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.infrastructure.database.RoleOS;
 import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
@@ -28,7 +29,7 @@ public class RoleFactoryService {
     public RoleEntity generate(Application application, String name) {
         checkForNameFormat(name);
         checkForDuplicateName(application, name);
-        String id = principalAccess.generateId(application.getId());
+        String id = principalAccess.generateId(application.getId(), PrincipalType.ROLE);
         RoleOS os = new RoleOS(application.getId(), id, new Date(), name);
         RoleEntity entity = reconstitute(os, application);
         entity.markAsNew();

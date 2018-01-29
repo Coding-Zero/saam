@@ -1,5 +1,6 @@
 package com.codingzero.saam.core;
 
+import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.core.application.RoleEntity;
 import com.codingzero.saam.core.application.RoleFactoryService;
 import com.codingzero.saam.infrastructure.database.RoleOS;
@@ -40,7 +41,7 @@ public class RoleFactoryServiceTest {
         String roleName = "role1";
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
-        when(principalAccess.generateId(applicationId)).thenReturn(principalId);
+        when(principalAccess.generateId(applicationId, PrincipalType.ROLE)).thenReturn(principalId);
         RoleEntity entity = service.generate(application, roleName);
         assertEquals(application, entity.getApplication());
         assertEquals(principalId, entity.getId());

@@ -47,32 +47,14 @@ public final class MySQLHelper {
         return builder.toString();
     }
 
-    public static void close(ResultSet rs) {
-        try {
-            if (null != rs) {
-                rs.close();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void close(PreparedStatement stmt) {
-        try {
-            if (null != stmt) {
-                stmt.close();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void close(Connection conn) {
-        try {
-            conn.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public static void close(PreparedStatement stmt) {
+//        try {
+//            if (null != stmt) {
+//                stmt.close();
+//            }
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 }

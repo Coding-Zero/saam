@@ -1,5 +1,6 @@
 package com.codingzero.saam.core;
 
+import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.core.application.RoleRepositoryService;
 import com.codingzero.saam.core.application.UserEntity;
 import com.codingzero.saam.core.application.UserFactoryService;
@@ -42,7 +43,7 @@ public class UserFactoryServiceTest {
         String applicationId = "appId";
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
-        when(principalAccess.generateId(applicationId)).thenReturn(principalId);
+        when(principalAccess.generateId(applicationId, PrincipalType.USER)).thenReturn(principalId);
         UserEntity entity = service.generate(application);
         assertEquals(application, entity.getApplication());
         assertEquals(principalId, entity.getId());

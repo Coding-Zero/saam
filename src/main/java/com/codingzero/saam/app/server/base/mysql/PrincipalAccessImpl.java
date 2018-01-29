@@ -29,71 +29,73 @@ public class PrincipalAccessImpl extends AbstractAccess implements PrincipalAcce
     }
 
     @Override
-    public String generateId(String applicationId) {
+    public String generateId(String applicationId, PrincipalType type) {
         return RandomKey.nextTimeBasedUUIDKey().toHexString();
     }
 
-    @Override
-    public void insert(PrincipalOS os) {
-        Connection conn = getConnection();
-        PreparedStatement stmt = null;
-        try {
-            String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
-                    TABLE,
-                    "application_id, id, type, creation_time",
-                    "?, ?, ?, ?");
-            stmt = conn.prepareStatement(sql);
-            stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setBytes(2, Key.fromHexString(os.getId()).getKey());
-            stmt.setString(3, os.getType().name());
-            stmt.setTimestamp(4, new Timestamp(os.getCreationTime().getTime()));
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            MySQLHelper.close(stmt);
-        }
-    }
+//    @Override
+//    public void insert(PrincipalOS os) {
+//        Connection conn = getConnection();
+//        PreparedStatement stmt = null;
+//        try {
+//            String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
+//                    TABLE,
+//                    "application_id, id, type, creation_time",
+//                    "?, ?, ?, ?");
+//            stmt = conn.prepareStatement(sql);
+//            stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
+//            stmt.setBytes(2, Key.fromHexString(os.getId()).getKey());
+//            stmt.setString(3, os.getType().name());
+//            stmt.setTimestamp(4, new Timestamp(os.getCreationTime().getTime()));
+//            stmt.executeUpdate();
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        } finally {
+//            closePreparedStatement(stmt);
+//            closeConnection(conn);
+//        }
+//    }
 
-    @Override
-    public void update(PrincipalOS os) {
-
-    }
-
-    @Override
-    public void delete(PrincipalOS os) {
-        Connection conn = getConnection();
-        PreparedStatement stmt=null;
-        try {
-            String sql = String.format("DELETE FROM %s WHERE application_id=? AND id=? LIMIT 1;",
-                    TABLE);
-            stmt = conn.prepareStatement(sql);
-            stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setBytes(2, Key.fromHexString(os.getId()).getKey());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            MySQLHelper.close(stmt);
-        }
-    }
-
-    @Override
-    public void deleteByApplicationId(String applicationId) {
-        Connection conn = getConnection();
-        PreparedStatement stmt = null;
-        try {
-            String sql = String.format("DELETE FROM %s WHERE application_id=? LIMIT 10000;",
-                    TABLE);
-            stmt = conn.prepareStatement(sql);
-            stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            MySQLHelper.close(stmt);
-        }
-    }
+//    @Override
+//    public void update(PrincipalOS os) {
+//    }
+//
+//    @Override
+//    public void delete(PrincipalOS os) {
+//        Connection conn = getConnection();
+//        PreparedStatement stmt=null;
+//        try {
+//            String sql = String.format("DELETE FROM %s WHERE application_id=? AND id=? LIMIT 1;",
+//                    TABLE);
+//            stmt = conn.prepareStatement(sql);
+//            stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
+//            stmt.setBytes(2, Key.fromHexString(os.getId()).getKey());
+//            stmt.executeUpdate();
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        } finally {
+//            closePreparedStatement(stmt);
+//            closeConnection(conn);
+//        }
+//    }
+//
+//    @Override
+//    public void deleteByApplicationId(String applicationId) {
+//        Connection conn = getConnection();
+//        PreparedStatement stmt = null;
+//        try {
+//            String sql = String.format("DELETE FROM %s WHERE application_id=? LIMIT 10000;",
+//                    TABLE);
+//            stmt = conn.prepareStatement(sql);
+//            stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
+//            stmt.executeUpdate();
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        } finally {
+//            closePreparedStatement(stmt);
+//            closeConnection(conn);
+//        }
+//    }
 
     @Override
     public PrincipalOS selectById(String applicationId, String id) {
@@ -169,13 +171,14 @@ public class PrincipalAccessImpl extends AbstractAccess implements PrincipalAcce
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            StringBuilder sql = new StringBuilder();
-            sql.append(String.format("SELECT * FROM %s WHERE "
-                            + " application_id=?;",
-                    TABLE));
+            String baseSQL = String.format("SELECT * FROM %s WHERE "
+                            + " application_id=? ",
+                    TABLE);
+            StringBuilder sql = new StringBuilder(baseSQL);
             sql.append(MySQLHelper.buildSortingQuery(request.getSorting()));
             sql.append(" ");
             sql.append(MySQLHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
+            sql.append(";");
             stmt = conn.prepareCall(sql.toString());
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
             rs = stmt.executeQuery();

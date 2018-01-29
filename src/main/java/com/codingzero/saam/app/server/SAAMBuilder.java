@@ -381,7 +381,7 @@ public class SAAMBuilder {
     public APIKeyRepositoryService getApiKeyRepository() {
         if (null == apiKeyRepository) {
             apiKeyRepository = new APIKeyRepositoryService(
-                    getApiKeyAccess(), getPrincipalAccess(), getApiKeyFactory());
+                    getApiKeyAccess(), getApiKeyFactory());
         }
         return apiKeyRepository;
     }

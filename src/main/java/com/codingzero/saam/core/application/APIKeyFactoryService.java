@@ -1,6 +1,7 @@
 package com.codingzero.saam.core.application;
 
 import com.codingzero.saam.common.Errors;
+import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.core.User;
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
@@ -31,7 +32,7 @@ public class APIKeyFactoryService {
 
     public APIKeyEntity generate(Application application, User user, String name) {
         checkForNameFormat(name);
-        String id = principalAccess.generateId(application.getId());
+        String id = principalAccess.generateId(application.getId(), PrincipalType.API_KEY);
         String key = access.generateKey();
         APIKeyOS os = new APIKeyOS(application.getId(), id, new Date(), key, name, user.getId(), true);
         APIKeyEntity entity = reconstitute(os, application, user);

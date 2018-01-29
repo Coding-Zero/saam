@@ -1,15 +1,11 @@
 package com.codingzero.saam.core;
 
+import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.core.application.APIKeyEntity;
 import com.codingzero.saam.core.application.APIKeyFactoryService;
-import com.codingzero.saam.core.application.RoleRepositoryService;
-import com.codingzero.saam.core.application.UserEntity;
-import com.codingzero.saam.core.application.UserFactoryService;
 import com.codingzero.saam.core.application.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
-import com.codingzero.saam.infrastructure.database.UserOS;
 import com.codingzero.saam.infrastructure.database.spi.APIKeyAccess;
-import com.codingzero.saam.infrastructure.database.spi.PasswordHelper;
 import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
@@ -51,7 +47,7 @@ public class APIKeyFactoryServiceTest {
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
         User user = mock(User.class);
-        when(principalAccess.generateId(applicationId)).thenReturn(principalId);
+        when(principalAccess.generateId(applicationId, PrincipalType.API_KEY)).thenReturn(principalId);
         when(access.generateKey()).thenReturn(key);
         APIKeyEntity entity = service.generate(application, user, name);
         assertEquals(application, entity.getApplication());

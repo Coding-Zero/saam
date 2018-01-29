@@ -9,15 +9,15 @@ import java.util.List;
 
 public interface PrincipalAccess extends TransactionalService {
 
-    String generateId(String applicationId);
+    String generateId(String applicationId, PrincipalType type);
 
-    void insert(PrincipalOS os);
+//    void insert(PrincipalOS os);
 
-    void update(PrincipalOS os);
+//    void update(PrincipalOS os);
 
-    void delete(PrincipalOS os);
+//    void delete(PrincipalOS os);
 
-    void deleteByApplicationId(String applicationId);
+//    void deleteByApplicationId(String applicationId);
 
     PrincipalOS selectById(String applicationId, String id);
 

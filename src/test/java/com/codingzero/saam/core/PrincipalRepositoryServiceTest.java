@@ -68,8 +68,6 @@ public class PrincipalRepositoryServiceTest {
         UserOS os = mock(UserOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
-        verify(access, times(1)).insert(os);
-        verify(access, times(0)).update(os);
         verify(userRepository, times(1)).store(entity);
     }
 
@@ -82,8 +80,6 @@ public class PrincipalRepositoryServiceTest {
         UserOS os = mock(UserOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
-        verify(access, times(0)).insert(os);
-        verify(access, times(1)).update(os);
         verify(userRepository, times(1)).store(entity);
     }
 
@@ -96,8 +92,6 @@ public class PrincipalRepositoryServiceTest {
         RoleOS os = mock(RoleOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
-        verify(access, times(1)).insert(os);
-        verify(access, times(0)).update(os);
         verify(roleRepository, times(1)).store(entity);
     }
 
@@ -110,8 +104,6 @@ public class PrincipalRepositoryServiceTest {
         RoleOS os = mock(RoleOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
-        verify(access, times(0)).insert(os);
-        verify(access, times(1)).update(os);
         verify(roleRepository, times(1)).store(entity);
     }
 
@@ -124,8 +116,6 @@ public class PrincipalRepositoryServiceTest {
         APIKeyOS os = mock(APIKeyOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
-        verify(access, times(1)).insert(os);
-        verify(access, times(0)).update(os);
         verify(apiKeyRepository, times(1)).store(entity);
     }
 
@@ -138,8 +128,6 @@ public class PrincipalRepositoryServiceTest {
         APIKeyOS os = mock(APIKeyOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
-        verify(access, times(0)).insert(os);
-        verify(access, times(1)).update(os);
         verify(apiKeyRepository, times(1)).store(entity);
     }
 
@@ -150,7 +138,6 @@ public class PrincipalRepositoryServiceTest {
         UserOS os = mock(UserOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.remove(entity);
-        verify(access, times(1)).delete(os);
         verify(userRepository, times(1)).remove(entity);
     }
 
@@ -161,7 +148,6 @@ public class PrincipalRepositoryServiceTest {
         RoleOS os = mock(RoleOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.remove(entity);
-        verify(access, times(1)).delete(os);
         verify(roleRepository, times(1)).remove(entity);
     }
 
@@ -172,7 +158,6 @@ public class PrincipalRepositoryServiceTest {
         APIKeyOS os = mock(APIKeyOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.remove(entity);
-        verify(access, times(1)).delete(os);
         verify(apiKeyRepository, times(1)).remove(entity);
     }
 
@@ -182,7 +167,6 @@ public class PrincipalRepositoryServiceTest {
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
         service.removeAll(application);
-        verify(access, times(1)).deleteByApplicationId(applicationId);
         verify(userRepository, times(1)).removeAll(application);
         verify(roleRepository, times(1)).removeAll(application);
         verify(apiKeyRepository, times(1)).removeAll(application);

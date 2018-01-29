@@ -3,12 +3,9 @@ package com.codingzero.saam.core;
 import com.codingzero.saam.core.application.APIKeyEntity;
 import com.codingzero.saam.core.application.APIKeyFactoryService;
 import com.codingzero.saam.core.application.APIKeyRepositoryService;
-import com.codingzero.saam.core.application.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
 import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import com.codingzero.saam.infrastructure.database.spi.APIKeyAccess;
-import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
-import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,7 +14,6 @@ import org.junit.rules.ExpectedException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,18 +25,15 @@ public class APIKeyRepositoryServiceTest {
     public ExpectedException thrown = ExpectedException.none();
 
     private APIKeyAccess access;
-    private PrincipalAccess principalAccess;
     private APIKeyFactoryService factory;
     private APIKeyRepositoryService service;
 
     @Before
     public void setUp() {
         access = mock(APIKeyAccess.class);
-        principalAccess = mock(PrincipalAccess.class);
         factory = mock(APIKeyFactoryService.class);
         service = new APIKeyRepositoryService(
                 access,
-                principalAccess,
                 factory);
     }
 
@@ -93,7 +86,7 @@ public class APIKeyRepositoryServiceTest {
         when(application.getId()).thenReturn(applicationId);
         String key = "key";
         APIKeyOS os = mock(APIKeyOS.class);
-        when(access.selectByKey(applicationId, key, principalAccess)).thenReturn(os);
+        when(access.selectByKey(applicationId, key)).thenReturn(os);
         service.findByKey(application, key);
         verify(factory, times(1)).reconstitute(os, application, null);
     }
@@ -108,7 +101,7 @@ public class APIKeyRepositoryServiceTest {
         when(user.getId()).thenReturn(userId);
         APIKeyOS os = mock(APIKeyOS.class);
         List<APIKeyOS> osList = Arrays.asList(os);
-        when(access.selectByUserId(applicationId, userId, principalAccess)).thenReturn(osList);
+        when(access.selectByUserId(applicationId, userId)).thenReturn(osList);
         service.findByOwner(application, user);
         verify(factory, times(osList.size())).reconstitute(os, application, user);
     }

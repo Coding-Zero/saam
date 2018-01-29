@@ -50,7 +50,7 @@ public class RoleRepositoryService {
     }
 
     public RoleEntity findByName(Application application, String name) {
-        RoleOS os = access.selectByName(application.getId(), name, principalAccess);
+        RoleOS os = access.selectByName(application.getId(), name);
         return factory.reconstitute(os, application);
     }
 
