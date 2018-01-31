@@ -82,7 +82,7 @@ public class MySQLAccessModule {
         return new OAuthIdentifierAccessImpl(dataSource, objectSegmentMapper);
     }
 
-    public OAuthIdentifierPolicyAccess getSSOIdentifierPolicyAccess() {
+    public OAuthIdentifierPolicyAccess getOAuthIdentifierPolicyAccess() {
         return new OAuthIdentifierPolicyAccessImpl(dataSource, objectSegmentMapper);
     }
 

@@ -56,14 +56,15 @@ public class OAuthIdentifierPolicyAccessImpl extends AbstractAccess implements O
         try {
             String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
                     TABLE,
-                    "application_id, platform, configurations, is_active, creation_time ",
-                    "?, ?, ?, ?, ?");
+                    "application_id, platform, configurations, is_active, creation_time, update_time ",
+                    "?, ?, ?, ?, ?, ?");
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
             stmt.setString(2, os.getPlatform().name());
             stmt.setString(3, getObjectSegmentMapper().toJson(os.getConfigurations()));
             stmt.setBoolean(4, os.isActive());
             stmt.setTimestamp(5, new Timestamp(os.getCreationTime().getTime()));
+            stmt.setTimestamp(6, new Timestamp(os.getUpdateTime().getTime()));
             stmt.executeUpdate();
 
         } catch (SQLException | JsonProcessingException e) {
@@ -79,14 +80,15 @@ public class OAuthIdentifierPolicyAccessImpl extends AbstractAccess implements O
         Connection conn = getConnection();
         PreparedStatement stmt = null;
         try {
-            String sql = String.format("UPDATE %s SET configurations=?, is_active=? "
+            String sql = String.format("UPDATE %s SET configurations=?, is_active=?, update_time=? "
                             + " WHERE application_id=? AND platform=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, getObjectSegmentMapper().toJson(os.getConfigurations()));
             stmt.setBoolean(2, os.isActive());
-            stmt.setBytes(3, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(4, os.getPlatform().name());
+            stmt.setTimestamp(3, new Timestamp(os.getUpdateTime().getTime()));
+            stmt.setBytes(4, Key.fromHexString(os.getApplicationId()).getKey());
+            stmt.setString(5, os.getPlatform().name());
             stmt.executeUpdate();
         } catch (SQLException | JsonProcessingException e) {
             throw new RuntimeException(e);

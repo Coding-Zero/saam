@@ -40,7 +40,7 @@ public class SAAMSupplier implements Supplier<SAAM> {
                 .setIdentifierPolicyAccess(accessModule.getIdentifierPolicyAccess())
                 .setUsernamePolicyAccess(accessModule.getUsernamePolicyAccess())
                 .setEmailPolicyAccess(accessModule.getEmailPolicyAccess())
-                .setOAuthIdentifierPolicyAccess(accessModule.getSSOIdentifierPolicyAccess())
+                .setOAuthIdentifierPolicyAccess(accessModule.getOAuthIdentifierPolicyAccess())
                 .setPrincipalAccess(accessModule.getPrincipalAccess())
                 .setUserAccess(accessModule.getUserAccess())
                 .setIdentifierAccess(accessModule.getIdentifierAccess())
