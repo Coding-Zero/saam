@@ -73,9 +73,15 @@ CHANGE COLUMN `action_codes` `action_codes` JSON NULL ;
 --
 ALTER TABLE `saam`.`email_policies`
 CHANGE COLUMN `code` `type` VARCHAR(45) NOT NULL ;
+DROP COLUMN `type`,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (`application_id`);
 
 --
 -- Table structure for table `username_policies`
 --
 ALTER TABLE `saam`.`username_policies`
 CHANGE COLUMN `code` `type` VARCHAR(45) NOT NULL ;
+DROP COLUMN `type`,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (`application_id`);

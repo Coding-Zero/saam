@@ -27,6 +27,6 @@ public interface IdentifierAccess  extends TransactionalService {
 
     List<IdentifierOS> selectByTypeAndUserId(String applicationId, IdentifierType type, String userId);
 
-    PaginatedResult<List<IdentifierOS>> selectByPolicyCode(String applicationId, IdentifierType type);
+    PaginatedResult<List<IdentifierOS>> selectByType(String applicationId, IdentifierType type);
 
 }

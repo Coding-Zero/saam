@@ -10,13 +10,13 @@ public interface IdentifierPolicyAccess extends TransactionalService {
 
     boolean isDuplicateType(String applicationId, IdentifierType type);
 
-    void insert(IdentifierPolicyOS os);
-
-    void update(IdentifierPolicyOS os);
-
-    void delete(IdentifierPolicyOS os);
-
-    void deleteByApplicationId(String applicationId);
+//    void insert(IdentifierPolicyOS os);
+//
+//    void update(IdentifierPolicyOS os);
+//
+//    void delete(IdentifierPolicyOS os);
+//
+//    void deleteByApplicationId(String applicationId);
 
     IdentifierPolicyOS selectByType(String applicationId, IdentifierType type);
 

@@ -1,7 +1,7 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
-import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
+import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.transaction.TransactionalService;
 
@@ -23,14 +23,10 @@ public interface APIKeyAccess extends TransactionalService {
 
     APIKeyOS selectByKey(String applicationId, String key);
 
-//    APIKeyOS selectByKey(String applicationId, String key, PrincipalAccess principalAccess);
-
     APIKeyOS selectByPrincipalOS(PrincipalOS os);
 
     List<APIKeyOS> selectByUserId(String applicationId, String userId);
 
     PaginatedResult<List<APIKeyOS>> selectByApplicationId(String applicationId);
-
-//    List<APIKeyOS> selectByUserId(String applicationId, String userId, PrincipalAccess principalAccess);
 
 }

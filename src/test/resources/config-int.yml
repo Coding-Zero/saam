@@ -5,7 +5,7 @@ logging:
 
 
 mysql:
-  url: ${MYSQL_URL:-localhost:3306/saam}
+  url: ${MYSQL_URL:-localhost:3306}
   username: ${MYSQL_USERNAME:-root}
   password: ${MYSQL_PASSWORD:-"123456"}
   connectionMinPoolSize: ${MYSQL_CONNECTION_MIN_POOL_SIZE:-1}

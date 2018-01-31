@@ -53,8 +53,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         UsernamePolicyOS os = mock(UsernamePolicyOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
-        verify(access, times(1)).insert(os);
-        verify(access, times(0)).update(os);
         verify(usernameIdentifierPolicyRepository, times(1)).store(entity);
         verify(entity, times(1)).getDirtyIdentifiers();
     }
@@ -68,8 +66,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         UsernamePolicyOS os = mock(UsernamePolicyOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
-        verify(access, times(0)).insert(os);
-        verify(access, times(1)).update(os);
         verify(usernameIdentifierPolicyRepository, times(1)).store(entity);
         verify(entity, times(1)).getDirtyIdentifiers();
     }
@@ -83,8 +79,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         EmailPolicyOS os = mock(EmailPolicyOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
-        verify(access, times(1)).insert(os);
-        verify(access, times(0)).update(os);
         verify(emailIdentifierPolicyRepository, times(1)).store(entity);
         verify(entity, times(1)).getDirtyIdentifiers();
     }
@@ -98,8 +92,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         EmailPolicyOS os = mock(EmailPolicyOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
-        verify(access, times(0)).insert(os);
-        verify(access, times(1)).update(os);
         verify(emailIdentifierPolicyRepository, times(1)).store(entity);
         verify(entity, times(1)).getDirtyIdentifiers();
     }
@@ -112,7 +104,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         when(entity.getObjectSegment()).thenReturn(os);
         service.remove(entity);
         verify(identifierRepository, times(1)).remove(entity);
-        verify(access, times(1)).delete(os);
         verify(usernameIdentifierPolicyRepository, times(1)).remove(entity);
     }
 
@@ -124,7 +115,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         when(entity.getObjectSegment()).thenReturn(os);
         service.remove(entity);
         verify(identifierRepository, times(1)).remove(entity);
-        verify(access, times(1)).delete(os);
         verify(emailIdentifierPolicyRepository, times(1)).remove(entity);
     }
 
@@ -137,7 +127,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         verify(identifierRepository, times(1)).removeAll(entity);
         verify(usernameIdentifierPolicyRepository, times(1)).removeAll(entity);
         verify(emailIdentifierPolicyRepository, times(1)).removeAll(entity);
-        verify(access, times(1)).deleteByApplicationId(applicationId);
     }
 
     @Test

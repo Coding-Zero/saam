@@ -267,7 +267,7 @@ public class OAuthIdentifierAccessImpl extends AbstractAccess implements OAuthId
         try {
             StringBuilder sql = new StringBuilder();
             sql.append(String.format("SELECT * FROM %s WHERE "
-                            + " application_id=? AND platform=?;",
+                            + " application_id=? AND platform=? ",
                     TABLE));
             sql.append(MySQLHelper.buildSortingQuery(request.getSorting()));
             sql.append(" ");

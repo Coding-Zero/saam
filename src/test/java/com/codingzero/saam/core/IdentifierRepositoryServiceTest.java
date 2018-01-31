@@ -124,7 +124,7 @@ public class IdentifierRepositoryServiceTest {
         PaginatedResult<List<IdentifierOS>> osResult = mock(PaginatedResult.class);
         when(osResult.getResult()).thenReturn(osList);
         when(osResult.start(page, null)).thenReturn(osResult);
-        when(access.selectByPolicyCode(applicationId, type)).thenReturn(osResult);
+        when(access.selectByType(applicationId, type)).thenReturn(osResult);
 
         PaginatedResult<List<Identifier>> result = service.findByPolicy(policy);
         result.start(page).getResult();

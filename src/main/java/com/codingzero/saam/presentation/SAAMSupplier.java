@@ -44,7 +44,7 @@ public class SAAMSupplier implements Supplier<SAAM> {
                 .setPrincipalAccess(accessModule.getPrincipalAccess())
                 .setUserAccess(accessModule.getUserAccess())
                 .setIdentifierAccess(accessModule.getIdentifierAccess())
-                .setOAuthIdentifierAccess(accessModule.getSSOIdentifierAccess())
+                .setOAuthIdentifierAccess(accessModule.getOAuthIdentifierAccess())
                 .setPermissionAccess(accessModule.getPermissionAccess())
                 .setResourceAccess(accessModule.getResourceAccess())
                 .setRoleAccess(accessModule.getRoleAccess())

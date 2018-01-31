@@ -63,7 +63,7 @@ public class IdentifierRepositoryService {
     }
 
     public PaginatedResult<List<Identifier>> findByPolicy(IdentifierPolicy policy) {
-        PaginatedResult<List<IdentifierOS>> result = access.selectByPolicyCode(
+        PaginatedResult<List<IdentifierOS>> result = access.selectByType(
                 policy.getApplication().getId(), policy.getType());
         return new PaginatedResult<>(new PaginatedResultMapper<List<Identifier>, List<IdentifierOS>>() {
             @Override

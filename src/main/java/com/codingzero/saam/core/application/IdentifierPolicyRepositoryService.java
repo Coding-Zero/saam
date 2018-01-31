@@ -27,21 +27,14 @@ public class IdentifierPolicyRepositoryService {
     }
 
     public void store(IdentifierPolicyEntity entity) {
-        storeIdentifierPolicy(entity);
         if (entity.getType() == IdentifierType.USERNAME) {
             usernameIdentifierPolicyRepository.store((UsernamePolicyEntity) entity);
         } else if (entity.getType() == IdentifierType.EMAIL) {
             emailIdentifierPolicyRepository.store((EmailPolicyEntity) entity);
+        } else {
+            throw new IllegalArgumentException("Unknown identifier type, " + entity.getType());
         }
         flushDirtyIdentifiers(entity);
-    }
-
-    private void storeIdentifierPolicy(IdentifierPolicyEntity entity) {
-        if (entity.isNew()) {
-            access.insert((IdentifierPolicyOS) entity.getObjectSegment());
-        } else if (entity.isDirty()) {
-            access.update((IdentifierPolicyOS) entity.getObjectSegment());
-        }
     }
 
     private void flushDirtyIdentifiers(IdentifierPolicyEntity policy) {
@@ -57,11 +50,12 @@ public class IdentifierPolicyRepositoryService {
 
     public void remove(IdentifierPolicyEntity entity) {
         identifierRepository.remove(entity);
-        access.delete((IdentifierPolicyOS) entity.getObjectSegment());
         if (entity.getType() == IdentifierType.USERNAME) {
             usernameIdentifierPolicyRepository.remove((UsernamePolicyEntity) entity);
         } else if (entity.getType() == IdentifierType.EMAIL) {
             emailIdentifierPolicyRepository.remove((EmailPolicyEntity) entity);
+        } else {
+            throw new IllegalArgumentException("Unknown identifier type, " + entity.getType());
         }
     }
 
@@ -69,7 +63,6 @@ public class IdentifierPolicyRepositoryService {
         identifierRepository.removeAll(application);
         usernameIdentifierPolicyRepository.removeAll(application);
         emailIdentifierPolicyRepository.removeAll(application);
-        access.deleteByApplicationId(application.getId());
     }
 
     public IdentifierPolicyEntity findByType(Application application, IdentifierType type) {

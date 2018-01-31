@@ -259,7 +259,7 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
     }
 
     @Override
-    public PaginatedResult<List<IdentifierOS>> selectByPolicyCode(String applicationId, IdentifierType type) {
+    public PaginatedResult<List<IdentifierOS>> selectByType(String applicationId, IdentifierType type) {
         return new PaginatedResult<>(request -> _selectByPolicyCode(request), applicationId, type);
     }
 

@@ -14,10 +14,8 @@ public interface UsernamePolicyAccess extends TransactionalService {
 
     void deleteByApplicationId(String id);
 
-//    public UsernamePolicyOS selectByCode(String applicationId, String code);
+    UsernamePolicyOS selectByApplicationId(String applicationId);
 
     UsernamePolicyOS selectByIdentifierPolicyOS(IdentifierPolicyOS os);
-
-//    public List<UsernamePolicyOS> selectByApplicationId(String applicationId);
 
 }

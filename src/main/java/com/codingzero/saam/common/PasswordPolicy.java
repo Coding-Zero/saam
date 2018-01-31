@@ -2,6 +2,7 @@ package com.codingzero.saam.common;
 
 import com.codingzero.utilities.error.BusinessError;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class PasswordPolicy {
@@ -106,33 +107,20 @@ public class PasswordPolicy {
         }
     }
 
-    /**
-     * Alphabets, digits, and punctuation -- !"#$%&'()\*+,-./:;<=>?@[\]^_`{|}~
-     *
-     * @return PasswordPolicy
-     */
-    public static PasswordPolicy easyPolicy(int minLength) {
-        return new PasswordPolicy(minLength, DEFAULT_MAX_LENGTH, false, false);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PasswordPolicy that = (PasswordPolicy) o;
+        return getMinLength() == that.getMinLength() &&
+                getMaxLength() == that.getMaxLength() &&
+                isNeedCapital() == that.isNeedCapital() &&
+                isNeedSpecialChar() == that.isNeedSpecialChar();
     }
 
-    /**
-     * All rules inheritent from easy policy plus the first letter must be upper case.
-     *
-     * @param minLength
-     * @return PasswordPolicy
-     */
-    public static PasswordPolicy regularPolicy(int minLength) {
-        return new PasswordPolicy(minLength, DEFAULT_MAX_LENGTH, true, false);
-    }
+    @Override
+    public int hashCode() {
 
-    /**
-     * All rules inheritent from easy policy plus must include one of punctuation char
-     *
-     * @param minLength
-     * @return PasswordPolicy
-     */
-    public static PasswordPolicy strictPolicy(int minLength) {
-        return new PasswordPolicy(minLength, DEFAULT_MAX_LENGTH, true, true);
+        return Objects.hash(getMinLength(), getMaxLength(), isNeedCapital(), isNeedSpecialChar());
     }
-
 }

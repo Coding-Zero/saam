@@ -78,7 +78,7 @@ public class MySQLAccessModule {
         return new RoleAccessImpl(dataSource, objectSegmentMapper);
     }
 
-    public OAuthIdentifierAccess getSSOIdentifierAccess() {
+    public OAuthIdentifierAccess getOAuthIdentifierAccess() {
         return new OAuthIdentifierAccessImpl(dataSource, objectSegmentMapper);
     }
 

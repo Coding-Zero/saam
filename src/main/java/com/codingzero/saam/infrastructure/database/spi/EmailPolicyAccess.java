@@ -14,10 +14,8 @@ public interface EmailPolicyAccess extends TransactionalService {
 
     void deleteByApplicationId(String applicationId);
 
-//    EmailPolicyOS selectByCode(String applicationId, String code);
+    EmailPolicyOS selectByApplicationId(String applicationId);
 
     EmailPolicyOS selectByIdentifierPolicyOS(IdentifierPolicyOS os);
-
-//    List<EmailPolicyOS> selectByApplicationId(String applicationId);
 
 }

@@ -1,4 +1,4 @@
-package com.codingzero.saam.infrastructure;
+package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
 import com.codingzero.saam.infrastructure.database.spi.APIKeyAccess;
@@ -27,17 +27,17 @@ public abstract class APIKeyAccessTest {
     public ExpectedException thrown = ExpectedException.none();
 
     private APIKeyAccess access;
-    private List<APIKeyOS> generatedAPIKeys;
+    private List<APIKeyOS> generatedObjectSegments;
 
     @Before
     public void setUp() {
-        generatedAPIKeys = new LinkedList<>();
+        generatedObjectSegments = new LinkedList<>();
         access = getAccess();
     }
 
     @After
     public void clean() {
-        for (APIKeyOS os: generatedAPIKeys) {
+        for (APIKeyOS os: generatedObjectSegments) {
             try {
                 access.delete(os);
             } catch (Exception e) {
@@ -52,16 +52,6 @@ public abstract class APIKeyAccessTest {
         access.insert(os);
         APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
         assertOS(os, actualOS);
-    }
-
-    private void assertOS(APIKeyOS expectedOS, APIKeyOS actualOS) {
-        assertEquals(expectedOS.getApplicationId(), actualOS.getApplicationId());
-        assertEquals(expectedOS.getId(), actualOS.getId());
-        assertEquals(expectedOS.getCreationTime(), actualOS.getCreationTime());
-        assertEquals(expectedOS.getKey(), actualOS.getKey());
-        assertEquals(expectedOS.getName(), actualOS.getName());
-        assertEquals(expectedOS.getUserId(), actualOS.getUserId());
-        assertEquals(expectedOS.isActive(), actualOS.isActive());
     }
 
     @Test
@@ -339,7 +329,7 @@ public abstract class APIKeyAccessTest {
         List<APIKeyOS> actualOSList = access.selectByUserId(applicationId, userId);
         assertEquals(3, actualOSList.size());
         for (APIKeyOS actualOS: actualOSList) {
-            for (APIKeyOS os: generatedAPIKeys) {
+            for (APIKeyOS os: generatedObjectSegments) {
                 if (os.getKey().equals(actualOS.getKey())) {
                     assertOS(os, actualOS);
                 }
@@ -364,12 +354,22 @@ public abstract class APIKeyAccessTest {
         List<APIKeyOS> actualOSList = result.start(new OffsetBasedResultPage(1, 10)).getResult();
         assertEquals(5, actualOSList.size());
         for (APIKeyOS actualOS: actualOSList) {
-            for (APIKeyOS os: generatedAPIKeys) {
+            for (APIKeyOS os: generatedObjectSegments) {
                 if (os.getKey().equals(actualOS.getKey())) {
                     assertOS(os, actualOS);
                 }
             }
         }
+    }
+
+    private void assertOS(APIKeyOS expectedOS, APIKeyOS actualOS) {
+        assertEquals(expectedOS.getApplicationId(), actualOS.getApplicationId());
+        assertEquals(expectedOS.getId(), actualOS.getId());
+        assertEquals(expectedOS.getCreationTime(), actualOS.getCreationTime());
+        assertEquals(expectedOS.getKey(), actualOS.getKey());
+        assertEquals(expectedOS.getName(), actualOS.getName());
+        assertEquals(expectedOS.getUserId(), actualOS.getUserId());
+        assertEquals(expectedOS.isActive(), actualOS.isActive());
     }
 
     private APIKeyOS createObjectSegment() {
@@ -387,7 +387,7 @@ public abstract class APIKeyAccessTest {
                 generateName(),
                 userId,
                 true);
-        generatedAPIKeys.add(os);
+        generatedObjectSegments.add(os);
         return os;
     }
 
@@ -396,7 +396,6 @@ public abstract class APIKeyAccessTest {
     }
 
     protected abstract APIKeyAccess getAccess();
-    protected abstract PrincipalAccess getPrincipalAccess();
     protected abstract String getApplicationId();
     protected abstract String getPrincipalId(String applicationId);
     protected abstract String getUserId(String applicationId);
