@@ -159,30 +159,6 @@ public class ResourceAccessImpl extends AbstractAccess implements ResourceAccess
         }
     }
 
-    private void deleteByParentKey(String applicationId, String parentKey) {
-        String parentKeyHash = hash(parentKey);
-        Connection conn = getConnection();
-        PreparedStatement stmt=null;
-        try {
-            String sql = String.format("DELETE FROM %s WHERE application_id=? AND %s LIMIT 1000;",
-                    TABLE, getParentKeyHashQuery(parentKeyHash));
-            stmt = conn.prepareStatement(sql);
-            stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            if (null != parentKeyHash) {
-                stmt.setBytes(2, Key.fromHexString(parentKeyHash).getKey());
-            }
-            int deletedRows = stmt.executeUpdate();
-            while (deletedRows > 0) {
-                deletedRows = stmt.executeUpdate();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            closePreparedStatement(stmt);
-            closeConnection(conn);
-        }
-    }
-
     private String getParentKeyHashQuery(String parentKeyHash) {
         String query = "parent_key_hash";
         if (null != parentKeyHash) {

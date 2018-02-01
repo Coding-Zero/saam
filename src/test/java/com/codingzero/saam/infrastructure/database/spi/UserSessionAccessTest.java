@@ -49,7 +49,7 @@ public abstract class UserSessionAccessTest {
     }
 
     @Test
-    public void testGenerateId() {
+    public void testGenerateKey() {
         String applicationId = getApplicationId();
         int size = 10;
         Set<String> keys = new HashSet<>(size);
@@ -66,6 +66,20 @@ public abstract class UserSessionAccessTest {
 
         UserSessionOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
         assertOS(os, actualOS);
+    }
+
+    @Test
+    public void testInsert_DuplicateKey() {
+        String applicationId = getApplicationId();
+        String key = getKey(applicationId);
+        String userId1 = getPrincipalId(applicationId, PrincipalType.USER);
+        UserSessionOS os1 = createObjectSegment(applicationId, key, userId1);
+        access.insert(os1);
+
+        String userId2 = getPrincipalId(applicationId, PrincipalType.USER);
+        UserSessionOS os2 = createObjectSegment(applicationId, key, userId2);
+        thrown.expect(Exception.class);
+        access.insert(os2);
     }
 
     @Test
@@ -156,6 +170,94 @@ public abstract class UserSessionAccessTest {
 
         UserSessionOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
         assertOS(os, actualOS);
+    }
+
+    @Test
+    public void testDeleteByUserId() {
+        String applicationId = getApplicationId();
+        String userId1 = getPrincipalId(applicationId, PrincipalType.USER);
+        List<UserSessionOS> osList1 = createObjectSegments(applicationId, userId1, 3);
+        for (UserSessionOS os: osList1) {
+            access.insert(os);
+        }
+        String userId2 = getPrincipalId(applicationId, PrincipalType.USER);
+        List<UserSessionOS> osList2 = createObjectSegments(applicationId, userId2, 2);
+        for (UserSessionOS os: osList2) {
+            access.insert(os);
+        }
+
+        access.deleteByUserId(applicationId, userId1);
+
+        for (UserSessionOS os: osList1) {
+            UserSessionOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+            assertNull(actualOS);
+        }
+        for (UserSessionOS os: osList2) {
+            UserSessionOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+            assertOS(os, actualOS);
+        }
+    }
+
+    @Test
+    public void testDeleteByUserId_Transaction_Commit() {
+        TransactionManager manager = TransactionManagerBuilder.create().build();
+        manager.register("role-access", access);
+
+        String applicationId = getApplicationId();
+        String userId1 = getPrincipalId(applicationId, PrincipalType.USER);
+        List<UserSessionOS> osList1 = createObjectSegments(applicationId, userId1, 3);
+        for (UserSessionOS os: osList1) {
+            access.insert(os);
+        }
+        String userId2 = getPrincipalId(applicationId, PrincipalType.USER);
+        List<UserSessionOS> osList2 = createObjectSegments(applicationId, userId2, 2);
+        for (UserSessionOS os: osList2) {
+            access.insert(os);
+        }
+
+        manager.start();
+        access.deleteByUserId(applicationId, userId1);
+        manager.commit();
+
+        for (UserSessionOS os: osList1) {
+            UserSessionOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+            assertNull(actualOS);
+        }
+        for (UserSessionOS os: osList2) {
+            UserSessionOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+            assertOS(os, actualOS);
+        }
+    }
+
+    @Test
+    public void testDeleteByUserId_Transaction_Rollback() {
+        TransactionManager manager = TransactionManagerBuilder.create().build();
+        manager.register("role-access", access);
+
+        String applicationId = getApplicationId();
+        String userId1 = getPrincipalId(applicationId, PrincipalType.USER);
+        List<UserSessionOS> osList1 = createObjectSegments(applicationId, userId1, 3);
+        for (UserSessionOS os: osList1) {
+            access.insert(os);
+        }
+        String userId2 = getPrincipalId(applicationId, PrincipalType.USER);
+        List<UserSessionOS> osList2 = createObjectSegments(applicationId, userId2, 2);
+        for (UserSessionOS os: osList2) {
+            access.insert(os);
+        }
+
+        manager.start();
+        access.deleteByUserId(applicationId, userId1);
+        manager.rollback();
+
+        for (UserSessionOS os: osList1) {
+            UserSessionOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+            assertOS(os, actualOS);
+        }
+        for (UserSessionOS os: osList2) {
+            UserSessionOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+            assertOS(os, actualOS);
+        }
     }
 
     @Test
