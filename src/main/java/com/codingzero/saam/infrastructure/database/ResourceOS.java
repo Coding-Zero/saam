@@ -8,10 +8,10 @@ import java.util.Date;
 public class ResourceOS {
 
     private String applicationId;
-    private String key; // path to root, eg: /root/name1/name2/name
+    private String key; // path to root, eg: root:name1:name2:name
     private String principalId;
     private long creationTime;
-    private String parentKey; // path to root, eg: /root/name1/name2
+    private String parentKey; // path to root, eg: root:name1:name2
 
     public ResourceOS(String applicationId, String key, String principalId, Date creationTime) {
         this.applicationId = applicationId;

@@ -294,7 +294,6 @@ public abstract class OAuthIdentifierPolicyAccessTest {
                 assertOS(facebookIdPolicy, actualOS);
             }
         }
-
     }
 
     private void assertOS(OAuthIdentifierPolicyOS expectedOS, OAuthIdentifierPolicyOS actualOS) {

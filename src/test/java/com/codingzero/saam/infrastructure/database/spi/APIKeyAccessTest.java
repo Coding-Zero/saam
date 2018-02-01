@@ -1,8 +1,6 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
-import com.codingzero.saam.infrastructure.database.spi.APIKeyAccess;
-import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.transaction.TransactionManager;

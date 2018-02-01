@@ -14,10 +14,6 @@ public interface UserAccess extends TransactionalService {
 
     void deleteByApplicationId(String id);
 
-//    UserOS selectById(String applicationId, String id);
-
     UserOS selectByPrincipalOS(PrincipalOS os);
-
-//    PaginatedResult<List<UserOS>> selectByApplicationId(String id);
 
 }

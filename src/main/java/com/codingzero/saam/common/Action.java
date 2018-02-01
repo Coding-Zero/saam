@@ -1,5 +1,7 @@
 package com.codingzero.saam.common;
 
+import java.util.Objects;
+
 public class Action {
 
     private String code;
@@ -18,4 +20,18 @@ public class Action {
         return isAllowed;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Action action = (Action) o;
+        return isAllowed() == action.isAllowed() &&
+                Objects.equals(getCode(), action.getCode());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getCode(), isAllowed());
+    }
 }

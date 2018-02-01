@@ -26,6 +26,17 @@ public class UserAccessImpl extends AbstractAccess implements UserAccess {
     @Override
     public void insert(UserOS os) {
         Connection conn = getConnection();
+        try {
+            insertUserOS(os, conn);
+            PrincipalOSHelper.insert(os, conn);
+        } catch (SQLException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
+    private void insertUserOS(UserOS os, Connection conn) throws SQLException, JsonProcessingException {
         PreparedStatement stmt = null;
         try {
             String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
@@ -39,11 +50,8 @@ public class UserAccessImpl extends AbstractAccess implements UserAccess {
             stmt.setString(4, getObjectSegmentMapper().toJson(os.getPasswordResetCode()));
             stmt.setString(5, getObjectSegmentMapper().toJson(os.getRoleIds()));
             stmt.executeUpdate();
-        } catch (SQLException | JsonProcessingException e) {
-            throw new RuntimeException(e);
         } finally {
             closePreparedStatement(stmt);
-            closeConnection(conn);
         }
     }
 
@@ -78,7 +86,7 @@ public class UserAccessImpl extends AbstractAccess implements UserAccess {
             String sql = String.format("DELETE ur, ppl FROM %S ur"
                             + " LEFT JOIN %S ppl"
                             + " ON ur.application_id = ppl.application_id AND ur.id = ppl.id"
-                            + " WHERE ur.application_id=? AND ur.id=? LIMIT 1;",
+                            + " WHERE ur.application_id=? AND ur.id=? ;",
                     TABLE,
                     PrincipalAccessImpl.TABLE);
             stmt = conn.prepareStatement(sql);
