@@ -68,7 +68,7 @@ import com.codingzero.saam.core.User;
 import com.codingzero.saam.core.UserSession;
 import com.codingzero.saam.core.UsernamePolicy;
 import com.codingzero.saam.core.services.UserAuthenticator;
-import com.codingzero.saam.infrastructure.SSOAccessToken;
+import com.codingzero.saam.infrastructure.OAuthAccessToken;
 import com.codingzero.saam.infrastructure.database.spi.OAuthPlatformAgent;
 import com.codingzero.utilities.error.BusinessError;
 import com.codingzero.utilities.pagination.PaginatedResult;
@@ -160,25 +160,14 @@ public class SAAMServer implements SAAM {
 
     @Override
     public void removeApplication(String id) {
-        Application application = getEnsuredApplication(id);
+        Application application = getCheckedApplicationById(id);
         removeApplication(application);
     }
 
     @Override
     public ApplicationResponse getApplicationById(String id) {
-        Application application = getEnsuredApplication(id);
+        Application application = applicationRepository.findById(id);
         return responseMapper.toResponse(application);
-    }
-
-    private Application getEnsuredApplication(String id) {
-        Application application = getCheckedApplicationById(id);
-        if (null == application) {
-            throw BusinessError.noSuchEntityFound()
-                    .message("No such application found.")
-                    .details("applicationId", id)
-                    .build();
-        }
-        return application;
     }
 
     @Override
@@ -212,7 +201,7 @@ public class SAAMServer implements SAAM {
     public OAuthAccessTokenResponse requestOAuthAccessToken(OAuthAccessTokenRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
         OAuthIdentifierPolicy policy = application.fetchOAuthIdentifierPolicy(request.getPlatform());
-        SSOAccessToken token = oAuthPlatformAgent.requestAccessToken(
+        OAuthAccessToken token = oAuthPlatformAgent.requestAccessToken(
                 policy.getPlatform(), policy.getConfigurations(), request.getParameters());
         return responseMapper.toResponse(application, token);
     }
@@ -220,8 +209,7 @@ public class SAAMServer implements SAAM {
     @Override
     public ApplicationResponse addUsernamePolicy(UsernamePolicyAddRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
-        UsernamePolicy policy = application.createUsernamePolicy(
-        );
+        application.createUsernamePolicy();
         application = storeApplication(application);
         return responseMapper.toResponse(application);
     }
@@ -229,11 +217,23 @@ public class SAAMServer implements SAAM {
     @Override
     public ApplicationResponse updateUsernamePolicy(UsernamePolicyUpdateRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
-        UsernamePolicy policy = application.fetchUsernamePolicy();
+        UsernamePolicy policy = (UsernamePolicy) getEnsuredUsernamePolicy(application, IdentifierType.USERNAME);
         policy.setActive(request.isActive());
         application.updateIdentifierPolicy(policy);
         application = storeApplication(application);
         return responseMapper.toResponse(application);
+    }
+
+    private IdentifierPolicy getEnsuredUsernamePolicy(Application application, IdentifierType type) {
+        IdentifierPolicy policy = application.fetchIdentifierPolicy(type);
+        if (null == policy) {
+            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
+                    .message("No such username policy found.")
+                    .details("type", type)
+                    .details("entity", "IdentifierPolicy")
+                    .build();
+        }
+        return policy;
     }
 
     @Override
@@ -248,7 +248,7 @@ public class SAAMServer implements SAAM {
     @Override
     public ApplicationResponse updateEmailPolicy(EmailPolicyUpdateRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
-        EmailPolicy policy = application.fetchEmailPolicy();
+        EmailPolicy policy = (EmailPolicy) getEnsuredUsernamePolicy(application, IdentifierType.EMAIL);
         policy.setActive(request.isActive());
         policy.setDomains(request.getDomains());
         policy.setVerificationRequired(request.isVerificationRequired());
@@ -260,7 +260,7 @@ public class SAAMServer implements SAAM {
     @Override
     public ApplicationResponse removeIdentifierPolicy(String applicationId, IdentifierType type) {
         Application application = getCheckedApplicationById(applicationId);
-        IdentifierPolicy policy = application.fetchIdentifierPolicy(type);
+        IdentifierPolicy policy = getEnsuredUsernamePolicy(application, type);
         application.removeIdentifierPolicy(policy);
         application = storeApplication(application);
         return responseMapper.toResponse(application);
@@ -269,8 +269,7 @@ public class SAAMServer implements SAAM {
     @Override
     public ApplicationResponse addOAuthIdentifierPolicy(OAuthIdentifierPolicyAddRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
-        OAuthIdentifierPolicy policy =
-                application.createOAuthIdentifierPolicy(request.getPlatform(), request.getConfigurations());
+        application.createOAuthIdentifierPolicy(request.getPlatform(), request.getConfigurations());
         application = storeApplication(application);
         return responseMapper.toResponse(application);
     }
@@ -278,7 +277,7 @@ public class SAAMServer implements SAAM {
     @Override
     public ApplicationResponse updateOAuthIdentifierPolicy(OAuthIdentifierPolicyUpdateRequest request) {
         Application application = getCheckedApplicationById(request.getApplicationId());
-        OAuthIdentifierPolicy policy = application.fetchOAuthIdentifierPolicy(request.getPlatform());
+        OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
         policy.setActive(request.isActive());
         policy.setConfigurations(request.getConfigurations());
         application.updateOAuthIdentifierPolicy(policy);
@@ -286,13 +285,33 @@ public class SAAMServer implements SAAM {
         return responseMapper.toResponse(application);
     }
 
+    private OAuthIdentifierPolicy getEnsuredOAuthIdentifierPolicy(Application application, OAuthPlatform platform) {
+        OAuthIdentifierPolicy policy = application.fetchOAuthIdentifierPolicy(platform);
+        if (null == policy) {
+            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
+                    .message("No such username policy found.")
+                    .details("platform", platform)
+                    .details("entity", "OAuthIdentifierPolicy")
+                    .build();
+        }
+        return policy;
+    }
+
     @Override
     public ApplicationResponse removeOAuthIdentifierPolicy(String applicationId, OAuthPlatform platform) {
         Application application = getCheckedApplicationById(applicationId);
-        OAuthIdentifierPolicy policy = application.fetchOAuthIdentifierPolicy(platform);
+        OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, platform);
         application.removeOAuthIdentifierPolicy(policy);
         application = storeApplication(application);
         return responseMapper.toResponse(application);
+    }
+
+    @Override
+    public UserResponse createUser(String applicationId) {
+        Application application = getCheckedApplicationById(applicationId);
+        User user = application.createUser();
+        storeApplication(application);
+        return responseMapper.toResponse(user);
     }
 
     @Override

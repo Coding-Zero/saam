@@ -1,7 +1,7 @@
 package com.codingzero.saam.app.server.base.sso;
 
 import com.codingzero.saam.common.OAuthPlatform;
-import com.codingzero.saam.infrastructure.SSOAccessToken;
+import com.codingzero.saam.infrastructure.OAuthAccessToken;
 import com.codingzero.saam.infrastructure.database.spi.OAuthPlatformAgent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,7 +59,7 @@ public class SlackAgent implements OAuthPlatformAgent {
 
 
     @Override
-    public SSOAccessToken requestAccessToken(
+    public OAuthAccessToken requestAccessToken(
             OAuthPlatform platform, Map<String, Object> configurations, Map<String, Object> parameters) {
         configurations = helper.prepareConfiguration(configurations, parameters);
         OAuth20Service service = oAuth20ServiceFactory.generate(platform, configurations);
@@ -73,12 +73,12 @@ public class SlackAgent implements OAuthPlatformAgent {
                 if (null !=accessToken.getExpiresIn()) {
                     expirationTime = new Date(System.currentTimeMillis() + accessToken.getExpiresIn() * 1000);
                 }
-                return new SSOAccessToken(platform, accountId, accessToken.getAccessToken(), new Date(), expirationTime);
+                return new OAuthAccessToken(platform, accountId, accessToken.getAccessToken(), new Date(), expirationTime);
             } else {
                 String accountId = readAccountId(token);
                 long timeout = System.currentTimeMillis() + TIME_OUT;
                 Date expirationTime = new Date(timeout);
-                return new SSOAccessToken(platform, accountId, token, new Date(), expirationTime);
+                return new OAuthAccessToken(platform, accountId, token, new Date(), expirationTime);
             }
 
         } catch (IOException e) {

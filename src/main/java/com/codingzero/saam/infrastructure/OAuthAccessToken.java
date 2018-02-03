@@ -5,7 +5,7 @@ import com.codingzero.saam.common.OAuthPlatform;
 import java.util.Date;
 
 
-public class SSOAccessToken {
+public class OAuthAccessToken {
 
     private OAuthPlatform platform;
     private String accountId;
@@ -13,8 +13,8 @@ public class SSOAccessToken {
     private long creationTime;
     private long expirationTime;
 
-    public SSOAccessToken(OAuthPlatform platform, String accountId, String token,
-                          Date creationTime, Date expirationTime) {
+    public OAuthAccessToken(OAuthPlatform platform, String accountId, String token,
+                            Date creationTime, Date expirationTime) {
         this.platform = platform;
         this.accountId = accountId;
         this.token = token;

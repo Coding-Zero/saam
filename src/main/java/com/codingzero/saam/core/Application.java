@@ -46,10 +46,6 @@ public interface Application {
 
     IdentifierPolicy fetchIdentifierPolicy(IdentifierType type);
 
-    UsernamePolicy fetchUsernamePolicy();
-
-    EmailPolicy fetchEmailPolicy();
-
     List<IdentifierPolicy> fetchAllIdentifierPolicies();
 
     /**OAuth Identifier Policy**/

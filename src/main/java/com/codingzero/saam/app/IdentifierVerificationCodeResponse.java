@@ -48,7 +48,7 @@ public class IdentifierVerificationCodeResponse {
         return code;
     }
 
-    public long getExpirationTime() {
-        return expirationTime;
+    public Date getExpirationTime() {
+        return new Date(expirationTime);
     }
 }

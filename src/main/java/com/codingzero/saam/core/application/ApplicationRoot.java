@@ -219,16 +219,6 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     }
 
     @Override
-    public UsernamePolicy fetchUsernamePolicy() {
-        return (UsernamePolicy) fetchIdentifierPolicy(IdentifierType.USERNAME);
-    }
-
-    @Override
-    public EmailPolicy fetchEmailPolicy() {
-        return (EmailPolicy) fetchIdentifierPolicy(IdentifierType.EMAIL);
-    }
-
-    @Override
     public List<IdentifierPolicy> fetchAllIdentifierPolicies() {
         return identifierPolicyRepository.findAll(this);
     }

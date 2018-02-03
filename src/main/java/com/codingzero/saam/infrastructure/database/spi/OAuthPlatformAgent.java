@@ -1,7 +1,7 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.common.OAuthPlatform;
-import com.codingzero.saam.infrastructure.SSOAccessToken;
+import com.codingzero.saam.infrastructure.OAuthAccessToken;
 
 import java.util.Map;
 
@@ -11,8 +11,8 @@ public interface OAuthPlatformAgent {
                                Map<String, Object> configurations,
                                Map<String, Object> parameters);
 
-    SSOAccessToken requestAccessToken(OAuthPlatform platform,
-                                      Map<String, Object> configurations,
-                                      Map<String, Object> parameters);
+    OAuthAccessToken requestAccessToken(OAuthPlatform platform,
+                                        Map<String, Object> configurations,
+                                        Map<String, Object> parameters);
 
 }

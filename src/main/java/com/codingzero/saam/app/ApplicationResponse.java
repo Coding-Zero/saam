@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class ApplicationResponse {
@@ -76,7 +77,7 @@ public class ApplicationResponse {
         return emailPolicy;
     }
 
-    public List<OAuthIdentifierPolicy> getoAuthIdentifierPolicies() {
+    public List<OAuthIdentifierPolicy> getOAuthIdentifierPolicies() {
         return oAuthIdentifierPolicies;
     }
 
@@ -161,6 +162,20 @@ public class ApplicationResponse {
         public UsernameFormat getFormat() {
             return format;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            UsernamePolicy that = (UsernamePolicy) o;
+            return getFormat() == that.getFormat();
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(getFormat());
+        }
     }
 
     public static class EmailPolicy extends IdentifierPolicy {
@@ -189,6 +204,19 @@ public class ApplicationResponse {
             return domains;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            EmailPolicy that = (EmailPolicy) o;
+            return Objects.equals(getDomains(), that.getDomains());
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(getDomains());
+        }
     }
 
     public static class OAuthIdentifierPolicy {
@@ -215,6 +243,22 @@ public class ApplicationResponse {
 
         public boolean isActive() {
             return isActive;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            OAuthIdentifierPolicy that = (OAuthIdentifierPolicy) o;
+            return isActive() == that.isActive() &&
+                    getPlatform() == that.getPlatform() &&
+                    Objects.equals(getConfigurations(), that.getConfigurations());
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(getPlatform(), getConfigurations(), isActive());
         }
     }
 }

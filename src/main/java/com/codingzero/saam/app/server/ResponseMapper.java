@@ -13,6 +13,7 @@ import com.codingzero.saam.app.RoleResponse;
 import com.codingzero.saam.app.UserResponse;
 import com.codingzero.saam.app.UserSessionResponse;
 import com.codingzero.saam.common.Action;
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.PasswordResetCode;
 import com.codingzero.saam.common.PermissionType;
 import com.codingzero.saam.core.APIKey;
@@ -29,7 +30,7 @@ import com.codingzero.saam.core.Role;
 import com.codingzero.saam.core.User;
 import com.codingzero.saam.core.UserSession;
 import com.codingzero.saam.core.UsernamePolicy;
-import com.codingzero.saam.infrastructure.SSOAccessToken;
+import com.codingzero.saam.infrastructure.OAuthAccessToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,9 @@ import java.util.List;
 public class ResponseMapper {
 
     public ApplicationResponse toResponse(Application source) {
+        if (null == source) {
+            return null;
+        }
         return new ApplicationResponse(
                 source.getId(),
                 source.getName(),
@@ -44,12 +48,15 @@ public class ResponseMapper {
                 source.getCreatedDateTime(),
                 source.getStatus(),
                 source.getPasswordPolicy(),
-                toUsernamePolicy(source.fetchUsernamePolicy()),
-                toEmailPolicy(source.fetchEmailPolicy()),
+                toUsernamePolicy((UsernamePolicy) source.fetchIdentifierPolicy(IdentifierType.USERNAME)),
+                toEmailPolicy((EmailPolicy) source.fetchIdentifierPolicy(IdentifierType.EMAIL)),
                 toOAuthIdentifierPolicies(source));
     }
 
     private ApplicationResponse.UsernamePolicy toUsernamePolicy(UsernamePolicy source) {
+        if (null == source) {
+            return null;
+        }
         return new ApplicationResponse.UsernamePolicy(
                 source.isVerificationRequired(),
                 source.getMinLength(),
@@ -62,6 +69,9 @@ public class ResponseMapper {
     }
 
     private ApplicationResponse.EmailPolicy toEmailPolicy(EmailPolicy source) {
+        if (null == source) {
+            return null;
+        }
         return new ApplicationResponse.EmailPolicy(
                 source.isVerificationRequired(),
                 source.getMinLength(),
@@ -232,7 +242,7 @@ public class ResponseMapper {
                 result);
     }
 
-    public OAuthAccessTokenResponse toResponse(Application application, SSOAccessToken source) {
+    public OAuthAccessTokenResponse toResponse(Application application, OAuthAccessToken source) {
         return new OAuthAccessTokenResponse(
                 application.getId(),
                 source.getPlatform(),

@@ -7,7 +7,7 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
-public class SAAMTest extends Application<SAAMConfiguration> {
+public class SAAMTestApplication extends Application<SAAMConfiguration> {
 
     @Override
     public String getName() {
@@ -28,6 +28,7 @@ public class SAAMTest extends Application<SAAMConfiguration> {
     @Override
     public void run(final SAAMConfiguration configuration,
                     final Environment environment) {
+
     }
 
 }

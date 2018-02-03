@@ -10,7 +10,6 @@ public class PasswordPolicy {
     private static final Pattern BASE_PATTERN = Pattern.compile("[a-zA-Z0-9\\p{Punct}]+");
     private static final Pattern CAPITAL_PATTERN = Pattern.compile("^[A-Z]+.*");
     private static final Pattern SPECIAL_CHAR_PATTERN = Pattern.compile(".*[\\p{Punct}]+.*");
-    private static final int DEFAULT_MAX_LENGTH = 25;
 
     private int minLength;
     private int maxLength;

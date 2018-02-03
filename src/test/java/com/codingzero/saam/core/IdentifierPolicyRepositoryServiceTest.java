@@ -3,6 +3,7 @@ package com.codingzero.saam.core;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.core.application.EmailPolicyEntity;
 import com.codingzero.saam.core.application.EmailPolicyRepositoryService;
+import com.codingzero.saam.core.application.IdentifierPolicyEntity;
 import com.codingzero.saam.core.application.IdentifierPolicyRepositoryService;
 import com.codingzero.saam.core.application.IdentifierRepositoryService;
 import com.codingzero.saam.core.application.UsernamePolicyEntity;
@@ -15,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -143,6 +145,17 @@ public class IdentifierPolicyRepositoryServiceTest {
     }
 
     @Test
+    public void testFindByType_Username_NotExist() {
+        IdentifierType type = IdentifierType.USERNAME;
+        String applicationId = "application-id";
+        Application application = mock(Application.class);
+        when(application.getId()).thenReturn(applicationId);
+        when(access.selectByType(applicationId, type)).thenReturn(null);
+        IdentifierPolicyEntity entity = service.findByType(application, type);
+        assertNull(entity);
+    }
+
+    @Test
     public void testFindByType_Email() {
         IdentifierType type = IdentifierType.EMAIL;
         String applicationId = "application-id";
@@ -153,6 +166,17 @@ public class IdentifierPolicyRepositoryServiceTest {
         when(access.selectByType(applicationId, type)).thenReturn(os);
         service.findByType(application, type);
         verify(emailIdentifierPolicyRepository, times(1)).load(application, os);
+    }
+
+    @Test
+    public void testFindByType_Email_NotExist() {
+        IdentifierType type = IdentifierType.EMAIL;
+        String applicationId = "application-id";
+        Application application = mock(Application.class);
+        when(application.getId()).thenReturn(applicationId);
+        when(access.selectByType(applicationId, type)).thenReturn(null);
+        IdentifierPolicyEntity entity = service.findByType(application, type);
+        assertNull(entity);
     }
 
 }

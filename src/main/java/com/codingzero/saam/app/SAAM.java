@@ -50,6 +50,8 @@ public interface SAAM {
 
     /**User**/
 
+    UserResponse createUser(String applicationId);
+
     UserResponse register(CredentialRegisterRequest request);
 
     UserResponse register(OAuthRegisterRequest request);

@@ -1,18 +1,23 @@
 package com.codingzero.saam.infrastructure.database.mysql;
 
+import com.codingzero.saam.app.SAAM;
+import com.codingzero.saam.app.server.SAAMBuilder;
 import com.codingzero.saam.app.server.base.mysql.MySQLAccessModule;
-import com.codingzero.saam.infrastructure.database.SAAMTest;
+import com.codingzero.saam.infrastructure.database.SAAMTestApplication;
+import com.codingzero.saam.infrastructure.database.spi.OAuthPlatformAgent;
 import com.codingzero.saam.presentation.DataSourceProvider;
+import com.codingzero.saam.presentation.HttpClientProvider;
 import com.codingzero.saam.presentation.SAAMConfiguration;
+import com.codingzero.saam.presentation.SAAMSupplier;
+import com.codingzero.utilities.transaction.TransactionManager;
+import com.codingzero.utilities.transaction.manager.TransactionManagerImpl;
 import io.dropwizard.testing.DropwizardTestSupport;
 import io.dropwizard.testing.ResourceHelpers;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.apache.http.impl.client.CloseableHttpClient;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -26,7 +31,7 @@ public class Helper {
     private static String DROP_SCHEMA = "DROP DATABASE `%s`;";
 
     private static final DropwizardTestSupport<SAAMConfiguration> SUPPORT = new DropwizardTestSupport<>(
-            SAAMTest.class,
+            SAAMTestApplication.class,
             ResourceHelpers.resourceFilePath("config-int.yml"));
 
     private static Helper instance;
@@ -85,6 +90,34 @@ public class Helper {
             mySQLAccessModule = new MySQLAccessModule(provider.get());
         }
         return mySQLAccessModule;
+    }
+
+    public SAAM getSAAM(OAuthPlatformAgent oAuthPlatformAgent) {
+            DataSource dataSource = new DataSourceProvider(SUPPORT.getConfiguration()).get();
+            SAAMBuilder builder = getSAAMBuilder(oAuthPlatformAgent, dataSource);
+            return  builder.build();
+    }
+
+    private SAAMBuilder getSAAMBuilder(OAuthPlatformAgent oAuthPlatformAgent, DataSource dataSource) {
+        TransactionManager transactionManager = new TransactionManagerImpl();
+        MySQLAccessModule accessModule = new MySQLAccessModule(dataSource);
+        return new SAAMBuilder()
+                .setTransactionManager(transactionManager)
+                .setIdentifierPolicyAccess(accessModule.getIdentifierPolicyAccess())
+                .setUsernamePolicyAccess(accessModule.getUsernamePolicyAccess())
+                .setEmailPolicyAccess(accessModule.getEmailPolicyAccess())
+                .setOAuthIdentifierPolicyAccess(accessModule.getOAuthIdentifierPolicyAccess())
+                .setPrincipalAccess(accessModule.getPrincipalAccess())
+                .setUserAccess(accessModule.getUserAccess())
+                .setIdentifierAccess(accessModule.getIdentifierAccess())
+                .setOAuthIdentifierAccess(accessModule.getOAuthIdentifierAccess())
+                .setPermissionAccess(accessModule.getPermissionAccess())
+                .setResourceAccess(accessModule.getResourceAccess())
+                .setRoleAccess(accessModule.getRoleAccess())
+                .setApiKeyAccess(accessModule.getAPIKeyAccess())
+                .setApplicationAccess(accessModule.getApplicationAccess())
+                .setUserSessionAccess(accessModule.getUserSessionAccess())
+                .setOAuthPlatformAgent(oAuthPlatformAgent);
     }
 
     private void initDatabase() throws SQLException {

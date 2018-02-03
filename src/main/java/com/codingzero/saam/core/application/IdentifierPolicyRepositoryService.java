@@ -80,6 +80,9 @@ public class IdentifierPolicyRepositoryService {
     }
 
     private IdentifierPolicyEntity load(Application application, IdentifierPolicyOS os) {
+        if (null == os) {
+            return null;
+        }
         if (os.getType() == IdentifierType.EMAIL) {
             return emailIdentifierPolicyRepository.load(application, os);
         } else if (os.getType() == IdentifierType.USERNAME) {

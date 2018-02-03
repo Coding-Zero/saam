@@ -14,10 +14,6 @@ public class CredentialRegisterRequest {
     private String password;
     private List<String> roleIds;
 
-    public CredentialRegisterRequest(String applicationId, Map<IdentifierType, String> identifiers, String password) {
-        this(applicationId, identifiers, password, Collections.emptyList());
-    }
-
     public CredentialRegisterRequest(String applicationId, Map<IdentifierType, String> identifiers,
                                      String password, List<String> roleIds) {
         this.applicationId = applicationId;
