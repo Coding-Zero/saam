@@ -12,6 +12,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -78,6 +80,25 @@ public class UserRepositoryServiceTest {
         when(entity.getId()).thenReturn(applicationId);
         service.removeAll(entity);
         verify(access, times(1)).deleteByApplicationId(applicationId);
+    }
+
+    @Test
+    public void testLoad() {
+        Application application = mock(Application.class);
+        PrincipalOS principalOS = mock(PrincipalOS.class);
+        UserOS os = mock(UserOS.class);
+        UserEntity entity = mock(UserEntity.class);
+        when(access.selectByPrincipalOS(principalOS)).thenReturn(os);
+        when(factory.reconstitute(os, application)).thenReturn(entity);
+        UserEntity actualEntity = service.load(application, principalOS);
+        assertEquals(entity, actualEntity);
+    }
+
+    @Test
+    public void testLoad_NullPrincipalOS() {
+        Application application = mock(Application.class);
+        UserEntity actualEntity = service.load(application, null);
+        assertNull(actualEntity);
     }
 
     @Test

@@ -4,7 +4,6 @@ import com.codingzero.saam.common.ApplicationStatus;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.common.PasswordPolicy;
-import com.codingzero.saam.infrastructure.database.ResourceOS;
 import com.codingzero.utilities.error.BusinessError;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
@@ -84,44 +83,53 @@ public abstract class SAAMTest {
     public void testGenerateVerificationCode() {
         ApplicationResponse app = createApplication();
 
-        UserResponse user = saam.createUser(app.getId());
-        String identifier = "foo@foo.com";
-        user = saam.assignIdentifier(
-                new IdentifierAssignRequest(app.getId(), user.getId(), IdentifierType.EMAIL, identifier));
+        UserResponse user = registerUser(app.getId());
+        String email = getIdentifier(user, IdentifierType.EMAIL).getContent();
 
         long timestamp = System.currentTimeMillis();
         IdentifierVerificationCodeResponse response = saam.generateVerificationCode(
                 new IdentifierVerificationCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.EMAIL, identifier, 1000));
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email, 1000));
 
         assertNotNull(response);
         assertEquals(app.getId(), response.getApplicationId());
         assertEquals(user.getId(), response.getUserId());
         assertEquals(IdentifierType.EMAIL, response.getIdentifierType());
-        assertEquals(identifier, response.getIdentifier());
+        assertEquals(email, response.getIdentifier());
         assertNotNull(response.getCode());
         assertTrue((response.getExpirationTime().getTime() - timestamp >= 1000));
+    }
+
+    @Test
+    public void testGenerateVerificationCode_VerificationIsNotRequired() {
+        ApplicationResponse app = createApplication();
+
+        UserResponse user = registerUser(app.getId());
+        String username = getIdentifier(user, IdentifierType.USERNAME).getContent();
+
+        thrown.expect(BusinessError.class);
+        saam.generateVerificationCode(
+                new IdentifierVerificationCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.USERNAME, username, 1000));
     }
 
     @Test
     public void testGenerateResetCode() {
         ApplicationResponse app = createApplication(false);
 
-        UserResponse user = saam.createUser(app.getId());
-        String identifier = "foo@foo.com";
-        user = saam.assignIdentifier(
-                new IdentifierAssignRequest(app.getId(), user.getId(), IdentifierType.EMAIL, identifier));
+        UserResponse user = registerUser(app.getId());
 
+        String email = getIdentifier(user, IdentifierType.EMAIL).getContent();
         long timestamp = System.currentTimeMillis();
         PasswordResetCodeResponse response = saam.generateResetCode(
                 new PasswordResetCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.EMAIL, identifier, 1000));
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email, 1000));
 
         assertNotNull(response);
         assertEquals(app.getId(), response.getApplicationId());
         assertEquals(user.getId(), response.getUserId());
         assertEquals(IdentifierType.EMAIL, response.getIdentifierType());
-        assertEquals(identifier, response.getIdentifier());
+        assertEquals(email, response.getIdentifier());
         assertNotNull(response.getCode());
         assertTrue((response.getExpirationTime().getTime() - timestamp >= 1000));
     }
@@ -401,6 +409,537 @@ public abstract class SAAMTest {
         saam.removeOAuthIdentifierPolicy(app.getId(), OAuthPlatform.GOOGLE);
     }
 
+    @Test
+    public void testCreateUser() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        assertNotNull(user);
+        assertEquals(app.getId(), user.getApplicationId());
+        assertEquals(2, user.getIdentifiers().size());
+        assertEquals(1, user.getOAuthIdentifiers().size());
+        assertEquals(0, user.getRoles().size());
+    }
+
+    @Test
+    public void testCreateUser_Plain() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId()));
+        assertNotNull(user);
+        assertEquals(app.getId(), user.getApplicationId());
+        assertEquals(0, user.getIdentifiers().size());
+        assertEquals(0, user.getOAuthIdentifiers().size());
+        assertEquals(0, user.getRoles().size());
+    }
+
+    @Test
+    public void testRemoveUser() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        saam.removeUser(user.getApplicationId(), user.getId());
+        UserResponse actualUser = saam.getUserById(user.getApplicationId(), user.getId());
+        assertNull(actualUser);
+    }
+
+    @Test
+    public void testRemoveUser_NotExistUser() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        saam.removeUser(user.getApplicationId(), user.getId());
+        thrown.expect(BusinessError.class);
+        saam.removeUser(user.getApplicationId(), user.getId());
+    }
+
+    @Test
+    public void testGetUserByIdentifier() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String username = getIdentifier(user, IdentifierType.USERNAME).getContent();
+        UserResponse actualUser = saam.getUserByIdentifier(user.getApplicationId(), username);
+        assertUser(user, actualUser);
+    }
+
+    @Test
+    public void testGetUserByIdentifier_NotExist() {
+        ApplicationResponse app = createApplication();
+        String username = "username";
+        UserResponse actualUser = saam.getUserByIdentifier(app.getId(), username);
+        assertNull(actualUser);
+    }
+
+    @Test
+    public void testGetUserByOAuthIdentifier() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String identifier = getOAuthIdentifier(user, OAuthPlatform.GOOGLE).getContent();
+        UserResponse actualUser = saam.getUserByOAuthIdentifier(
+                user.getApplicationId(), OAuthPlatform.GOOGLE, identifier);
+        assertUser(user, actualUser);
+    }
+
+    @Test
+    public void testGetUserByOAuthIdentifier_NotExist() {
+        ApplicationResponse app = createApplication();
+        String identifier = "google-oauth-idenfier";
+        UserResponse actualUser = saam.getUserByOAuthIdentifier(
+                app.getId(), OAuthPlatform.GOOGLE, identifier);
+        assertNull(actualUser);
+    }
+
+    @Test
+    public void testListUsersByApplicationId() {
+        ApplicationResponse app1 = createApplication();
+        List<UserResponse> users1 = registerUsers(app1.getId(), 3);
+        ApplicationResponse app2 = createApplication();
+        registerUsers(app2.getId(), 5);
+
+        PaginatedResult<List<UserResponse>> actualResult = saam.listUsersByApplicationId(app1.getId());
+        List<UserResponse> actualUsers = actualResult.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(3, actualUsers.size());
+        for (UserResponse user: users1) {
+            for (UserResponse actualUser: actualUsers) {
+                if (user.getId().equals(actualUser.getId())) {
+                    assertUser(user, actualUser);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testUpdateRoles() {
+        ApplicationResponse app = createApplication();
+        String roleName = getRoleName();
+        RoleResponse role = createRole(app.getId(), roleName);
+        UserResponse user = registerUser(app.getId());
+        UserResponse actualUser = saam.updateRoles(
+                new UserRoleUpdateRequest(app.getId(), user.getId(), Arrays.asList(role.getId())));
+        assertEquals(1, actualUser.getRoles().size());
+        assertEquals(roleName, actualUser.getRoles().get(0).getName());
+    }
+
+    @Test
+    public void testUpdateRoles_NotExist() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String roleName = getRoleName();
+        RoleResponse role = createRole(app.getId(), roleName);
+        saam.removeRole(app.getId(), role.getId());
+        thrown.expect(BusinessError.class);
+        saam.updateRoles(new UserRoleUpdateRequest(app.getId(), user.getId(), Arrays.asList(role.getId())));
+    }
+
+    @Test
+    public void testChangePassword() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String oldPassword = "Password!";
+        String newPassword = "Password!1";
+        saam.changePassword(
+                new PasswordChangeRequest(app.getId(), user.getId(), oldPassword, newPassword));
+        saam.changePassword(
+                new PasswordChangeRequest(app.getId(), user.getId(), newPassword, oldPassword));
+    }
+
+    @Test
+    public void testChangePassword_WrongPassword() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String oldPassword = "Password";
+        String newPassword = "Password!1";
+        thrown.expect(BusinessError.class);
+        saam.changePassword(
+                new PasswordChangeRequest(app.getId(), user.getId(), oldPassword, newPassword));
+    }
+
+    @Test
+    public void testChangePassword_NoPasswordPolicy() {
+        ApplicationResponse app = createSimpleApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        String oldPassword = null;
+        String newPassword = "Password!1";
+        thrown.expect(BusinessError.class);
+        saam.changePassword(
+                new PasswordChangeRequest(app.getId(), user.getId(), oldPassword, newPassword));
+    }
+
+    @Test
+    public void testResetPassword() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String identifier = getIdentifier(user, IdentifierType.USERNAME).getContent();
+        long timeout = 1000;
+        PasswordResetCodeResponse resetCode = saam.generateResetCode(
+                new PasswordResetCodeGenerateRequest(
+                        app.getId(),
+                        user.getId(),
+                        IdentifierType.USERNAME,
+                        identifier,
+                        timeout));
+        String password = "NewPassword!1";
+        UserResponse actualUser = saam.resetPassword(
+                new PasswordResetRequest(
+                        app.getId(),
+                        user.getId(),
+                        resetCode.getCode(),
+                        password));
+        saam.changePassword(
+                new PasswordChangeRequest(app.getId(), user.getId(), password, "NewPassword2!"));
+        assertUser(user, actualUser);
+    }
+
+    @Test
+    public void testResetPassword_NoPasswordSet() {
+        ApplicationResponse app = createApplication();
+        Map<IdentifierType, String> identifiers = new HashMap<>();
+        identifiers.put(IdentifierType.USERNAME, getUsername());
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), identifiers, Collections.emptyMap(), null, Collections.emptyList()));
+        String identifier = getIdentifier(user, IdentifierType.USERNAME).getContent();
+        long timeout = 1000;
+        PasswordResetCodeResponse resetCode = saam.generateResetCode(
+                new PasswordResetCodeGenerateRequest(
+                        app.getId(),
+                        user.getId(),
+                        IdentifierType.USERNAME,
+                        identifier,
+                        timeout));
+        String password = "NewPassword!1";
+        UserResponse actualUser = saam.resetPassword(
+                new PasswordResetRequest(
+                        app.getId(),
+                        user.getId(),
+                        resetCode.getCode(),
+                        password));
+        saam.changePassword(
+                new PasswordChangeRequest(app.getId(), user.getId(), password, "NewPassword2!"));
+        assertUser(user, actualUser);
+    }
+
+    @Test
+    public void testResetPassword_ResetCodeExpired() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String identifier = getIdentifier(user, IdentifierType.USERNAME).getContent();
+        long timeout = 100;
+        PasswordResetCodeResponse resetCode = saam.generateResetCode(
+                new PasswordResetCodeGenerateRequest(
+                        app.getId(),
+                        user.getId(),
+                        IdentifierType.USERNAME,
+                        identifier,
+                        timeout));
+        String password = "NewPassword!1";
+        try {
+            Thread.sleep(110);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        thrown.expect(BusinessError.class);
+        saam.resetPassword(
+                new PasswordResetRequest(
+                        app.getId(),
+                        user.getId(),
+                        resetCode.getCode(),
+                        password));
+    }
+
+    @Test
+    public void testResetPassword_InvalidResetCode() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String identifier = getIdentifier(user, IdentifierType.USERNAME).getContent();
+        long timeout = 1000;
+        PasswordResetCodeResponse resetCode = saam.generateResetCode(
+                new PasswordResetCodeGenerateRequest(
+                        app.getId(),
+                        user.getId(),
+                        IdentifierType.USERNAME,
+                        identifier,
+                        timeout));
+        saam.generateResetCode(
+                new PasswordResetCodeGenerateRequest(
+                        app.getId(),
+                        user.getId(),
+                        IdentifierType.USERNAME,
+                        identifier,
+                        timeout));
+        String password = "NewPassword!1";
+        thrown.expect(BusinessError.class);
+        saam.resetPassword(
+                new PasswordResetRequest(
+                        app.getId(),
+                        user.getId(),
+                        resetCode.getCode(),
+                        password));
+    }
+
+    @Test
+    public void testAddIdentifier() {
+        ApplicationResponse app = createApplication();
+        String username = getUsername();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse actualUser = saam.addIdentifier(
+                new IdentifierAddRequest(app.getId(), user.getId(), IdentifierType.USERNAME, username));
+        assertEquals(user.getApplicationId(), actualUser.getApplicationId());
+        assertEquals(user.getId(), actualUser.getId());
+        assertEquals(user.getCreationTime(), actualUser.getCreationTime());
+        assertEquals(1, actualUser.getIdentifiers().size());
+        assertEquals(IdentifierType.USERNAME, actualUser.getIdentifiers().get(0).getType());
+        assertEquals(username, actualUser.getIdentifiers().get(0).getContent());
+    }
+
+    @Test
+    public void testAddIdentifier_DuplicateIdentifier() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String username = getIdentifier(user, IdentifierType.USERNAME).getContent();
+
+        thrown.expect(BusinessError.class);
+        saam.addIdentifier(
+                new IdentifierAddRequest(app.getId(), user.getId(), IdentifierType.USERNAME, username));
+    }
+
+    @Test
+    public void testAddIdentifier_WithoutPolicy() {
+        ApplicationResponse app = createSimpleApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+
+        String username = getUsername();
+        thrown.expect(BusinessError.class);
+        saam.addIdentifier(
+                new IdentifierAddRequest(app.getId(), user.getId(), IdentifierType.USERNAME, username));
+    }
+
+    @Test
+    public void testRemoveIdentifier() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String username = getIdentifier(user, IdentifierType.USERNAME).getContent();
+        UserResponse actualUser = saam.removeIdentifier(
+                new IdentifierRemoveRequest(app.getId(), user.getId(), IdentifierType.USERNAME, username));
+        assertEquals(user.getApplicationId(), actualUser.getApplicationId());
+        assertEquals(user.getId(), actualUser.getId());
+        assertEquals(user.getCreationTime(), actualUser.getCreationTime());
+        assertNull(getIdentifier(actualUser, IdentifierType.USERNAME));
+    }
+
+    @Test
+    public void testRemoveIdentifier_NotExist() {
+        ApplicationResponse app = createApplication();
+        String username = getUsername();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+
+        thrown.expect(BusinessError.class);
+        saam.removeIdentifier(
+                new IdentifierRemoveRequest(app.getId(), user.getId(), IdentifierType.USERNAME, username));
+    }
+
+    @Test
+    public void testVerifyIdentifier() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        UserResponse.Identifier email = getIdentifier(user, IdentifierType.EMAIL);
+        IdentifierVerificationCodeResponse code = saam.generateVerificationCode(
+                new IdentifierVerificationCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), 1000));
+        UserResponse actualUser = saam.verifyIdentifier(
+                new IdentifierVerifyRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), code.getCode()));
+        email = getIdentifier(actualUser, IdentifierType.EMAIL);
+        assertEquals(user.getApplicationId(), actualUser.getApplicationId());
+        assertEquals(user.getId(), actualUser.getId());
+        assertEquals(user.getCreationTime(), actualUser.getCreationTime());
+        assertEquals(true, email.isVerified());
+    }
+
+    @Test
+    public void testVerifyIdentifier_AlreadyVerified() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        UserResponse.Identifier email = getIdentifier(user, IdentifierType.EMAIL);
+        IdentifierVerificationCodeResponse code = saam.generateVerificationCode(
+                new IdentifierVerificationCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), 1000));
+        saam.verifyIdentifier(
+                new IdentifierVerifyRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), code.getCode()));
+
+        code = saam.generateVerificationCode(
+                new IdentifierVerificationCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), 1000));
+        UserResponse actualUser = saam.verifyIdentifier(
+                new IdentifierVerifyRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), code.getCode()));
+        email = getIdentifier(actualUser, IdentifierType.EMAIL);
+        assertEquals(user.getApplicationId(), actualUser.getApplicationId());
+        assertEquals(user.getId(), actualUser.getId());
+        assertEquals(user.getCreationTime(), actualUser.getCreationTime());
+        assertEquals(true, email.isVerified());
+    }
+
+    @Test
+    public void testVerifyIdentifier_InvalidVerificationCode() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        UserResponse.Identifier email = getIdentifier(user, IdentifierType.EMAIL);
+        IdentifierVerificationCodeResponse code = saam.generateVerificationCode(
+                new IdentifierVerificationCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), 1000));
+        saam.generateVerificationCode(
+                new IdentifierVerificationCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), 1000));
+
+        thrown.expect(BusinessError.class);
+        saam.verifyIdentifier(
+                new IdentifierVerifyRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), code.getCode()));
+    }
+
+    @Test
+    public void testConnectOAuthIdentifier() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        String googleOAuthIdentifier = getGoogleOAuthIdentifier();
+        UserResponse actualUser = saam.connectOAuthIdentifier(
+                new OAuthIdentifierConnectRequest(
+                        app.getId(),
+                        user.getId(),
+                        OAuthPlatform.GOOGLE,
+                        googleOAuthIdentifier,
+                        Collections.emptyMap()));
+        UserResponse.OAuthIdentifier identifier = getOAuthIdentifier(actualUser, OAuthPlatform.GOOGLE);
+        assertEquals(user.getApplicationId(), actualUser.getApplicationId());
+        assertEquals(user.getId(), actualUser.getId());
+        assertEquals(user.getCreationTime(), actualUser.getCreationTime());
+        assertNotNull(identifier);
+        assertEquals(OAuthPlatform.GOOGLE, identifier.getPlatform());
+        assertEquals(googleOAuthIdentifier, identifier.getContent());
+        assertEquals(0, identifier.getProperties().size());
+    }
+
+    @Test
+    public void testConnectOAuthIdentifier_Duplicate() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        String googleOAuthIdentifier = getGoogleOAuthIdentifier();
+
+        saam.connectOAuthIdentifier(
+                new OAuthIdentifierConnectRequest(
+                        app.getId(),
+                        user.getId(),
+                        OAuthPlatform.GOOGLE,
+                        googleOAuthIdentifier,
+                        Collections.emptyMap()));
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("key1", "value1");
+        UserResponse actualUser = saam.connectOAuthIdentifier(
+                new OAuthIdentifierConnectRequest(
+                        app.getId(),
+                        user.getId(),
+                        OAuthPlatform.GOOGLE,
+                        googleOAuthIdentifier,
+                        properties));
+        UserResponse.OAuthIdentifier identifier = getOAuthIdentifier(actualUser, OAuthPlatform.GOOGLE);
+        assertEquals(user.getApplicationId(), actualUser.getApplicationId());
+        assertEquals(user.getId(), actualUser.getId());
+        assertEquals(user.getCreationTime(), actualUser.getCreationTime());
+        assertNotNull(identifier);
+        assertEquals(OAuthPlatform.GOOGLE, identifier.getPlatform());
+        assertEquals(googleOAuthIdentifier, identifier.getContent());
+        assertEquals(properties, identifier.getProperties());
+    }
+
+    @Test
+    public void testConnectOAuthIdentifier_WithoutPolicy() {
+        ApplicationResponse app = createSimpleApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+
+        String googleOAuthIdentifier = getGoogleOAuthIdentifier();
+
+        thrown.expect(BusinessError.class);
+        saam.connectOAuthIdentifier(
+                new OAuthIdentifierConnectRequest(
+                        app.getId(),
+                        user.getId(),
+                        OAuthPlatform.GOOGLE,
+                        googleOAuthIdentifier,
+                        Collections.emptyMap()));
+    }
+
+    @Test
+    public void testDisconnectOAuthIdentifier() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String googleOAuthIdentifier = getOAuthIdentifier(user, OAuthPlatform.GOOGLE).getContent();
+        UserResponse actualUser = saam.disconnectOAuthIdentifier(
+                new OAuthIdentifierDisconnectRequest(
+                        app.getId(), user.getId(), OAuthPlatform.GOOGLE, googleOAuthIdentifier));
+        UserResponse.OAuthIdentifier identifier = getOAuthIdentifier(actualUser, OAuthPlatform.GOOGLE);
+        assertEquals(user.getApplicationId(), actualUser.getApplicationId());
+        assertEquals(user.getId(), actualUser.getId());
+        assertEquals(user.getCreationTime(), actualUser.getCreationTime());
+        assertNull(identifier);
+    }
+
+    @Test
+    public void testDisconnectOAuthIdentifier_NotExist() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+
+        String googleOAuthIdentifier = getGoogleOAuthIdentifier();
+
+        thrown.expect(BusinessError.class);
+        saam.disconnectOAuthIdentifier(
+                new OAuthIdentifierDisconnectRequest(
+                        app.getId(), user.getId(), OAuthPlatform.GOOGLE, googleOAuthIdentifier));
+    }
+
+    private UserResponse.Identifier getIdentifier(UserResponse user, IdentifierType type) {
+        List<UserResponse.Identifier> identifiers = user.getIdentifiers();
+        for (UserResponse.Identifier identifier: identifiers) {
+            if (identifier.getType() == type) {
+                return identifier;
+            }
+        }
+        return null;
+    }
+
+    private UserResponse.OAuthIdentifier getOAuthIdentifier(UserResponse user, OAuthPlatform platform) {
+        List<UserResponse.OAuthIdentifier> identifiers = user.getOAuthIdentifiers();
+        for (UserResponse.OAuthIdentifier identifier: identifiers) {
+            if (identifier.getPlatform() == platform) {
+                return identifier;
+            }
+        }
+        return null;
+    }
+
+    private RoleResponse createRole(String applicationId, String name) {
+        RoleResponse role = saam.addRole(new RoleAddRequest(applicationId, name));
+        return role;
+    }
+
+    private String getRoleName() {
+        return "role-" + new Random().nextInt(10000);
+    }
+
+    private void assertUser(UserResponse expected, UserResponse actual) {
+        assertEquals(expected.getApplicationId(), actual.getApplicationId());
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getIdentifiers(), actual.getIdentifiers());
+        assertEquals(expected.getOAuthIdentifiers(), actual.getOAuthIdentifiers());
+        assertEquals(expected.getRoles(), actual.getRoles());
+        assertEquals(expected.getCreationTime(), actual.getCreationTime());
+    }
+
     private void assertApplication(ApplicationResponse expected, ApplicationResponse actual) {
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getName(), actual.getName());
@@ -412,6 +951,48 @@ public abstract class SAAMTest {
         assertEquals(expected.getEmailPolicy(), actual.getEmailPolicy());
         assertEquals(expected.getOAuthIdentifierPolicies(), actual.getOAuthIdentifierPolicies());
     }
+
+    private List<UserResponse> registerUsers(String applicationId, int size) {
+        List<UserResponse> users = new ArrayList<>(size);
+        for (int i = 0; i < size; i ++) {
+            users.add(registerUser(applicationId));
+        }
+        return users;
+    }
+
+    private UserResponse registerUser(String applicationId) {
+        Map<IdentifierType, String> identifiers = new HashMap<>();
+        identifiers.put(IdentifierType.USERNAME, getUsername());
+        identifiers.put(IdentifierType.EMAIL, getEmail());
+
+        String googleOAuthIdentifier = getGoogleOAuthIdentifier();
+        Map<OAuthPlatform, UserRegisterRequest.OAuthIdentifier> oAuthIdentifiers = new HashMap<>();
+        oAuthIdentifiers.put(OAuthPlatform.GOOGLE,
+                new UserRegisterRequest.OAuthIdentifier(googleOAuthIdentifier, Collections.emptyMap()));
+
+        return registerUser(applicationId, identifiers, oAuthIdentifiers);
+    }
+
+    private UserResponse registerUser(String applicationId,
+                                      Map<IdentifierType, String> identifiers,
+                                      Map<OAuthPlatform, UserRegisterRequest.OAuthIdentifier> oAuthIdentifiers) {
+        String password = "Password!";
+        return saam.register(new UserRegisterRequest(
+                applicationId, identifiers, oAuthIdentifiers, password, Collections.emptyList()));
+    }
+
+    private String getUsername() {
+        return "username-" + new Random().nextInt(10000);
+    }
+
+    private String getEmail() {
+        return "email-" + new Random().nextInt(10000) + "@foo.com";
+    }
+
+    private String getGoogleOAuthIdentifier() {
+        return "google-oauth-" + new Random().nextInt(10000);
+    }
+
 
     private List<ApplicationResponse> createApplications(int size) {
         List<ApplicationResponse> apps = new ArrayList<>(size);
