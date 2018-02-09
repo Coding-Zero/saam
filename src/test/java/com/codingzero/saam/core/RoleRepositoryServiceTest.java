@@ -12,6 +12,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -92,6 +94,25 @@ public class RoleRepositoryServiceTest {
         when(access.selectByPrincipalOS(principalOS)).thenReturn(os);
         service.findById(application, id);
         verify(factory, times(1)).reconstitute(os, application);
+    }
+
+    @Test
+    public void testLoad() {
+        Application application = mock(Application.class);
+        PrincipalOS principalOS = mock(PrincipalOS.class);
+        RoleOS os = mock(RoleOS.class);
+        RoleEntity entity = mock(RoleEntity.class);
+        when(access.selectByPrincipalOS(principalOS)).thenReturn(os);
+        when(factory.reconstitute(os, application)).thenReturn(entity);
+        RoleEntity actualEntity = service.load(application, principalOS);
+        assertEquals(entity, actualEntity);
+    }
+
+    @Test
+    public void testLoad_NullPrincipalOS() {
+        Application application = mock(Application.class);
+        RoleEntity actualEntity = service.load(application, null);
+        assertNull(actualEntity);
     }
 
 }

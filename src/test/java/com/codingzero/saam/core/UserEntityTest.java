@@ -131,6 +131,16 @@ public class UserEntityTest {
     }
 
     @Test
+    public void testChangePassword_NewPassword_NullValue() {
+        String password = "password";
+        PasswordPolicy passwordPolicy = mock(PasswordPolicy.class);
+        when(application.getPasswordPolicy()).thenReturn(passwordPolicy);
+        when(objectSegment.getPassword()).thenReturn(password);
+        entity.changePassword(password, null);
+        assertEquals(false, entity.isDirty());
+    }
+
+    @Test
     public void testChangePassword_WrongOldPassword() {
         String newPassword = "new-password";
         String oldPassword = "password";
