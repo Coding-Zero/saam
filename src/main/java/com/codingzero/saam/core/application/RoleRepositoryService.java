@@ -59,6 +59,9 @@ public class RoleRepositoryService {
     }
 
     public RoleEntity load(Application application, PrincipalOS principalOS) {
+        if (null == principalOS) {
+            return null;
+        }
         RoleOS os = access.selectByPrincipalOS(principalOS);
         return factory.reconstitute(os, application);
     }

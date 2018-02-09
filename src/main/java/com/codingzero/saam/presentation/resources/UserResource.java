@@ -1,17 +1,15 @@
 package com.codingzero.saam.presentation.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.codingzero.saam.app.CredentialRegisterRequest;
-import com.codingzero.saam.app.IdentifierAssignRequest;
+import com.codingzero.saam.app.IdentifierAddRequest;
 import com.codingzero.saam.app.IdentifierRemoveRequest;
 import com.codingzero.saam.app.IdentifierVerifyRequest;
 import com.codingzero.saam.app.OAuthIdentifierConnectRequest;
 import com.codingzero.saam.app.OAuthIdentifierDisconnectRequest;
-import com.codingzero.saam.app.OAuthIdentifierUpdateRequest;
-import com.codingzero.saam.app.OAuthRegisterRequest;
 import com.codingzero.saam.app.PasswordChangeRequest;
 import com.codingzero.saam.app.PasswordResetRequest;
 import com.codingzero.saam.app.SAAM;
+import com.codingzero.saam.app.UserRegisterRequest;
 import com.codingzero.saam.app.UserResponse;
 import com.codingzero.saam.app.UserRoleUpdateRequest;
 import com.codingzero.saam.common.IdentifierType;
@@ -47,30 +45,10 @@ public class UserResource extends AbstractResource {
     @POST
     @Timed(name = "user-register")
     public Response register(@PathParam("applicationId") String applicationId,
-                             @QueryParam("type") String type,
                              ObjectNode requestBody) throws IOException {
-        if (type.equalsIgnoreCase("CREDENTIAL")) {
-            return registerWithCredential(applicationId, requestBody);
-        } else if (type.equalsIgnoreCase("OAUTH")) {
-            return registerWithOAuth(applicationId, requestBody);
-        }
-        throw new IllegalArgumentException("Unsupported type, " + type);
-    }
-
-    private Response registerWithCredential(String applicationId,
-                                            ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", applicationId);
-        CredentialRegisterRequest request = getObjectMapper().readValue(
-                requestBody.toString(), CredentialRegisterRequest.class);
-        UserResponse response = getApp().register(request);
-        return created(response);
-    }
-
-    private Response registerWithOAuth(String applicationId,
-                                       ObjectNode requestBody) throws IOException {
-        requestBody.put("applicationId", applicationId);
-        OAuthRegisterRequest request = getObjectMapper().readValue(
-                requestBody.toString(), OAuthRegisterRequest.class);
+        UserRegisterRequest request = getObjectMapper().readValue(
+                requestBody.toString(), UserRegisterRequest.class);
         UserResponse response = getApp().register(request);
         return created(response);
     }
@@ -181,9 +159,9 @@ public class UserResource extends AbstractResource {
         requestBody.put("applicationId", applicationId);
         requestBody.put("userId", id);
         requestBody.put("type", type);
-        IdentifierAssignRequest request = getObjectMapper().readValue(
-                requestBody.toString(), IdentifierAssignRequest.class);
-        UserResponse response = getApp().assignIdentifier(request);
+        IdentifierAddRequest request = getObjectMapper().readValue(
+                requestBody.toString(), IdentifierAddRequest.class);
+        UserResponse response = getApp().addIdentifier(request);
         return ok(response);
     }
 
@@ -196,7 +174,7 @@ public class UserResource extends AbstractResource {
                                      @PathParam("content") String content) {
         IdentifierRemoveRequest request =
                 new IdentifierRemoveRequest(applicationId, id, IdentifierType.valueOf(type), content);
-        UserResponse response = getApp().unassignIdentifier(request);
+        UserResponse response = getApp().removeIdentifier(request);
         return ok(response);
     }
 
@@ -218,22 +196,6 @@ public class UserResource extends AbstractResource {
         return ok(response);
     }
 
-    @POST
-    @Path("/{id}/oauth-identifiers/{platform}")
-    @Timed(name = "create-oauth-identifier")
-    public Response createOAuthIdentifier(@PathParam("applicationId") String applicationId,
-                                          @PathParam("id") String id,
-                                          @PathParam("platform") OAuthPlatform platform,
-                                          ObjectNode requestBody) throws IOException {
-        requestBody.put("applicationId", applicationId);
-        requestBody.put("userId", id);
-        requestBody.set("platform", getObjectMapper().valueToTree(platform));
-        OAuthIdentifierConnectRequest request = getObjectMapper().readValue(
-                requestBody.toString(), OAuthIdentifierConnectRequest.class);
-        UserResponse response = getApp().connectOAuthIdentifier(request);
-        return ok(response);
-    }
-
     @PUT
     @Path("/{id}/oauth-identifiers/{platform}/{content}")
     @Timed(name = "update-oauth-identifier")
@@ -245,10 +207,9 @@ public class UserResource extends AbstractResource {
         requestBody.put("applicationId", applicationId);
         requestBody.put("userId", id);
         requestBody.set("platform", getObjectMapper().valueToTree(platform));
-        requestBody.put("identifier", content);
-        OAuthIdentifierUpdateRequest request = getObjectMapper().readValue(
-                requestBody.toString(), OAuthIdentifierUpdateRequest.class);
-        UserResponse response = getApp().updateOAuthIdentifier(request);
+        OAuthIdentifierConnectRequest request = getObjectMapper().readValue(
+                requestBody.toString(), OAuthIdentifierConnectRequest.class);
+        UserResponse response = getApp().connectOAuthIdentifier(request);
         return ok(response);
     }
 

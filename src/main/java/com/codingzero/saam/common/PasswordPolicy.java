@@ -49,7 +49,9 @@ public class PasswordPolicy {
 
     public void check(String password) {
         if (null == password) {
-            throw new IllegalArgumentException("Password is missing");
+            throw BusinessError.raise(Errors.ILLEGAL_PASSWORD_FORMAT)
+                    .message("Password is missing")
+                    .build();
         }
         if (!isValidLength(password)) {
             throw BusinessError.raise(Errors.ILLEGAL_PASSWORD_FORMAT)

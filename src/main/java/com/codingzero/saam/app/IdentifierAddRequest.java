@@ -3,14 +3,14 @@ package com.codingzero.saam.app;
 
 import com.codingzero.saam.common.IdentifierType;
 
-public class IdentifierAssignRequest {
+public class IdentifierAddRequest {
 
     private String applicationId;
     private String userId;
     private IdentifierType type;
     private String identifier;
 
-    public IdentifierAssignRequest(String applicationId, String userId, IdentifierType type, String identifier) {
+    public IdentifierAddRequest(String applicationId, String userId, IdentifierType type, String identifier) {
         this.applicationId = applicationId;
         this.userId = userId;
         this.type = type;

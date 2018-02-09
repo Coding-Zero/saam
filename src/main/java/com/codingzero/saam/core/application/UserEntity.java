@@ -68,6 +68,9 @@ public class UserEntity extends PrincipalEntity<UserOS> implements User {
 
     @Override
     public void changePassword(String oldPassword, String newPassword) {
+        if (null == newPassword) {
+            return;
+        }
         checkForNoPasswordPolicy();
         if (null != getObjectSegment().getPassword()) {
             if (!verifyPassword(oldPassword)) {

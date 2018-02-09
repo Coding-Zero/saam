@@ -50,6 +50,9 @@ public class UserRepositoryService {
     }
 
     public UserEntity load(Application application, PrincipalOS principalOS) {
+        if (null == principalOS) {
+            return null;
+        }
         UserOS os = access.selectByPrincipalOS(principalOS);
         return factory.reconstitute(os, application);
     }

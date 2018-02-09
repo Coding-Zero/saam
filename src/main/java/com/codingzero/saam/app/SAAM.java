@@ -50,11 +50,7 @@ public interface SAAM {
 
     /**User**/
 
-    UserResponse createUser(String applicationId);
-
-    UserResponse register(CredentialRegisterRequest request);
-
-    UserResponse register(OAuthRegisterRequest request);
+    UserResponse register(UserRegisterRequest request);
 
     void removeUser(String applicationId, String id);
 
@@ -72,15 +68,13 @@ public interface SAAM {
 
     UserResponse resetPassword(PasswordResetRequest request);
 
-    UserResponse assignIdentifier(IdentifierAssignRequest request);
+    UserResponse addIdentifier(IdentifierAddRequest request);
 
-    UserResponse unassignIdentifier(IdentifierRemoveRequest request);
+    UserResponse removeIdentifier(IdentifierRemoveRequest request);
 
     UserResponse verifyIdentifier(IdentifierVerifyRequest request);
 
     UserResponse connectOAuthIdentifier(OAuthIdentifierConnectRequest request);
-
-    UserResponse updateOAuthIdentifier(OAuthIdentifierUpdateRequest request);
 
     UserResponse disconnectOAuthIdentifier(OAuthIdentifierDisconnectRequest request);
 

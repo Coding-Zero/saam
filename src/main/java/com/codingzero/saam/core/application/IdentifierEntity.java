@@ -7,8 +7,8 @@ import com.codingzero.saam.core.IdentifierPolicy;
 import com.codingzero.saam.core.User;
 import com.codingzero.saam.infrastructure.database.IdentifierOS;
 import com.codingzero.saam.infrastructure.database.spi.IdentifierVerificationCodeGenerator;
-import com.codingzero.utilities.error.BusinessError;
 import com.codingzero.utilities.ddd.EntityObject;
+import com.codingzero.utilities.error.BusinessError;
 
 import java.util.Date;
 
@@ -59,6 +59,7 @@ public class IdentifierEntity extends EntityObject<IdentifierOS> implements Iden
 
     @Override
     public IdentifierVerificationCode generateVerificationCode(long timeout) {
+        checkForVerificationIsNotRequired();
         String code = verificationCodeGenerator.generate(getObjectSegment().getIdentifierType());
         Date expirationTime = new Date(System.currentTimeMillis() + timeout);
         getObjectSegment().setVerificationCode(
@@ -67,6 +68,17 @@ public class IdentifierEntity extends EntityObject<IdentifierOS> implements Iden
         getObjectSegment().setUpdateTime(new Date(System.currentTimeMillis()));
         markAsDirty();
         return getObjectSegment().getVerificationCode();
+    }
+
+    private void checkForVerificationIsNotRequired() {
+        if (!getPolicy().isVerificationRequired()) {
+            throw BusinessError.raise(Errors.INVALID_IDENTIFIER_POLICY)
+                    .message("Verification is not required for identifier, " + getPolicy().getType())
+                    .details("applicationId", getPolicy().getApplication())
+                    .details("identifierType", getPolicy().getType())
+                    .details("identifier", getContent())
+                    .build();
+        }
     }
 
     @Override

@@ -1,36 +1,20 @@
 package com.codingzero.saam.presentation.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.codingzero.saam.app.APIKeyResponse;
 import com.codingzero.saam.app.CredentialLoginRequest;
-import com.codingzero.saam.app.CredentialRegisterRequest;
-import com.codingzero.saam.app.IdentifierAssignRequest;
-import com.codingzero.saam.app.IdentifierRemoveRequest;
-import com.codingzero.saam.app.IdentifierVerifyRequest;
-import com.codingzero.saam.app.OAuthIdentifierConnectRequest;
-import com.codingzero.saam.app.OAuthIdentifierDisconnectRequest;
-import com.codingzero.saam.app.OAuthIdentifierUpdateRequest;
 import com.codingzero.saam.app.OAuthLoginRequest;
-import com.codingzero.saam.app.OAuthRegisterRequest;
-import com.codingzero.saam.app.PasswordChangeRequest;
-import com.codingzero.saam.app.PasswordResetRequest;
 import com.codingzero.saam.app.SAAM;
-import com.codingzero.saam.app.UserResponse;
-import com.codingzero.saam.app.UserRoleUpdateRequest;
 import com.codingzero.saam.app.UserSessionCreateRequest;
 import com.codingzero.saam.app.UserSessionResponse;
-import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.dropwizard.jersey.PATCH;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;

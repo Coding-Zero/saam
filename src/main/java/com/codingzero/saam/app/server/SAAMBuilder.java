@@ -311,8 +311,8 @@ public class SAAMBuilder {
     public UserFactoryService getUserFactory() {
         if (null == userFactory) {
             userFactory = new UserFactoryService(
-                    principalAccess,
-                    roleRepository,
+                    getPrincipalAccess(),
+                    getRoleRepository(),
                     getPasswordHelper());
         }
         return userFactory;

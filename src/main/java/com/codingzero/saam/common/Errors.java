@@ -29,7 +29,8 @@ public enum Errors implements ErrorType {
     AUTHENTICATION_FAILED("AuthenticationFailed"),
     PASSWORD_POLICY_UNAVAILABLE("PasswordPolicyUnavailable"),
     WRONG_PASSWORD("WrongPassword"),
-    IDENTIFIER_UNVERIFIED("IdentifierUnverified")
+    IDENTIFIER_UNVERIFIED("IdentifierUnverified"),
+    INVALID_IDENTIFIER_POLICY("InvalidIdentifierPolicy")
     ;
 
     private final String name;

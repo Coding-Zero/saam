@@ -101,6 +101,9 @@ public class ResponseMapper {
     }
 
     public UserResponse toResponse(User source) {
+        if (null == source) {
+            return null;
+        }
         return new UserResponse(
                 source.getApplication().getId(),
                 source.getId(),

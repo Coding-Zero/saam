@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class UserResponse {
@@ -75,6 +76,22 @@ public class UserResponse {
         public String getName() {
             return name;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Role role = (Role) o;
+            return getCreationTime().equals(role.getCreationTime()) &&
+                    Objects.equals(getId(), role.getId()) &&
+                    Objects.equals(getName(), role.getName());
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(getId(), getCreationTime(), getName());
+        }
     }
 
     public static class Identifier {
@@ -108,6 +125,22 @@ public class UserResponse {
             return new Date(creationTime);
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Identifier that = (Identifier) o;
+            return isVerified() == that.isVerified() &&
+                    getCreationTime().equals(that.getCreationTime()) &&
+                    getType() == that.getType() &&
+                    Objects.equals(getContent(), that.getContent());
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(getType(), getContent(), isVerified(), getCreationTime());
+        }
     }
 
     public static class OAuthIdentifier {
@@ -139,6 +172,23 @@ public class UserResponse {
 
         public Date getCreationTime() {
             return new Date(creationTime);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            OAuthIdentifier that = (OAuthIdentifier) o;
+            return getCreationTime().equals(that.getCreationTime()) &&
+                    getPlatform() == that.getPlatform() &&
+                    Objects.equals(getContent(), that.getContent()) &&
+                    Objects.equals(getProperties(), that.getProperties());
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(getPlatform(), getContent(), getProperties(), getCreationTime());
         }
     }
 }
