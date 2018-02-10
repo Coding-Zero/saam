@@ -4,6 +4,7 @@ import com.codingzero.saam.common.ApplicationStatus;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.common.PasswordPolicy;
+import com.codingzero.saam.core.APIKey;
 import com.codingzero.utilities.error.BusinessError;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
@@ -66,6 +67,18 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testRequestOAuthAuthorizationUrl_WithoutPolicy() {
+        ApplicationResponse app = createSimpleApplication();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("state", "state-123456");
+        parameters.put("redirect-url", "http://localhost:8080");
+
+        thrown.expect(BusinessError.class);
+        saam.requestOAuthAuthorizationUrl(
+                new OAuthAuthorizationUrlRequest(app.getId(), OAuthPlatform.GOOGLE, parameters));
+    }
+
+    @Test
     public void testRequestOAuthAccessToken() {
         ApplicationResponse app = createApplication();
 
@@ -77,6 +90,18 @@ public abstract class SAAMTest {
         assertNotNull(response);
         assertEquals(app.getId(), response.getApplicationId());
         assertEquals(OAuthPlatform.GOOGLE, response.getPlatform());
+    }
+
+    @Test
+    public void testRequestOAuthAccessToken_WithoutPolicy() {
+        ApplicationResponse app = createSimpleApplication();
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("key1", "value1");
+
+        thrown.expect(BusinessError.class);
+        saam.requestOAuthAccessToken(
+                new OAuthAccessTokenRequest(app.getId(), OAuthPlatform.GOOGLE, parameters));
     }
 
     @Test
@@ -98,6 +123,32 @@ public abstract class SAAMTest {
         assertEquals(email, response.getIdentifier());
         assertNotNull(response.getCode());
         assertTrue((response.getExpirationTime().getTime() - timestamp >= 1000));
+    }
+
+    @Test
+    public void testGenerateVerificationCode_WithoutPolicy() {
+        ApplicationResponse app = createSimpleApplication();
+
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+
+        thrown.expect(BusinessError.class);
+        saam.generateVerificationCode(
+                new IdentifierVerificationCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, "foo@foo.com", 1000));
+    }
+
+    @Test
+    public void testGenerateVerificationCode_NoIdentifierFound() {
+        ApplicationResponse app = createApplication();
+
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+
+        thrown.expect(BusinessError.class);
+        saam.generateVerificationCode(
+                new IdentifierVerificationCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, "foo@foo.com", 1000));
     }
 
     @Test
@@ -132,6 +183,30 @@ public abstract class SAAMTest {
         assertEquals(email, response.getIdentifier());
         assertNotNull(response.getCode());
         assertTrue((response.getExpirationTime().getTime() - timestamp >= 1000));
+    }
+
+    @Test
+    public void testGenerateResetCode_WithoutPolicy() {
+        ApplicationResponse app = createSimpleApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+
+        thrown.expect(BusinessError.class);
+        saam.generateResetCode(
+                new PasswordResetCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, "foo@foo.com", 1000));
+    }
+
+    @Test
+    public void testGenerateResetCode_NoIdentifierFound() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+
+        thrown.expect(BusinessError.class);
+        saam.generateResetCode(
+                new PasswordResetCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, "foo@foo.com", 1000));
     }
 
     @Test
@@ -902,6 +977,21 @@ public abstract class SAAMTest {
                         app.getId(), user.getId(), OAuthPlatform.GOOGLE, googleOAuthIdentifier));
     }
 
+    @Test
+    public void testAddAPIKey() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+
+        String name = getAPIKeyName();
+        APIKeyResponse apiKey = saam.addAPIKey(
+                new APIKeyAddRequest(app.getId(), user.getId(), name));
+        assertNotNull(apiKey);
+        assertEquals(app.getId(), apiKey.getApplicationId());
+        assertEquals(user.getId(), apiKey.getUserId());
+        assertEquals(name, apiKey.getName());
+    }
+
     private UserResponse.Identifier getIdentifier(UserResponse user, IdentifierType type) {
         List<UserResponse.Identifier> identifiers = user.getIdentifiers();
         for (UserResponse.Identifier identifier: identifiers) {
@@ -993,6 +1083,9 @@ public abstract class SAAMTest {
         return "google-oauth-" + new Random().nextInt(10000);
     }
 
+    private String getAPIKeyName() {
+        return "apikey-" + new Random().nextInt(10000);
+    }
 
     private List<ApplicationResponse> createApplications(int size) {
         List<ApplicationResponse> apps = new ArrayList<>(size);
