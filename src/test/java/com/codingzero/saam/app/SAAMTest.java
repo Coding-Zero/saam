@@ -1,10 +1,10 @@
 package com.codingzero.saam.app;
 
+import com.codingzero.saam.common.Action;
 import com.codingzero.saam.common.ApplicationStatus;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.common.PasswordPolicy;
-import com.codingzero.saam.core.APIKey;
 import com.codingzero.utilities.error.BusinessError;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
@@ -992,6 +992,985 @@ public abstract class SAAMTest {
         assertEquals(name, apiKey.getName());
     }
 
+    @Test
+    public void testAddAPIKey_NoUserFound() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        saam.removeUser(app.getId(), user.getId());
+
+        thrown.expect(BusinessError.class);
+        String name = getAPIKeyName();
+        saam.addAPIKey(
+                new APIKeyAddRequest(app.getId(), user.getId(), name));
+    }
+
+    @Test
+    public void testUpdateAPIKey() {
+        String name = getAPIKeyName();
+        boolean isActive = false;
+        APIKeyResponse apiKey = createAPIKey();
+        APIKeyResponse actualAPIKey = saam.updateAPIKey(
+                new APIKeyUpdateRequest(apiKey.getApplicationId(), apiKey.getId(), name, isActive));
+        assertEquals(apiKey.getApplicationId(), actualAPIKey.getApplicationId());
+        assertEquals(apiKey.getId(), apiKey.getId());
+        assertEquals(apiKey.getSecretKey(), apiKey.getSecretKey());
+        assertEquals(apiKey.getUserId(), actualAPIKey.getUserId());
+        assertEquals(name, actualAPIKey.getName());
+        assertEquals(isActive, actualAPIKey.isActive());
+    }
+
+    @Test
+    public void testUpdateAPIKey_NotExist() {
+        String name = getAPIKeyName();
+        boolean isActive = false;
+        APIKeyResponse apiKey = createAPIKey();
+        saam.removeAPIKeyById(apiKey.getApplicationId(), apiKey.getId());
+
+        thrown.expect(BusinessError.class);
+        saam.updateAPIKey(
+                new APIKeyUpdateRequest(apiKey.getApplicationId(), apiKey.getId(), name, isActive));
+    }
+
+    @Test
+    public void testVerifyAPIkey() {
+        APIKeyResponse apiKey = createAPIKey();
+        saam.verifyAPIKey(
+                new APIKeyVerifyRequest(
+                        apiKey.getApplicationId(), apiKey.getId(), apiKey.getSecretKey()));
+    }
+
+    @Test
+    public void testVerifyAPIkey_NotExist() {
+        APIKeyResponse apiKey = createAPIKey();
+        saam.removeAPIKeyById(apiKey.getApplicationId(), apiKey.getId());
+
+        thrown.expect(BusinessError.class);
+        saam.verifyAPIKey(
+                new APIKeyVerifyRequest(
+                        apiKey.getApplicationId(), apiKey.getId(), apiKey.getSecretKey()));
+    }
+
+    @Test
+    public void testVerifyAPIkey_WrongSecretKey() {
+        APIKeyResponse apiKey = createAPIKey();
+
+        thrown.expect(BusinessError.class);
+        saam.verifyAPIKey(
+                new APIKeyVerifyRequest(
+                        apiKey.getApplicationId(), apiKey.getId(), "wrongkey"));
+    }
+
+    @Test
+    public void testVerifyAPIkey_Inactive() {
+        APIKeyResponse apiKey = createAPIKey();
+        saam.updateAPIKey(
+                new APIKeyUpdateRequest(
+                        apiKey.getApplicationId(), apiKey.getId(), apiKey.getName(), false));
+
+        thrown.expect(BusinessError.class);
+        saam.verifyAPIKey(
+                new APIKeyVerifyRequest(
+                        apiKey.getApplicationId(), apiKey.getId(), "wrongkey"));
+    }
+
+    @Test
+    public void testVerifyAPIkey_NoSuchUser() {
+        APIKeyResponse apiKey = createAPIKey();
+        saam.removeUser(apiKey.getApplicationId(), apiKey.getUserId());
+
+        thrown.expect(BusinessError.class);
+        saam.verifyAPIKey(
+                new APIKeyVerifyRequest(
+                        apiKey.getApplicationId(), apiKey.getId(), "wrongkey"));
+    }
+
+    @Test
+    public void testRemoveAPIKeyById() {
+        APIKeyResponse apiKey = createAPIKey();
+        saam.removeAPIKeyById(apiKey.getApplicationId(), apiKey.getId());
+        APIKeyResponse actualAPIKey = saam.getAPIKeyById(apiKey.getApplicationId(), apiKey.getId());
+        assertNull(actualAPIKey);
+    }
+
+    @Test
+    public void testRemoveAPIKey_NotExist() {
+        APIKeyResponse apiKey = createAPIKey();
+        saam.removeAPIKeyById(apiKey.getApplicationId(), apiKey.getId());
+
+        thrown.expect(BusinessError.class);
+        saam.removeAPIKeyById(apiKey.getApplicationId(), apiKey.getId());
+    }
+
+    @Test
+    public void testListAPIKeysByApplicationIdAndUserId() {
+        ApplicationResponse app = createApplication();
+        UserResponse user1 = registerUser(app.getId());
+        List<APIKeyResponse> apiKeys1 = createAPIKeys(app.getId(), user1.getId(), 3);
+
+        UserResponse user2 = registerUser(app.getId());
+        createAPIKeys(app.getId(), user2.getId(), 5);
+
+        List<APIKeyResponse> actualAPIKeys1 = saam.listAPIKeysByApplicationIdAndUserId(app.getId(), user1.getId());
+        assertEquals(apiKeys1.size(), actualAPIKeys1.size());
+
+        for (APIKeyResponse apiKey: apiKeys1) {
+            for (APIKeyResponse actualAPIKey: actualAPIKeys1) {
+                if (apiKey.getSecretKey().equals(actualAPIKey.getSecretKey())) {
+                    assertAPIKey(apiKey, actualAPIKey);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testLogin_Credential() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        UserResponse.Identifier username = getIdentifier(user, IdentifierType.USERNAME);
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+        UserSessionResponse session = saam.login(
+                new CredentialLoginRequest(
+                        app.getId(),
+                        username.getContent(),
+                        "Password!",
+                        sessionDetails,
+                        1000));
+        assertNotNull(session);
+        assertEquals(app.getId(), session.getApplicationId());
+        assertEquals(user.getId(), session.getUserId());
+        assertEquals(sessionDetails, session.getDetails());
+        assertNotNull(session.getKey());
+        assertNotNull(session.getCreationTime());
+        assertTrue((session.getExpirationTime().getTime() > session.getCreationTime().getTime()));
+    }
+
+    @Test
+    public void testLogin_Credential_NoPolicyFound() {
+        ApplicationResponse app = createSimpleApplication();
+        saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+
+        thrown.expect(BusinessError.class);
+        saam.login(
+                new CredentialLoginRequest(
+                        app.getId(),
+                        "foo",
+                        "Password!",
+                        Collections.emptyMap(),
+                        1000));
+    }
+
+    @Test
+    public void testLogin_Credential_NoUserFound() {
+        ApplicationResponse app = createApplication();
+
+        thrown.expect(BusinessError.class);
+        saam.login(
+                new CredentialLoginRequest(
+                        app.getId(),
+                        "foo",
+                        "Password!",
+                        Collections.emptyMap(),
+                        1000));
+    }
+
+    @Test
+    public void testLogin_Credential_WrongPassword() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        UserResponse.Identifier username = getIdentifier(user, IdentifierType.USERNAME);
+
+        thrown.expect(BusinessError.class);
+        saam.login(
+                new CredentialLoginRequest(
+                        app.getId(),
+                        username.getContent(),
+                        "WrongPassword",
+                        Collections.emptyMap(),
+                        1000));
+    }
+
+    @Test
+    public void testLogin_OAuth() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        UserResponse.OAuthIdentifier googleOAuth = getOAuthIdentifier(user, OAuthPlatform.GOOGLE);
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+        UserSessionResponse session = saam.login(
+                new OAuthLoginRequest(
+                        app.getId(),
+                        googleOAuth.getPlatform(),
+                        googleOAuth.getContent(),
+                        sessionDetails,
+                        1000));
+        assertNotNull(session);
+        assertEquals(app.getId(), session.getApplicationId());
+        assertEquals(user.getId(), session.getUserId());
+        assertEquals(sessionDetails, session.getDetails());
+        assertNotNull(session.getKey());
+        assertNotNull(session.getCreationTime());
+        assertTrue((session.getExpirationTime().getTime() > session.getCreationTime().getTime()));
+    }
+
+    @Test
+    public void testLogin_OAuth_NoSuchOAuthPolicy() {
+        ApplicationResponse app = createApplication();
+        registerUser(app.getId());
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+
+        thrown.expect(BusinessError.class);
+        saam.login(
+                new OAuthLoginRequest(
+                        app.getId(),
+                        OAuthPlatform.SLACK,
+                        "slack-id",
+                        sessionDetails,
+                        1000));
+    }
+
+    @Test
+    public void testLogin_OAuth_NoSuchOAuthIdentifier() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        UserResponse.OAuthIdentifier googleOAuth = getOAuthIdentifier(user, OAuthPlatform.GOOGLE);
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+
+        thrown.expect(BusinessError.class);
+        saam.login(
+                new OAuthLoginRequest(
+                        app.getId(),
+                        googleOAuth.getPlatform(),
+                        getGoogleOAuthIdentifier(),
+                        sessionDetails,
+                        1000));
+    }
+
+    @Test
+    public void testLogin_OAuth_NoSuchUser() {
+        ApplicationResponse app = createApplication();
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+
+        thrown.expect(BusinessError.class);
+        saam.login(
+                new OAuthLoginRequest(
+                        app.getId(),
+                        OAuthPlatform.GOOGLE,
+                        getGoogleOAuthIdentifier(),
+                        sessionDetails,
+                        1000));
+    }
+
+    @Test
+    public void testCreateUserSession() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+        UserSessionResponse session = saam.createUserSession(
+                new UserSessionCreateRequest(
+                        app.getId(),
+                        user.getId(),
+                        sessionDetails,
+                        1000));
+        assertNotNull(session);
+        assertEquals(app.getId(), session.getApplicationId());
+        assertEquals(user.getId(), session.getUserId());
+        assertEquals(sessionDetails, session.getDetails());
+        assertNotNull(session.getKey());
+        assertNotNull(session.getCreationTime());
+        assertTrue((session.getExpirationTime().getTime() > session.getCreationTime().getTime()));
+    }
+
+    @Test
+    public void testCreateUserSession_NoSuchUser() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        saam.removeUser(app.getId(), user.getId());
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+
+        thrown.expect(BusinessError.class);
+        saam.createUserSession(
+                new UserSessionCreateRequest(
+                        app.getId(),
+                        user.getId(),
+                        sessionDetails,
+                        1000));
+    }
+
+    @Test
+    public void testGetUserSessionByKey() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+        UserSessionResponse session = saam.createUserSession(
+                new UserSessionCreateRequest(
+                        app.getId(),
+                        user.getId(),
+                        sessionDetails,
+                        1000));
+        UserSessionResponse actualSession = saam.getUserSessionByKey(app.getId(), session.getKey());
+
+        assertEquals(session.getApplicationId(), actualSession.getApplicationId());
+        assertEquals(session.getUserId(), actualSession.getUserId());
+        assertEquals(session.getDetails(), actualSession.getDetails());
+        assertEquals(session.getKey(), actualSession.getKey());
+        assertEquals(session.getCreationTime(), actualSession.getCreationTime());
+        assertEquals(session.getExpirationTime(), actualSession.getExpirationTime());
+    }
+
+    @Test
+    public void testRemoveUserSessionByKey() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+        UserSessionResponse session = saam.createUserSession(
+                new UserSessionCreateRequest(
+                        app.getId(),
+                        user.getId(),
+                        sessionDetails,
+                        1000));
+
+        saam.removeUserSessionByKey(session.getApplicationId(), session.getKey());
+        UserSessionResponse actualSession = saam.getUserSessionByKey(app.getId(), session.getKey());
+        assertNull(actualSession);
+    }
+
+    @Test
+    public void testRemoveUserSessionByKey_NotExist() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+        UserSessionResponse session = saam.createUserSession(
+                new UserSessionCreateRequest(
+                        app.getId(),
+                        user.getId(),
+                        sessionDetails,
+                        1000));
+
+        saam.removeUserSessionByKey(session.getApplicationId(), session.getKey());
+
+        thrown.expect(BusinessError.class);
+        saam.removeUserSessionByKey(session.getApplicationId(), session.getKey());
+    }
+
+    @Test
+    public void testRemoveUserSessionsByUserId() {
+        ApplicationResponse app = createApplication();
+        UserResponse user1 = registerUser(app.getId());
+        createUserSessions(app.getId(), user1.getId(), 3);
+
+        UserResponse user2 = registerUser(app.getId());
+        createUserSessions(app.getId(), user2.getId(), 5);
+        saam.removeUserSessionsByUserId(app.getId(), user1.getId());
+
+        PaginatedResult<List<UserSessionResponse>> actualResult1 =
+                saam.listUserSessionsByUserId(app.getId(), user1.getId());
+        List<UserSessionResponse> actualSessions1 =
+                actualResult1.start(new OffsetBasedResultPage(1, 10)).getResult();
+
+        PaginatedResult<List<UserSessionResponse>> actualResult2 =
+                saam.listUserSessionsByUserId(app.getId(), user2.getId());
+        List<UserSessionResponse> actualSessions2 =
+                actualResult2.start(new OffsetBasedResultPage(1, 10)).getResult();
+
+        assertEquals(0, actualSessions1.size());
+        assertEquals(5, actualSessions2.size());
+    }
+
+    @Test
+    public void testAddRole() {
+        ApplicationResponse app = createApplication();
+        String name = getRoleName();
+        RoleResponse role = saam.addRole(new RoleAddRequest(app.getId(), name));
+        assertEquals(app.getId(), role.getApplicationId());
+        assertEquals(name, role.getName());
+    }
+
+    @Test
+    public void testAddRole_DuplicateName() {
+        ApplicationResponse app = createApplication();
+        String name = getRoleName();
+        saam.addRole(new RoleAddRequest(app.getId(), name));
+
+        thrown.expect(BusinessError.class);
+        saam.addRole(new RoleAddRequest(app.getId(), name));
+    }
+
+    @Test
+    public void testUpdateRole() {
+        ApplicationResponse app = createApplication();
+        String name = getRoleName();
+        RoleResponse role = saam.addRole(new RoleAddRequest(app.getId(), name));
+        String newName = getRoleName();
+        RoleResponse actualRole = saam.updateRole(new RoleUpdateRequest(app.getId(), role.getId(), newName));
+
+        assertEquals(role.getApplicationId(), role.getApplicationId());
+        assertEquals(role.getId(), role.getId());
+        assertEquals(newName, actualRole.getName());
+    }
+
+    @Test
+    public void testUpdateRole_SameName() {
+        ApplicationResponse app = createApplication();
+        String name = getRoleName();
+        RoleResponse role = saam.addRole(new RoleAddRequest(app.getId(), name));
+        RoleResponse actualRole = saam.updateRole(new RoleUpdateRequest(app.getId(), role.getId(), name));
+
+        assertEquals(role.getApplicationId(), role.getApplicationId());
+        assertEquals(role.getId(), role.getId());
+        assertEquals(name, actualRole.getName());
+    }
+
+    @Test
+    public void testUpdateRole_NotExist() {
+        ApplicationResponse app = createApplication();
+        String name = getRoleName();
+        RoleResponse role = saam.addRole(new RoleAddRequest(app.getId(), name));
+        saam.removeRole(app.getId(), role.getId());
+
+        thrown.expect(BusinessError.class);
+        saam.updateRole(new RoleUpdateRequest(app.getId(), role.getId(), getRoleName()));
+    }
+
+    @Test
+    public void testRemoveRole() {
+        ApplicationResponse app = createApplication();
+        String name = getRoleName();
+        RoleResponse role = saam.addRole(new RoleAddRequest(app.getId(), name));
+        saam.removeRole(app.getId(), role.getId());
+        RoleResponse actualRole = saam.getRoleById(app.getId(), role.getId());
+        assertNull(actualRole);
+    }
+
+    @Test
+    public void testRemoveRole_NotExist() {
+        ApplicationResponse app = createApplication();
+        String name = getRoleName();
+        RoleResponse role = saam.addRole(new RoleAddRequest(app.getId(), name));
+        saam.removeRole(app.getId(), role.getId());
+
+        thrown.expect(BusinessError.class);
+        saam.removeRole(app.getId(), role.getId());
+    }
+
+    @Test
+    public void testListRoles() {
+        ApplicationResponse app1 = createApplication();
+        List<RoleResponse> roles1 = createRoles(app1.getId(), 3);
+        ApplicationResponse app2 = createApplication();
+        List<RoleResponse> roles2 = createRoles(app2.getId(), 5);
+
+
+        PaginatedResult<List<RoleResponse>> actualResult1 = saam.listRoles(app1.getId());
+        List<RoleResponse> actualRoles1 = actualResult1.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(roles1.size(), actualRoles1.size());
+        for (RoleResponse role: roles1) {
+            for (RoleResponse actualRole: actualRoles1) {
+                if (role.getId().equals(actualRole.getId())) {
+                    assertRole(role, actualRole);
+                }
+            }
+        }
+
+        PaginatedResult<List<RoleResponse>> actualResult2 = saam.listRoles(app2.getId());
+        List<RoleResponse> actualRoles2 = actualResult2.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(roles2.size(), actualRoles2.size());
+    }
+
+    @Test
+    public void testStoreResource_UserOwner() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String key = getResourceKey();
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), key));
+        assertNotNull(resource);
+        assertEquals(app.getId(), resource.getApplicationId());
+        assertEquals(user.getId(), resource.getOwnerId());
+        assertEquals(key, resource.getKey());
+    }
+
+    @Test
+    public void testStoreResource_RoleOwner() {
+        ApplicationResponse app = createApplication();
+        RoleResponse role = createRole(app.getId(), getRoleName());
+        String key = getResourceKey();
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), role.getId(), key));
+        assertNotNull(resource);
+        assertEquals(app.getId(), resource.getApplicationId());
+        assertEquals(role.getId(), resource.getOwnerId());
+        assertEquals(key, resource.getKey());
+    }
+
+    @Test
+    public void testStoreResource_APIKeyOwner() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
+        String key = getResourceKey();
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), apiKey.getId(), key));
+        assertNotNull(resource);
+        assertEquals(app.getId(), resource.getApplicationId());
+        assertEquals(user.getId(), resource.getOwnerId());
+        assertEquals(key, resource.getKey());
+    }
+
+    @Test
+    public void testStoreResource_NotExitOwner() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        saam.removeUser(user.getApplicationId(), user.getId());
+        String key = getResourceKey();
+
+        thrown.expect(BusinessError.class);
+        saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), key));
+    }
+
+    @Test
+    public void testStoreResource_DuplicateKey() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String key = getResourceKey();
+        saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), key));
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), key));
+        assertNotNull(resource);
+        assertEquals(app.getId(), resource.getApplicationId());
+        assertEquals(user.getId(), resource.getOwnerId());
+        assertEquals(key, resource.getKey());
+    }
+
+    @Test
+    public void testStoreResource_InvalidKey_IllegalFormat() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String key = "key!";
+
+        thrown.expect(BusinessError.class);
+        saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), key));
+    }
+
+    @Test
+    public void testStoreResource_InvalidKey_TooShort() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String key = "";
+
+        thrown.expect(BusinessError.class);
+        saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), key));
+    }
+
+    @Test
+    public void testStoreResource_InvalidKey_TooLong() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        StringBuilder key = new StringBuilder();
+        for (int i = 0; i < 126; i ++) {
+            key.append("a");
+        }
+        thrown.expect(BusinessError.class);
+        saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), key.toString()));
+    }
+
+    @Test
+    public void testStoreResource_NoParentFound() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String key = getResourceKey(getResourceKey());
+        thrown.expect(BusinessError.class);
+        saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), key));
+    }
+
+    @Test
+    public void testRemoveResource() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String key = getResourceKey();
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), key));
+        saam.removeResource(resource.getApplicationId(), resource.getKey());
+        ResourceResponse actualResource =
+                saam.getResourceByKey(resource.getApplicationId(), resource.getKey());
+        assertNull(actualResource);
+    }
+
+    @Test
+    public void testRemoveResource_Parent() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String parentKey = getResourceKey();
+        ResourceResponse parent = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), parentKey));
+        createResources(app.getId(), user.getId(), parentKey, 3);
+        saam.removeResource(app.getId(), parentKey);
+
+        ResourceResponse actualResource =
+                saam.getResourceByKey(app.getId(), parent.getKey());
+        assertNull(actualResource);
+    }
+
+    @Test
+    public void testRemoveResource_NotExist() {
+        ApplicationResponse app = createApplication();
+        String key = getResourceKey();
+
+        thrown.expect(BusinessError.class);
+        saam.removeResource(app.getId(), key);
+    }
+
+    @Test
+    public void testGetResourcesByOwnerId() {
+        ApplicationResponse app = createApplication();
+        UserResponse user1 = registerUser(app.getId());
+        List<ResourceResponse> resources1 =
+                createResources(app.getId(), user1.getId(), null,3);
+
+        UserResponse user2 = registerUser(app.getId());
+        List<ResourceResponse> resources2 =
+                createResources(app.getId(), user2.getId(), null,5);
+
+        PaginatedResult<List<ResourceResponse>> actualResult1 =
+                saam.getResourcesByOwnerId(app.getId(), user1.getId(), null);
+        List<ResourceResponse> actualResources1 =
+                actualResult1.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(resources1.size(), actualResources1.size());
+        for (ResourceResponse resource: resources1) {
+            for (ResourceResponse actualResource: actualResources1) {
+                if (resource.getKey().equals(actualResource.getKey())) {
+                    assertResource(resource, actualResource);
+                }
+            }
+        }
+
+        PaginatedResult<List<ResourceResponse>> actualResult2 =
+                saam.getResourcesByOwnerId(app.getId(), user2.getId(), null);
+        List<ResourceResponse> actualResources2 =
+                actualResult2.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(resources2.size(), actualResources2.size());
+        for (ResourceResponse resource: resources2) {
+            for (ResourceResponse actualResource: actualResources2) {
+                if (resource.getKey().equals(actualResource.getKey())) {
+                    assertResource(resource, actualResource);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testGetResourcesByOwnerId_Parent() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        ResourceResponse parentParent = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), getResourceKey()));
+        List<ResourceResponse> parents =
+                createResources(app.getId(), user.getId(), parentParent.getKey(),5);
+        ResourceResponse parent = parents.get(0);
+        List<ResourceResponse> resources =
+                createResources(app.getId(), user.getId(), parent.getKey(),3);
+
+        PaginatedResult<List<ResourceResponse>> actualResult =
+                saam.getResourcesByOwnerId(app.getId(), user.getId(), parent.getKey());
+        List<ResourceResponse> actualResources =
+                actualResult.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(resources.size(), actualResources.size());
+        for (ResourceResponse resource: resources) {
+            for (ResourceResponse actualResource: actualResources) {
+                if (resource.getKey().equals(actualResource.getKey())) {
+                    assertResource(resource, actualResource);
+                }
+            }
+        }
+
+        PaginatedResult<List<ResourceResponse>> actualParentResult =
+                saam.getResourcesByOwnerId(app.getId(), user.getId(), parent.getParentKey());
+        List<ResourceResponse> actualParents =
+                actualParentResult.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(parents.size(), actualParents.size());
+        for (ResourceResponse resource: parents) {
+            for (ResourceResponse actualResource: actualParents) {
+                if (resource.getKey().equals(actualResource.getKey())) {
+                    assertResource(resource, actualResource);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testListResources() {
+        ApplicationResponse app1 = createApplication();
+        UserResponse user1 = registerUser(app1.getId());
+        List<ResourceResponse> resources1 =
+                createResources(app1.getId(), user1.getId(), null,3);
+
+        ApplicationResponse app2 = createApplication();
+        UserResponse user2 = registerUser(app2.getId());
+        List<ResourceResponse> resources2 =
+                createResources(app2.getId(), user2.getId(), null,5);
+
+        PaginatedResult<List<ResourceResponse>> actualResult1 =
+                saam.listResources(app1.getId(), null);
+        List<ResourceResponse> actualResources1 =
+                actualResult1.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(resources1.size(), actualResources1.size());
+        for (ResourceResponse resource: resources1) {
+            for (ResourceResponse actualResource: actualResources1) {
+                if (resource.getKey().equals(actualResource.getKey())) {
+                    assertResource(resource, actualResource);
+                }
+            }
+        }
+
+        PaginatedResult<List<ResourceResponse>> actualResult2 =
+                saam.listResources(app2.getId(), null);
+        List<ResourceResponse> actualResources2 =
+                actualResult2.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(resources2.size(), actualResources2.size());
+        for (ResourceResponse resource: resources2) {
+            for (ResourceResponse actualResource: actualResources2) {
+                if (resource.getKey().equals(actualResource.getKey())) {
+                    assertResource(resource, actualResource);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testListResources_Parent() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        ResourceResponse parentParent = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), getResourceKey()));
+        List<ResourceResponse> parents =
+                createResources(app.getId(), user.getId(), parentParent.getKey(),5);
+        ResourceResponse parent = parents.get(0);
+        List<ResourceResponse> resources =
+                createResources(app.getId(), user.getId(), parent.getKey(),3);
+
+        PaginatedResult<List<ResourceResponse>> actualResult =
+                saam.listResources(app.getId(), parent.getKey());
+        List<ResourceResponse> actualResources =
+                actualResult.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(resources.size(), actualResources.size());
+        for (ResourceResponse resource: resources) {
+            for (ResourceResponse actualResource: actualResources) {
+                if (resource.getKey().equals(actualResource.getKey())) {
+                    assertResource(resource, actualResource);
+                }
+            }
+        }
+
+        PaginatedResult<List<ResourceResponse>> actualParentResult =
+                saam.listResources(app.getId(), parent.getParentKey());
+        List<ResourceResponse> actualParents =
+                actualParentResult.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(parents.size(), actualParents.size());
+        for (ResourceResponse resource: parents) {
+            for (ResourceResponse actualResource: actualParents) {
+                if (resource.getKey().equals(actualResource.getKey())) {
+                    assertResource(resource, actualResource);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testStorePermission() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), getResourceKey()));
+        List<Action> actions = new LinkedList<>();
+        actions.add(new Action("READ", true));
+        actions.add(new Action("EDIT", true));
+        actions.add(new Action("REMOVE", false));
+        PermissionResponse permission =
+                saam.storePermission(
+                        new PermissionStoreRequest(
+                                app.getId(),
+                                resource.getKey(),
+                                user.getId(),
+                                actions));
+
+        assertNotNull(permission);
+        assertEquals(app.getId(), permission.getApplicationId());
+        assertEquals(resource.getKey(), permission.getResourceKey());
+        assertEquals(user.getId(), permission.getPrincipalId());
+        assertEquals(actions, permission.getActions());
+    }
+
+    @Test
+    public void testStorePermission_Update() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), getResourceKey()));
+        List<Action> actions = new LinkedList<>();
+        actions.add(new Action("READ", true));
+        actions.add(new Action("EDIT", true));
+        actions.add(new Action("REMOVE", false));
+        saam.storePermission(
+                new PermissionStoreRequest(
+                        app.getId(),
+                        resource.getKey(),
+                        user.getId(),
+                        actions));
+
+
+        List<Action> actions2 = new LinkedList<>();
+        actions.add(new Action("READ", false));
+        actions.add(new Action("EDIT", false));
+        actions.add(new Action("REMOVE", true));
+        actions.add(new Action("MOVE", true));
+        PermissionResponse permission =
+                saam.storePermission(
+                        new PermissionStoreRequest(
+                                app.getId(),
+                                resource.getKey(),
+                                user.getId(),
+                                actions2));
+
+        assertNotNull(permission);
+        assertEquals(app.getId(), permission.getApplicationId());
+        assertEquals(resource.getKey(), permission.getResourceKey());
+        assertEquals(user.getId(), permission.getPrincipalId());
+        assertEquals(actions2, permission.getActions());
+    }
+
+    @Test
+    public void testRemovePermission() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), getResourceKey()));
+        List<Action> actions = new LinkedList<>();
+        actions.add(new Action("READ", true));
+        actions.add(new Action("EDIT", true));
+        actions.add(new Action("REMOVE", false));
+        saam.storePermission(
+                new PermissionStoreRequest(
+                        app.getId(),
+                        resource.getKey(),
+                        user.getId(),
+                        actions));
+        saam.removePermission(app.getId(), resource.getKey(), user.getId());
+        PermissionResponse actualPermission =
+                saam.getPermissionByPrincipalId(app.getId(), resource.getKey(), user.getId());
+        assertNull(actualPermission);
+    }
+
+    @Test
+    public void testRemovePermission_NotExist() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), getResourceKey()));
+        List<Action> actions = new LinkedList<>();
+        actions.add(new Action("READ", true));
+        actions.add(new Action("EDIT", true));
+        actions.add(new Action("REMOVE", false));
+        saam.storePermission(
+                new PermissionStoreRequest(
+                        app.getId(),
+                        resource.getKey(),
+                        user.getId(),
+                        actions));
+        saam.removePermission(app.getId(), resource.getKey(), user.getId());
+
+        thrown.expect(BusinessError.class);
+        saam.removePermission(app.getId(), resource.getKey(), user.getId());
+    }
+
+    private void assertResource(ResourceResponse expected, ResourceResponse actual) {
+        assertEquals(expected.getKey(), actual.getKey());
+        assertEquals(expected.getApplicationId(), actual.getApplicationId());
+        assertEquals(expected.getParentKey(), actual.getParentKey());
+        assertEquals(expected.getOwnerId(), actual.getOwnerId());
+        assertEquals(expected.getCreationTime(), actual.getCreationTime());
+    }
+
+    private List<ResourceResponse> createResources(String applicationId, String ownerId, String parentKey, int size) {
+        List<ResourceResponse> resources = new ArrayList<>(size);
+        for (int i = 0; i < size; i ++) {
+            String key = getResourceKey(parentKey);
+            resources.add(saam.storeResource(
+                    new ResourceStoreRequest(applicationId, ownerId, key)));
+        }
+        return resources;
+    }
+
+    private String getResourceKey() {
+        return getResourceKey(null);
+    }
+
+    private String getResourceKey(String parent) {
+        String key = "resource-" + new Random().nextInt(10000);
+        if (null == parent) {
+            return key;
+        }
+        return parent + ":" + key;
+    }
+
+    private void assertRole(RoleResponse expected, RoleResponse actual) {
+        assertEquals(expected.getApplicationId(), actual.getApplicationId());
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.getCreationTime(), actual.getCreationTime());
+    }
+
+    private List<RoleResponse> createRoles(String applicationId, int size) {
+        List<RoleResponse> roles = new ArrayList<>(size);
+        for (int i = 0; i < size; i ++) {
+            String name = getRoleName();
+            roles.add(saam.addRole(new RoleAddRequest(applicationId, name)));
+        }
+        return roles;
+    }
+
+    private List<UserSessionResponse> createUserSessions(String applicationId, String userId, int size) {
+        List<UserSessionResponse> sessions = new ArrayList<>(size);
+        for (int i = 0; i < size; i ++) {
+            sessions.add(createUserSession(applicationId, userId));
+        }
+        return sessions;
+    }
+
+    private UserSessionResponse createUserSession(String applicationId, String userId) {
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+        UserSessionResponse session = saam.createUserSession(
+                new UserSessionCreateRequest(
+                        applicationId,
+                        userId,
+                        sessionDetails,
+                        1000));
+        return session;
+    }
+
+    private void assertAPIKey(APIKeyResponse expected, APIKeyResponse actual) {
+        assertEquals(expected.getApplicationId(), actual.getApplicationId());
+        assertEquals(expected.getUserId(), actual.getUserId());
+        assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.isActive(), actual.isActive());
+    }
+
     private UserResponse.Identifier getIdentifier(UserResponse user, IdentifierType type) {
         List<UserResponse.Identifier> identifiers = user.getIdentifiers();
         for (UserResponse.Identifier identifier: identifiers) {
@@ -1040,6 +2019,26 @@ public abstract class SAAMTest {
         assertEquals(expected.getUsernamePolicy(), actual.getUsernamePolicy());
         assertEquals(expected.getEmailPolicy(), actual.getEmailPolicy());
         assertEquals(expected.getOAuthIdentifierPolicies(), actual.getOAuthIdentifierPolicies());
+    }
+
+    private List<APIKeyResponse> createAPIKeys(String applicationId, String userId, int size) {
+        List<APIKeyResponse> apiKeys = new ArrayList<>(size);
+        for (int i = 0; i < size; i ++) {
+            apiKeys.add(createAPIKey(applicationId, userId));
+        }
+        return apiKeys;
+    }
+
+    private APIKeyResponse createAPIKey() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        return createAPIKey(app.getId(), user.getId());
+    }
+
+    private APIKeyResponse createAPIKey(String applicationId, String userId) {
+        String name = getAPIKeyName();
+        return saam.addAPIKey(
+                new APIKeyAddRequest(applicationId, userId, name));
     }
 
     private List<UserResponse> registerUsers(String applicationId, int size) {
