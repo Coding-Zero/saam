@@ -5,6 +5,7 @@ import com.codingzero.saam.common.ApplicationStatus;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.common.PasswordPolicy;
+import com.codingzero.saam.common.PermissionType;
 import com.codingzero.utilities.error.BusinessError;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
@@ -1714,6 +1715,39 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testGetGrantedResources() {
+        ApplicationResponse app = createApplication();
+        UserResponse user1 = registerUser(app.getId());
+        List<ResourceResponse> resources1 =
+                createResources(app.getId(), user1.getId(), null,3);
+        for (ResourceResponse resource: resources1) {
+            createPermission(app.getId(), resource.getKey(),  user1.getId());
+        }
+
+        UserResponse user2 = registerUser(app.getId());
+        createResources(app.getId(), user2.getId(), null,5);
+
+        PaginatedResult<List<ResourceResponse>> actualResult1 =
+                saam.getGrantedResources(app.getId(), user1.getId());
+        List<ResourceResponse> actualResources1 =
+                actualResult1.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(resources1.size(), actualResources1.size());
+        for (ResourceResponse resource: resources1) {
+            for (ResourceResponse actualResource: actualResources1) {
+                if (resource.getKey().equals(actualResource.getKey())) {
+                    assertResource(resource, actualResource);
+                }
+            }
+        }
+
+        PaginatedResult<List<ResourceResponse>> actualResult2 =
+                saam.getGrantedResources(app.getId(), user2.getId());
+        List<ResourceResponse> actualResources2 =
+                actualResult2.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(0, actualResources2.size());
+    }
+
+    @Test
     public void testListResources() {
         ApplicationResponse app1 = createApplication();
         UserResponse user1 = registerUser(app1.getId());
@@ -1797,23 +1831,12 @@ public abstract class SAAMTest {
         UserResponse user = registerUser(app.getId());
         ResourceResponse resource = saam.storeResource(
                 new ResourceStoreRequest(app.getId(), user.getId(), getResourceKey()));
-        List<Action> actions = new LinkedList<>();
-        actions.add(new Action("READ", true));
-        actions.add(new Action("EDIT", true));
-        actions.add(new Action("REMOVE", false));
-        PermissionResponse permission =
-                saam.storePermission(
-                        new PermissionStoreRequest(
-                                app.getId(),
-                                resource.getKey(),
-                                user.getId(),
-                                actions));
+        PermissionResponse permission = createPermission(app.getId(), resource.getKey(), user.getId());
 
         assertNotNull(permission);
         assertEquals(app.getId(), permission.getApplicationId());
         assertEquals(resource.getKey(), permission.getResourceKey());
         assertEquals(user.getId(), permission.getPrincipalId());
-        assertEquals(actions, permission.getActions());
     }
 
     @Test
@@ -1822,23 +1845,14 @@ public abstract class SAAMTest {
         UserResponse user = registerUser(app.getId());
         ResourceResponse resource = saam.storeResource(
                 new ResourceStoreRequest(app.getId(), user.getId(), getResourceKey()));
-        List<Action> actions = new LinkedList<>();
-        actions.add(new Action("READ", true));
-        actions.add(new Action("EDIT", true));
-        actions.add(new Action("REMOVE", false));
-        saam.storePermission(
-                new PermissionStoreRequest(
-                        app.getId(),
-                        resource.getKey(),
-                        user.getId(),
-                        actions));
+        createPermission(app.getId(), resource.getKey(), user.getId());
 
 
         List<Action> actions2 = new LinkedList<>();
-        actions.add(new Action("READ", false));
-        actions.add(new Action("EDIT", false));
-        actions.add(new Action("REMOVE", true));
-        actions.add(new Action("MOVE", true));
+        actions2.add(new Action("READ", false));
+        actions2.add(new Action("EDIT", false));
+        actions2.add(new Action("REMOVE", true));
+        actions2.add(new Action("MOVE", true));
         PermissionResponse permission =
                 saam.storePermission(
                         new PermissionStoreRequest(
@@ -1860,16 +1874,8 @@ public abstract class SAAMTest {
         UserResponse user = registerUser(app.getId());
         ResourceResponse resource = saam.storeResource(
                 new ResourceStoreRequest(app.getId(), user.getId(), getResourceKey()));
-        List<Action> actions = new LinkedList<>();
-        actions.add(new Action("READ", true));
-        actions.add(new Action("EDIT", true));
-        actions.add(new Action("REMOVE", false));
-        saam.storePermission(
-                new PermissionStoreRequest(
-                        app.getId(),
-                        resource.getKey(),
-                        user.getId(),
-                        actions));
+        createPermission(app.getId(), resource.getKey(), user.getId());
+
         saam.removePermission(app.getId(), resource.getKey(), user.getId());
         PermissionResponse actualPermission =
                 saam.getPermissionByPrincipalId(app.getId(), resource.getKey(), user.getId());
@@ -1882,20 +1888,202 @@ public abstract class SAAMTest {
         UserResponse user = registerUser(app.getId());
         ResourceResponse resource = saam.storeResource(
                 new ResourceStoreRequest(app.getId(), user.getId(), getResourceKey()));
-        List<Action> actions = new LinkedList<>();
-        actions.add(new Action("READ", true));
-        actions.add(new Action("EDIT", true));
-        actions.add(new Action("REMOVE", false));
-        saam.storePermission(
-                new PermissionStoreRequest(
-                        app.getId(),
-                        resource.getKey(),
-                        user.getId(),
-                        actions));
+        createPermission(app.getId(), resource.getKey(), user.getId());
+
         saam.removePermission(app.getId(), resource.getKey(), user.getId());
 
         thrown.expect(BusinessError.class);
         saam.removePermission(app.getId(), resource.getKey(), user.getId());
+    }
+
+    @Test
+    public void testListPermissions() {
+        ApplicationResponse app = createApplication();
+        RoleResponse owner = createRole(app.getId(), getRoleName());
+        List<UserResponse> users = registerUsers(app.getId(), 3);
+        ResourceResponse resource1 = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), owner.getId(), getResourceKey()));
+        List<PermissionResponse> permissions1 = createPermissions(app.getId(), resource1.getKey(), users);
+        ResourceResponse resource2 = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), owner.getId(), getResourceKey()));
+        List<PermissionResponse> permissions2 = createPermissions(app.getId(), resource1.getKey(), users);
+
+        PaginatedResult<List<PermissionResponse>> actualResult1 = saam.listPermissions(app.getId(), resource1.getKey());
+        List<PermissionResponse> actualPermissions1 =
+                actualResult1.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(permissions1.size(), actualPermissions1.size());
+        for (PermissionResponse permission: permissions1) {
+            for (PermissionResponse actualPermission: actualPermissions1) {
+                if (permission.getPrincipalId().equals(actualPermission.getPrincipalId())) {
+                    assertPermission(permission, actualPermission);
+                }
+            }
+        }
+
+        PaginatedResult<List<PermissionResponse>> actualResult2 = saam.listPermissions(app.getId(), resource2.getKey());
+        List<PermissionResponse> actualPermissions2 =
+                actualResult2.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(permissions1.size(), actualPermissions1.size());
+        for (PermissionResponse permission: permissions2) {
+            for (PermissionResponse actualPermission: actualPermissions2) {
+                if (permission.getPrincipalId().equals(actualPermission.getPrincipalId())) {
+                    assertPermission(permission, actualPermission);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testListPermissions_Parent() {
+        ApplicationResponse app = createApplication();
+        RoleResponse owner = createRole(app.getId(), getRoleName());
+        List<UserResponse> users = registerUsers(app.getId(), 3);
+        ResourceResponse resource1 = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), owner.getId(), getResourceKey()));
+        List<PermissionResponse> permissions1 = createPermissions(app.getId(), resource1.getKey(), users);
+        ResourceResponse resource2 = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), owner.getId(), getResourceKey(resource1.getKey())));
+        List<PermissionResponse> permissions2 = createPermissions(app.getId(), resource1.getKey(), users);
+
+        PaginatedResult<List<PermissionResponse>> actualResult1 = saam.listPermissions(app.getId(), resource1.getKey());
+        List<PermissionResponse> actualPermissions1 =
+                actualResult1.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(permissions1.size(), actualPermissions1.size());
+        for (PermissionResponse permission: permissions1) {
+            for (PermissionResponse actualPermission: actualPermissions1) {
+                if (permission.getPrincipalId().equals(actualPermission.getPrincipalId())) {
+                    assertPermission(permission, actualPermission);
+                }
+            }
+        }
+
+        PaginatedResult<List<PermissionResponse>> actualResult2 = saam.listPermissions(app.getId(), resource2.getKey());
+        List<PermissionResponse> actualPermissions2 =
+                actualResult2.start(new OffsetBasedResultPage(1, 10)).getResult();
+        assertEquals(permissions1.size(), actualPermissions1.size());
+        for (PermissionResponse permission: permissions2) {
+            for (PermissionResponse actualPermission: actualPermissions2) {
+                if (permission.getPrincipalId().equals(actualPermission.getPrincipalId())) {
+                    assertPermission(permission, actualPermission);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testCheckPermission() {
+        ApplicationResponse app = createApplication();
+        RoleResponse owner = createRole(app.getId(), getRoleName());
+        UserResponse user = registerUser(app.getId());
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), owner.getId(), getResourceKey()));
+        createPermission(app.getId(), resource.getKey(), user.getId());
+
+        PermissionCheckResponse read = saam.checkPermission(
+                new PermissionCheckRequest(app.getId(), resource.getKey(), user.getId(), "READ"));
+        assertEquals(app.getId(), read.getApplicationId());
+        assertEquals(resource.getKey(), read.getResourceKey());
+        assertEquals(user.getId(), read.getPrincipalId());
+        assertEquals("READ", read.getActionCode());
+        assertEquals(PermissionType.ALLOW, read.getResult());
+
+        PermissionCheckResponse edit = saam.checkPermission(
+                new PermissionCheckRequest(app.getId(), resource.getKey(), user.getId(), "EDIT"));
+        assertEquals(app.getId(), edit.getApplicationId());
+        assertEquals(resource.getKey(), edit.getResourceKey());
+        assertEquals(user.getId(), edit.getPrincipalId());
+        assertEquals("EDIT", edit.getActionCode());
+        assertEquals(PermissionType.ALLOW, edit.getResult());
+
+        PermissionCheckResponse remove = saam.checkPermission(
+                new PermissionCheckRequest(app.getId(), resource.getKey(), user.getId(), "REMOVE"));
+        assertEquals(app.getId(), remove.getApplicationId());
+        assertEquals(resource.getKey(), remove.getResourceKey());
+        assertEquals(user.getId(), remove.getPrincipalId());
+        assertEquals("REMOVE", remove.getActionCode());
+        assertEquals(PermissionType.DENY, remove.getResult());
+
+        PermissionCheckResponse move = saam.checkPermission(
+                new PermissionCheckRequest(app.getId(), resource.getKey(), user.getId(), "MOVE"));
+        assertEquals(app.getId(), move.getApplicationId());
+        assertEquals(resource.getKey(), move.getResourceKey());
+        assertEquals(user.getId(), move.getPrincipalId());
+        assertEquals("MOVE", move.getActionCode());
+        assertEquals(PermissionType.NONE, move.getResult());
+    }
+
+    @Test
+    public void testCheckPermission_Owner() {
+        ApplicationResponse app = createApplication();
+        RoleResponse owner = createRole(app.getId(), getRoleName());
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), owner.getId(), getResourceKey()));
+
+        PermissionCheckResponse read = saam.checkPermission(
+                new PermissionCheckRequest(app.getId(), resource.getKey(), owner.getId(), "READ"));
+        assertEquals(app.getId(), read.getApplicationId());
+        assertEquals(resource.getKey(), read.getResourceKey());
+        assertEquals(owner.getId(), read.getPrincipalId());
+        assertEquals("READ", read.getActionCode());
+        assertEquals(PermissionType.ALLOW, read.getResult());
+
+        PermissionCheckResponse edit = saam.checkPermission(
+                new PermissionCheckRequest(app.getId(), resource.getKey(), owner.getId(), "EDIT"));
+        assertEquals(app.getId(), edit.getApplicationId());
+        assertEquals(resource.getKey(), edit.getResourceKey());
+        assertEquals(owner.getId(), edit.getPrincipalId());
+        assertEquals("EDIT", edit.getActionCode());
+        assertEquals(PermissionType.ALLOW, edit.getResult());
+
+        PermissionCheckResponse remove = saam.checkPermission(
+                new PermissionCheckRequest(app.getId(), resource.getKey(), owner.getId(), "REMOVE"));
+        assertEquals(app.getId(), remove.getApplicationId());
+        assertEquals(resource.getKey(), remove.getResourceKey());
+        assertEquals(owner.getId(), remove.getPrincipalId());
+        assertEquals("REMOVE", remove.getActionCode());
+        assertEquals(PermissionType.ALLOW, remove.getResult());
+
+        PermissionCheckResponse move = saam.checkPermission(
+                new PermissionCheckRequest(app.getId(), resource.getKey(), owner.getId(), "MOVE"));
+        assertEquals(app.getId(), move.getApplicationId());
+        assertEquals(resource.getKey(), move.getResourceKey());
+        assertEquals(owner.getId(), move.getPrincipalId());
+        assertEquals("MOVE", move.getActionCode());
+        assertEquals(PermissionType.ALLOW, move.getResult());
+    }
+
+    private void assertPermission(PermissionResponse expected, PermissionResponse actual) {
+        assertEquals(expected.getApplicationId(), actual.getApplicationId());
+        assertEquals(expected.getResourceKey(), actual.getResourceKey());
+        assertEquals(expected.getPrincipalId(), actual.getPrincipalId());
+        assertEquals(expected.getActions(), actual.getActions());
+        assertEquals(expected.getCreationTime(), actual.getCreationTime());
+    }
+
+    private List<PermissionResponse> createPermissions(String applicationId,
+                                                       String resourceKey,
+                                                       List<UserResponse> users) {
+        List<PermissionResponse> permissions = new ArrayList<>(users.size());
+        for (UserResponse user: users) {
+            permissions.add(createPermission(
+                            applicationId,
+                            resourceKey,
+                            user.getId()));
+        }
+        return permissions;
+    }
+
+    private PermissionResponse createPermission(String applicationId, String resourceKey, String principalId) {
+        List<Action> actions = new LinkedList<>();
+        actions.add(new Action("READ", true));
+        actions.add(new Action("EDIT", true));
+        actions.add(new Action("REMOVE", false));
+        return saam.storePermission(
+                new PermissionStoreRequest(
+                        applicationId,
+                        resourceKey,
+                        principalId,
+                        actions));
     }
 
     private void assertResource(ResourceResponse expected, ResourceResponse actual) {

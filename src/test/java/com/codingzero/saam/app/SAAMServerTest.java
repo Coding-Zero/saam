@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class SAAMServerTest extends SAAMTest {
 
-    private SAAM saam;
+    private static SAAM saam;
 
     @BeforeClass
     public static void beforeClass() {
