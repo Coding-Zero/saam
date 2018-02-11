@@ -75,7 +75,7 @@ public class UserSessionResource extends AbstractResource {
     @Timed(name = "delete-user-session")
     public Response delete(@PathParam("applicationId") String applicationId,
                            @PathParam("key") String key) {
-        getApp().cleanUserSession(applicationId, key);
+        getApp().removeUserSessionByKey(applicationId, key);
         return noContent();
     }
 
@@ -84,7 +84,7 @@ public class UserSessionResource extends AbstractResource {
     @Timed(name = "delete-user-sessions")
     public Response deleteAll(@PathParam("applicationId") String applicationId,
                            @PathParam("userId") String userId) {
-        getApp().cleanAllUserSessions(applicationId, userId);
+        getApp().removeUserSessionsByUserId(applicationId, userId);
         return noContent();
     }
 

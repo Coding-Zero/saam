@@ -4,12 +4,12 @@ package com.codingzero.saam.app;
 public class ResourceStoreRequest {
 
     private String applicationId;
-    private String userId;
+    private String ownerId; //principalId
     private String key;
 
-    public ResourceStoreRequest(String applicationId, String userId, String key) {
+    public ResourceStoreRequest(String applicationId, String ownerId, String key) {
         this.applicationId = applicationId;
-        this.userId = userId;
+        this.ownerId = ownerId;
         this.key = key;
     }
 
@@ -17,8 +17,8 @@ public class ResourceStoreRequest {
         return applicationId;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getOwnerId() {
+        return ownerId;
     }
 
     public String getKey() {

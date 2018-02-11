@@ -117,14 +117,14 @@ public class ResourceEntity extends EntityObject<ResourceOS> implements Resource
         if (null == permission) {
             throw new IllegalArgumentException(
                     "Owner " + owner.getId()
-                            + " of APIKey, " + apiKey.getKey()
+                            + " of APIKey, " + apiKey.getSecretKey()
                             + " doesn't have permission granted for resource, " + getKey());
         }
         for (Action action: actions) {
             if (!permission.containAction(action.getCode())) {
                 throw new IllegalArgumentException(
                         "Owner " + owner.getId()
-                                + " of APIKey, " + apiKey.getKey()
+                                + " of APIKey, " + apiKey.getSecretKey()
                                 + " doesn't have action " + action.getCode()
                                 + " granted for resource, " + getKey());
             }

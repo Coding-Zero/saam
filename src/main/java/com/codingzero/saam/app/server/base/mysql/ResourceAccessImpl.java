@@ -54,7 +54,8 @@ public class ResourceAccessImpl extends AbstractAccess implements ResourceAccess
     }
 
     private String hash(String key) {
-        if (null == key) {
+        if (null == key
+                || key.trim().length() == 0) {
             return null;
         }
         return Key.fromString(key.toLowerCase())

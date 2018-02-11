@@ -40,7 +40,6 @@ public class PrincipalRepositoryService {
     }
 
     public void remove(PrincipalEntity entity) {
-//        access.delete((PrincipalOS) entity.getObjectSegment());
         if (entity.getType() == PrincipalType.USER) {
             userRepository.remove((UserEntity) entity);
         } else if (entity.getType() == PrincipalType.ROLE) {
@@ -53,7 +52,6 @@ public class PrincipalRepositoryService {
     }
 
     public void removeAll(Application application) {
-//        access.deleteByApplicationId(application.getId());
         userRepository.removeAll(application);
         roleRepository.removeAll(application);
         apiKeyRepository.removeAll(application);
@@ -61,6 +59,9 @@ public class PrincipalRepositoryService {
 
     public PrincipalEntity findById(Application application, String id) {
         PrincipalOS os = access.selectById(application.getId(), id);
+        if (null == os) {
+            return null;
+        }
         if (os.getType() == PrincipalType.USER) {
             return userRepository.load(application, os);
         } else if (os.getType() == PrincipalType.ROLE) {

@@ -30,6 +30,7 @@ import org.junit.rules.ExpectedException;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -209,6 +210,17 @@ public class PrincipalRepositoryServiceTest {
         when(access.selectById(applicationId, id)).thenReturn(os);
         service.findById(application, id);
         verify(apiKeyRepository, times(1)).load(application, os);
+    }
+
+    @Test
+    public void testFindById_NullValue() {
+        String id = "principal-key";
+        String applicationId = "application-id";
+        Application application = mock(Application.class);
+        when(application.getId()).thenReturn(applicationId);
+        when(access.selectById(applicationId, id)).thenReturn(null);
+        PrincipalEntity entity = service.findById(application, id);
+        assertNull(entity);
     }
 
 }

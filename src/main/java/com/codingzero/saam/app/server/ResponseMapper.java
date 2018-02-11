@@ -183,15 +183,22 @@ public class ResponseMapper {
     }
 
     public APIKeyResponse toResponse(APIKey source) {
+        if (null == source) {
+            return null;
+        }
         return new APIKeyResponse(
                 source.getApplication().getId(),
-                source.getKey(),
+                source.getId(),
+                source.getSecretKey(),
                 source.getName(),
                 source.getOwner().getId(),
                 source.isActive());
     }
 
     public UserSessionResponse toResponse(UserSession source) {
+        if (null == source) {
+            return null;
+        }
         return new UserSessionResponse(
                 source.getApplication().getId(),
                 source.getKey(),
@@ -203,6 +210,9 @@ public class ResponseMapper {
     }
 
     public RoleResponse toResponse(Role source) {
+        if (null == source) {
+            return null;
+        }
         return new RoleResponse(
                 source.getApplication().getId(),
                 source.getId(),
@@ -211,6 +221,9 @@ public class ResponseMapper {
     }
 
     public ResourceResponse toResponse(Resource source) {
+        if (null == source) {
+            return null;
+        }
         String parentKey = null;
         if (null != source.getParent()) {
             parentKey = source.getParent().getKey();
@@ -226,6 +239,9 @@ public class ResponseMapper {
     }
 
     public PermissionResponse toResponse(Permission source) {
+        if (null == source) {
+            return null;
+        }
         List<Action> actions = source.getActions();
         return new PermissionResponse(
                 source.getResource().getApplication().getId(),
