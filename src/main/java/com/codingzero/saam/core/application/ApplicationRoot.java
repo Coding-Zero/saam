@@ -453,7 +453,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     }
 
     @Override
-    public PaginatedResult<List<Resource>> fetchPermissionAssignedResources(Principal principal, Resource parentResource) {
+    public PaginatedResult<List<Resource>> fetchPermissionAssignedResources(Principal principal) {
         return resourceRepository.findPermissionAssignedResources(this, principal);
     }
 

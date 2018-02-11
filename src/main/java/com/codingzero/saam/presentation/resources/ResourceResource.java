@@ -86,7 +86,7 @@ public class ResourceResource extends AbstractResource {
                                          @QueryParam("start") int start,
                                          @QueryParam("size") int size) {
         PaginatedResult<List<ResourceResponse>> result =
-                getApp().getGrantedResources(applicationId, principalId, parentKey);
+                getApp().getGrantedResources(applicationId, principalId);
         result = result.start(new OffsetBasedResultPage(start, size));
         List<ResourceResponse> response = result.getResult();
         return ok(response);

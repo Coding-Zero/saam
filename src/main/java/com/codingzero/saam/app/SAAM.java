@@ -132,7 +132,7 @@ public interface SAAM {
             String applicationId, String ownerId, String parentKey);
 
     PaginatedResult<List<ResourceResponse>> getGrantedResources(
-            String applicationId, String principalId, String parentKey);
+            String applicationId, String principalId);
 
     PaginatedResult<List<ResourceResponse>> listResources(String applicationId, String parentKey);
 

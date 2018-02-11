@@ -875,14 +875,10 @@ public class SAAMServer implements SAAM {
 
     @Override
     public PaginatedResult<List<ResourceResponse>> getGrantedResources(
-            String applicationId, String principalId, String parentKey) {
+            String applicationId, String principalId) {
         Application application = getEnsuredApplicationById(applicationId);
         Principal principal = getEnsuredPrincipal(application, principalId);
-        Resource parent = null;
-        if (null != parentKey && parentKey.trim().length() > 0) {
-            parent = getEnsuredResource(application, parentKey);
-        }
-        PaginatedResult<List<Resource>> result = application.fetchPermissionAssignedResources(principal, parent);
+        PaginatedResult<List<Resource>> result = application.fetchPermissionAssignedResources(principal);
         return new PaginatedResult<>(new PaginatedResultMapper<List<ResourceResponse>, List<Resource>>() {
             @Override
             protected List<ResourceResponse> toResult(List<Resource> source, Object[] arguments) {
@@ -984,29 +980,8 @@ public class SAAMServer implements SAAM {
     @Override
     public PermissionCheckResponse checkPermission(PermissionCheckRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        if (null == application) {
-            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
-                    .message("No such application found, " + request.getApplicationId())
-                    .details("type", "Application")
-                    .details("id", request.getApplicationId())
-                    .build();
-        }
-        Principal principal = application.fetchPrincipalById(request.getPrincipalId());
-        if (null == principal) {
-            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
-                    .message("No such principal found, " + request.getPrincipalId())
-                    .details("type", "Principal")
-                    .details("id", request.getPrincipalId())
-                    .build();
-        }
-        Resource resource = application.fetchResourceByKey(request.getResourceKey());
-        if (null == resource) {
-            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
-                    .message("No such resource found, " + request.getResourceKey())
-                    .details("type", "Resource")
-                    .details("key", request.getResourceKey())
-                    .build();
-        }
+        Principal principal = getEnsuredPrincipal(application, request.getPrincipalId());
+        Resource resource = getEnsuredResource(application, request.getResourceKey());
         PermissionType result = resource.checkPermission(principal, request.getActionCode());
         return responseMapper.toResponse(principal, resource, request.getActionCode(), result);
     }

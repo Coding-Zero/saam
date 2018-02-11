@@ -130,39 +130,8 @@ public interface Application {
 
     PaginatedResult<List<Resource>> fetchResourcesByOwner(Principal owner, Resource parentResource);
 
-    PaginatedResult<List<Resource>> fetchPermissionAssignedResources(Principal principal, Resource parentResource);
+    PaginatedResult<List<Resource>> fetchPermissionAssignedResources(Principal principal);
 
     PaginatedResult<List<Resource>> fetchAllResources(Resource parentResource);
-
-    /**Action**/
-
-//    Action createAction(String code, String name, Resource resource);
-//
-//    void updateAction(Action action);
-//
-//    void removeAction(Action action);
-//
-//    Action fetchAction(String code);
-//
-//    PaginatedResult<List<Action>> fetchActionsByResource(Resource resource);
-//
-//    PaginatedResult<List<Action>> fetchAllActions();
-
-    /**Permission**/
-
-//    Permission addPermission(Principal principal, Resource resource, PermissionType type, List<Action> actions);
-//
-//    void updatePermission(Permission permission);
-//
-//    void removePermission(Permission permission);
-//
-//    Permission fetchPermission(Principal principal, Resource resource);
-//
-//    PaginatedResult<List<Permission>> fetchPermissionsByPrincipal(Principal principal);
-//
-//    PaginatedResult<List<Permission>> fetchPermissionsByResource(Resource resource);
-//
-//    PermissionType checkPermission(Principal owner, Resource resource, Action action);
-
 
 }
