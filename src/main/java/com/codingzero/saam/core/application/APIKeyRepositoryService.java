@@ -6,6 +6,7 @@ import com.codingzero.saam.core.User;
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
 import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import com.codingzero.saam.infrastructure.database.spi.APIKeyAccess;
+import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,11 +16,14 @@ import java.util.List;
 public class APIKeyRepositoryService {
 
     private APIKeyAccess access;
+    private PrincipalAccess principalAccess;
     private APIKeyFactoryService factory;
 
     public APIKeyRepositoryService(APIKeyAccess access,
+                                   PrincipalAccess principalAccess,
                                    APIKeyFactoryService factory) {
         this.access = access;
+        this.principalAccess = principalAccess;
         this.factory = factory;
     }
 
@@ -39,9 +43,9 @@ public class APIKeyRepositoryService {
         access.deleteByApplicationId(application.getId());
     }
 
-    public APIKeyEntity findByKey(Application application, String key) {
-        APIKeyOS os = access.selectByKey(application.getId(), key);
-        return factory.reconstitute(os, application, null);
+    public APIKeyEntity findById(Application application, String id) {
+        PrincipalOS principalOS = principalAccess.selectById(application.getId(), id);
+        return load(application, principalOS);
     }
 
     public List<APIKey> findByOwner(Application application, User user) {
@@ -54,6 +58,9 @@ public class APIKeyRepositoryService {
     }
 
     public APIKeyEntity load(Application application, PrincipalOS principalOS) {
+        if (null == principalOS) {
+            return null;
+        }
         APIKeyOS os = access.selectByPrincipalOS(principalOS);
         return factory.reconstitute(os, application, null);
     }

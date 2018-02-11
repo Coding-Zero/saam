@@ -33,8 +33,8 @@ public class APIKeyFactoryService {
     public APIKeyEntity generate(Application application, User user, String name) {
         checkForNameFormat(name);
         String id = principalAccess.generateId(application.getId(), PrincipalType.API_KEY);
-        String key = access.generateKey();
-        APIKeyOS os = new APIKeyOS(application.getId(), id, new Date(), key, name, user.getId(), true);
+        String secretKey = access.generateSecretKey();
+        APIKeyOS os = new APIKeyOS(application.getId(), id, new Date(), secretKey, name, user.getId(), true);
         APIKeyEntity entity = reconstitute(os, application, user);
         entity.markAsNew();
         return entity;

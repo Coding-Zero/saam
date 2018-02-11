@@ -85,3 +85,10 @@ CHANGE COLUMN `code` `type` VARCHAR(45) NOT NULL ;
 DROP COLUMN `type`,
 DROP PRIMARY KEY,
 ADD PRIMARY KEY (`application_id`);
+
+--
+-- Table structure for table `apikeys`
+--
+ALTER TABLE `saam`.`apikeys`
+CHANGE COLUMN `key` `secret_key` VARCHAR(64) NOT NULL ,
+DROP INDEX `key_UNIQUE` ;

@@ -24,8 +24,8 @@ public class APIKeyEntity extends PrincipalEntity<APIKeyOS> implements APIKey {
     }
 
     @Override
-    public String getKey() {
-        return getObjectSegment().getKey();
+    public String getSecretKey() {
+        return getObjectSegment().getSecretKey();
     }
 
     @Override

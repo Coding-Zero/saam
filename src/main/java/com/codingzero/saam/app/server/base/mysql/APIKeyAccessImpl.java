@@ -30,7 +30,7 @@ public class APIKeyAccessImpl extends AbstractAccess implements APIKeyAccess {
     }
 
     @Override
-    public String generateKey() {
+    public String generateSecretKey() {
         return RandomKey.nextUUIDKey()
                 .toHMACKey(HMACKey.Algorithm.SHA256)
                 .toBase64String(true);
@@ -54,13 +54,13 @@ public class APIKeyAccessImpl extends AbstractAccess implements APIKeyAccess {
         try {
             String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
                     TABLE,
-                    "application_id, id, `key`, name, user_id, is_active",
+                    "application_id, id, `secret_key`, name, user_id, is_active",
                     "?, ?, ?, ?, ?, ?");
             stmt = conn.prepareStatement(sql);
 
             stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
             stmt.setBytes(2, Key.fromHexString(os.getId()).getKey());
-            stmt.setString(3, os.getKey());
+            stmt.setString(3, os.getSecretKey());
             stmt.setString(4, os.getName());
             stmt.setBytes(5, Key.fromHexString(os.getUserId()).getKey());
             stmt.setBoolean(6, os.isActive());
@@ -164,67 +164,6 @@ public class APIKeyAccessImpl extends AbstractAccess implements APIKeyAccess {
     }
 
     @Override
-    public APIKeyOS selectByKey(String applicationId, String key) {
-        Connection conn = getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            String sql = String.format(
-                    "SELECT * FROM %S ak"
-                            + " LEFT JOIN %S ppl"
-                            + " ON ak.application_id = ppl.application_id AND ak.id = ppl.id"
-                            + " WHERE ak.application_id=? AND ak.`key`=? LIMIT 1;",
-                    TABLE,
-                    PrincipalAccessImpl.TABLE);
-            stmt = conn.prepareCall(sql);
-            stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, key);
-            rs = stmt.executeQuery();
-            if (!rs.next()) {
-                return null;
-            } else {
-                return getObjectSegmentMapper().toAPIKeyOS(rs);
-            }
-        } catch (SQLException | IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            closeResultSet(rs);
-            closePreparedStatement(stmt);
-            closeConnection(conn);
-        }
-    }
-
-//    @Override
-//    public APIKeyOS selectByKey(String applicationId, String key, PrincipalAccess principalAccess) {
-//        Connection conn = getConnection();
-//        PreparedStatement stmt = null;
-//        ResultSet rs = null;
-//        try {
-//            String sql = String.format(
-//                    "SELECT * FROM %S WHERE application_id=? AND `key`=? LIMIT 1;",
-//                    TABLE);
-//            stmt = conn.prepareCall(sql);
-//            stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-//            stmt.setString(2, key);
-//            rs = stmt.executeQuery();
-//            if (!rs.next()) {
-//                return null;
-//            } else {
-//                PrincipalOS principalOS = principalAccess.selectById(
-//                        applicationId,
-//                        Key.fromBytes(rs.getBytes("id")).toHexString());
-//                return getObjectSegmentMapper().toAPIKeyOS(principalOS, rs);
-//            }
-//        } catch (SQLException | IOException e) {
-//            throw new RuntimeException(e);
-//        } finally {
-//            closeResultSet(rs);
-//            closePreparedStatement(stmt);
-//            closeConnection(conn);
-//        }
-//    }
-
-    @Override
     public APIKeyOS selectByPrincipalOS(PrincipalOS principalOS) {
         Connection conn = getConnection();
         PreparedStatement stmt = null;
@@ -277,29 +216,6 @@ public class APIKeyAccessImpl extends AbstractAccess implements APIKeyAccess {
         }
     }
 
-    //    @Override
-//    public List<APIKeyOS> selectByUserId(String applicationId, String userId, PrincipalAccess principalAccess) {
-//        Connection conn = getConnection();
-//        PreparedStatement stmt = null;
-//        ResultSet rs = null;
-//        try {
-//            String sql = String.format(
-//                    "SELECT * FROM %s WHERE application_id=? AND user_id=? ", TABLE);
-//            stmt = conn.prepareCall(sql);
-//            stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-//            stmt.setBytes(2, Key.fromHexString(userId).getKey());
-//            rs = stmt.executeQuery();
-//            return toOSList(principalAccess, rs);
-//        } catch (SQLException | IOException e) {
-//            throw new RuntimeException(e);
-//        } finally {
-//            closeResultSet(rs);
-//            closePreparedStatement(stmt);
-//            closeConnection(conn);
-//        }
-//    }
-
-
     @Override
     public PaginatedResult<List<APIKeyOS>> selectByApplicationId(String applicationId) {
         return new PaginatedResult<>(
@@ -345,16 +261,5 @@ public class APIKeyAccessImpl extends AbstractAccess implements APIKeyAccess {
         }
         return result;
     }
-
-//    private List<APIKeyOS> toOSList(PrincipalAccess principalAccess, ResultSet rs) throws SQLException, IOException {
-//        List<APIKeyOS> result = new ArrayList<>(10);
-//        while (rs.next()) {
-//            PrincipalOS principalOS = principalAccess.selectById(
-//                    Key.fromBytes(rs.getBytes("application_id")).toHexString(),
-//                    Key.fromBytes(rs.getBytes("id")).toHexString());
-//            result.add(getObjectSegmentMapper().toAPIKeyOS(principalOS, rs));
-//        }
-//        return result;
-//    }
 
 }

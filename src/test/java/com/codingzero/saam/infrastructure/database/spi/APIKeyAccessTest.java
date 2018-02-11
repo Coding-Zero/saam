@@ -48,7 +48,8 @@ public abstract class APIKeyAccessTest {
     public void testInsert() {
         APIKeyOS os = createObjectSegment();
         access.insert(os);
-        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+
+        APIKeyOS actualOS = access.selectByPrincipalOS(os);
         assertOS(os, actualOS);
     }
 
@@ -70,7 +71,7 @@ public abstract class APIKeyAccessTest {
         access.insert(os);
         manager.commit();
 
-        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        APIKeyOS actualOS = access.selectByPrincipalOS(os);
         assertOS(os, actualOS);
     }
 
@@ -84,7 +85,7 @@ public abstract class APIKeyAccessTest {
         access.insert(os);
         manager.rollback();
 
-        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        APIKeyOS actualOS = access.selectByPrincipalOS(os);
         assertEquals(null, actualOS);
     }
 
@@ -102,7 +103,7 @@ public abstract class APIKeyAccessTest {
         } catch (Exception e) {
             manager.rollback();
         }
-        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        APIKeyOS actualOS = access.selectByPrincipalOS(os);
         assertEquals(null, actualOS);
     }
 
@@ -115,7 +116,7 @@ public abstract class APIKeyAccessTest {
         os.setName(newName);
         access.update(os);
 
-        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        APIKeyOS actualOS = access.selectByPrincipalOS(os);
         assertEquals(newName, actualOS.getName());
     }
 
@@ -133,7 +134,7 @@ public abstract class APIKeyAccessTest {
         access.update(os);
         manager.commit();
 
-        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        APIKeyOS actualOS = access.selectByPrincipalOS(os);
         assertEquals(newName, actualOS.getName());
     }
 
@@ -151,7 +152,7 @@ public abstract class APIKeyAccessTest {
         access.update(os);
         manager.rollback();
 
-        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        APIKeyOS actualOS = access.selectByPrincipalOS(os);
         assertNotEquals(newName, actualOS.getName());
     }
 
@@ -161,7 +162,7 @@ public abstract class APIKeyAccessTest {
         access.insert(os);
         access.delete(os);
 
-        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        APIKeyOS actualOS = access.selectByPrincipalOS(os);
         assertEquals(null, actualOS);
     }
 
@@ -177,7 +178,7 @@ public abstract class APIKeyAccessTest {
         access.delete(os);
         manager.commit();
 
-        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        APIKeyOS actualOS = access.selectByPrincipalOS(os);
         assertEquals(null, actualOS);
     }
 
@@ -193,7 +194,7 @@ public abstract class APIKeyAccessTest {
         access.delete(os);
         manager.rollback();
 
-        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        APIKeyOS actualOS = access.selectByPrincipalOS(os);
         assertOS(os, actualOS);
     }
 
@@ -299,7 +300,7 @@ public abstract class APIKeyAccessTest {
     public void testSelectByKey() {
         APIKeyOS os = createObjectSegment();
         access.insert(os);
-        APIKeyOS actualOS = access.selectByKey(os.getApplicationId(), os.getKey());
+        APIKeyOS actualOS = access.selectByPrincipalOS(os);
         assertOS(os, actualOS);
     }
 
@@ -328,7 +329,7 @@ public abstract class APIKeyAccessTest {
         assertEquals(3, actualOSList.size());
         for (APIKeyOS actualOS: actualOSList) {
             for (APIKeyOS os: generatedObjectSegments) {
-                if (os.getKey().equals(actualOS.getKey())) {
+                if (os.getSecretKey().equals(actualOS.getSecretKey())) {
                     assertOS(os, actualOS);
                 }
             }
@@ -353,7 +354,7 @@ public abstract class APIKeyAccessTest {
         assertEquals(5, actualOSList.size());
         for (APIKeyOS actualOS: actualOSList) {
             for (APIKeyOS os: generatedObjectSegments) {
-                if (os.getKey().equals(actualOS.getKey())) {
+                if (os.getSecretKey().equals(actualOS.getSecretKey())) {
                     assertOS(os, actualOS);
                 }
             }
@@ -364,7 +365,7 @@ public abstract class APIKeyAccessTest {
         assertEquals(expectedOS.getApplicationId(), actualOS.getApplicationId());
         assertEquals(expectedOS.getId(), actualOS.getId());
         assertEquals(expectedOS.getCreationTime(), actualOS.getCreationTime());
-        assertEquals(expectedOS.getKey(), actualOS.getKey());
+        assertEquals(expectedOS.getSecretKey(), actualOS.getSecretKey());
         assertEquals(expectedOS.getName(), actualOS.getName());
         assertEquals(expectedOS.getUserId(), actualOS.getUserId());
         assertEquals(expectedOS.isActive(), actualOS.isActive());
@@ -381,7 +382,7 @@ public abstract class APIKeyAccessTest {
                 applicationId,
                 getPrincipalId(applicationId),
                 new Date(),
-                access.generateKey(),
+                access.generateSecretKey(),
                 generateName(),
                 userId,
                 true);

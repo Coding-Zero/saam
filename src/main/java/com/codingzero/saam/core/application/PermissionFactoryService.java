@@ -65,7 +65,7 @@ public class PermissionFactoryService {
                 throw BusinessError.raise(Errors.ILLEGAL_PERMISSION_TYPE)
                         .message("API Key only accept DENY permissions")
                         .details("applicationId", principal.getApplication().getId())
-                        .details("apiKey", ((APIKey) principal).getKey())
+                        .details("apiKey", ((APIKey) principal).getSecretKey())
                         .build();
             }
         }

@@ -45,12 +45,11 @@ DROP TABLE IF EXISTS `apikeys`;
 CREATE TABLE `apikeys` (
   `application_id` binary(16) NOT NULL,
   `id` binary(16) NOT NULL,
-  `key` varchar(64) NOT NULL,
+  `secret_key` varchar(64) NOT NULL,
   `name` varchar(45) NOT NULL,
   `user_id` binary(16) NOT NULL,
   `is_active` bit(1) NOT NULL,
   PRIMARY KEY (`application_id`,`id`),
-  UNIQUE KEY `key_UNIQUE` (`application_id`,`key`),
   KEY `is_active_INDEX` (`is_active`),
   KEY `user_id_INDEX` (`application_id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -320,4 +319,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-29 20:26:51
+-- Dump completed on 2018-02-10 16:33:42

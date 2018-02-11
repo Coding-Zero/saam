@@ -6,6 +6,7 @@ import com.codingzero.saam.core.application.APIKeyRepositoryService;
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
 import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import com.codingzero.saam.infrastructure.database.spi.APIKeyAccess;
+import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,15 +26,18 @@ public class APIKeyRepositoryServiceTest {
     public ExpectedException thrown = ExpectedException.none();
 
     private APIKeyAccess access;
+    private PrincipalAccess principalAccess;
     private APIKeyFactoryService factory;
     private APIKeyRepositoryService service;
 
     @Before
     public void setUp() {
         access = mock(APIKeyAccess.class);
+        principalAccess = mock(PrincipalAccess.class);
         factory = mock(APIKeyFactoryService.class);
         service = new APIKeyRepositoryService(
                 access,
+                principalAccess,
                 factory);
     }
 
@@ -80,14 +84,16 @@ public class APIKeyRepositoryServiceTest {
     }
 
     @Test
-    public void testFindByKey() {
+    public void testFindById() {
         String applicationId = "application-id";
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
-        String key = "key";
+        PrincipalOS principalOS = mock(PrincipalOS.class);
+        String id = "principal-id";
+        when(principalAccess.selectById(applicationId, id)).thenReturn(principalOS);
         APIKeyOS os = mock(APIKeyOS.class);
-        when(access.selectByKey(applicationId, key)).thenReturn(os);
-        service.findByKey(application, key);
+        when(access.selectByPrincipalOS(principalOS)).thenReturn(os);
+        service.findById(application, id);
         verify(factory, times(1)).reconstitute(os, application, null);
     }
 

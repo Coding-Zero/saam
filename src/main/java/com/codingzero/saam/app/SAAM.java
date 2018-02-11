@@ -84,9 +84,11 @@ public interface SAAM {
 
     APIKeyResponse updateAPIKey(APIKeyUpdateRequest request);
 
-    void removeAPIKey(String applicationId, String key);
+    void verifyAPIKey(APIKeyVerifyRequest request);
 
-    APIKeyResponse getAPIKeyByKey(String applicationId, String key);
+    void removeAPIKeyById(String applicationId, String id);
+
+    APIKeyResponse getAPIKeyById(String applicationId, String id);
 
     List<APIKeyResponse> listAPIKeysByApplicationIdAndUserId(String applicationId, String userId);
 
@@ -100,9 +102,9 @@ public interface SAAM {
 
     UserSessionResponse getUserSessionByKey(String applicationId, String key);
 
-    void cleanUserSession(String applicationId, String sessionKey);
+    void removeUserSessionByKey(String applicationId, String sessionKey);
 
-    void cleanAllUserSessions(String applicationId, String userId);
+    void removeUserSessionsByUserId(String applicationId, String userId);
 
     PaginatedResult<List<UserSessionResponse>> listUserSessionsByUserId(String applicationId, String userId);
 

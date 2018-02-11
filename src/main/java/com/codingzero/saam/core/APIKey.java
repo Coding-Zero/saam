@@ -2,7 +2,7 @@ package com.codingzero.saam.core;
 
 public interface APIKey extends Principal {
 
-    String getKey();
+    String getSecretKey();
 
     String getName();
 

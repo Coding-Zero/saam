@@ -3,6 +3,7 @@ package com.codingzero.saam.app.server;
 import com.codingzero.saam.app.APIKeyAddRequest;
 import com.codingzero.saam.app.APIKeyResponse;
 import com.codingzero.saam.app.APIKeyUpdateRequest;
+import com.codingzero.saam.app.APIKeyVerifyRequest;
 import com.codingzero.saam.app.ApplicationAddRequest;
 import com.codingzero.saam.app.ApplicationResponse;
 import com.codingzero.saam.app.ApplicationUpdateRequest;
@@ -126,7 +127,7 @@ public class SAAMServer implements SAAM {
         }
     }
 
-    private Application getCheckedApplicationById(String id) {
+    private Application getEnsuredApplicationById(String id) {
         Application application = applicationRepository.findById(id);
         if (null == application) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
@@ -140,7 +141,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public ApplicationResponse updateApplication(ApplicationUpdateRequest request) {
-        Application application = getCheckedApplicationById(request.getId());
+        Application application = getEnsuredApplicationById(request.getId());
         application.setStatus(request.getStatus());
         application.setDescription(request.getDescription());
         application.setName(request.getName());
@@ -150,7 +151,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public ApplicationResponse updatePasswordPolicy(PasswordPolicyUpdateRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         application.setPasswordPolicy(request.getPasswordPolicy());
         application = storeApplication(application);
         return responseMapper.toResponse(application);
@@ -158,7 +159,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public void removeApplication(String id) {
-        Application application = getCheckedApplicationById(id);
+        Application application = getEnsuredApplicationById(id);
         removeApplication(application);
     }
 
@@ -189,7 +190,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public String requestOAuthAuthorizationUrl(OAuthAuthorizationUrlRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
         return oAuthPlatformAgent.getAuthorizationUrl(
                 request.getPlatform(), policy.getConfigurations(), request.getParameters());
@@ -197,7 +198,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public OAuthAccessTokenResponse requestOAuthAccessToken(OAuthAccessTokenRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
         OAuthAccessToken token = oAuthPlatformAgent.requestAccessToken(
                 policy.getPlatform(), policy.getConfigurations(), request.getParameters());
@@ -206,7 +207,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public ApplicationResponse addUsernamePolicy(UsernamePolicyAddRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         application.createUsernamePolicy();
         application = storeApplication(application);
         return responseMapper.toResponse(application);
@@ -214,7 +215,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public ApplicationResponse updateUsernamePolicy(UsernamePolicyUpdateRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         UsernamePolicy policy = (UsernamePolicy) getEnsuredIdentifierPolicy(application, IdentifierType.USERNAME);
         policy.setActive(request.isActive());
         application.updateIdentifierPolicy(policy);
@@ -236,7 +237,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public ApplicationResponse addEmailPolicy(EmailPolicyAddRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         application.createEmailPolicy(
                 request.isVerificationRequired(), request.getDomains());
         application = storeApplication(application);
@@ -245,7 +246,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public ApplicationResponse updateEmailPolicy(EmailPolicyUpdateRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         EmailPolicy policy = (EmailPolicy) getEnsuredIdentifierPolicy(application, IdentifierType.EMAIL);
         policy.setActive(request.isActive());
         policy.setDomains(request.getDomains());
@@ -257,7 +258,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public ApplicationResponse removeIdentifierPolicy(String applicationId, IdentifierType type) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, type);
         application.removeIdentifierPolicy(policy);
         application = storeApplication(application);
@@ -266,7 +267,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public ApplicationResponse addOAuthIdentifierPolicy(OAuthIdentifierPolicyAddRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         application.createOAuthIdentifierPolicy(request.getPlatform(), request.getConfigurations());
         application = storeApplication(application);
         return responseMapper.toResponse(application);
@@ -274,7 +275,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public ApplicationResponse updateOAuthIdentifierPolicy(OAuthIdentifierPolicyUpdateRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
         policy.setActive(request.isActive());
         policy.setConfigurations(request.getConfigurations());
@@ -297,7 +298,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public ApplicationResponse removeOAuthIdentifierPolicy(String applicationId, OAuthPlatform platform) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, platform);
         application.removeOAuthIdentifierPolicy(policy);
         application = storeApplication(application);
@@ -306,7 +307,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserResponse register(UserRegisterRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.createUser();
         setIdentifiers(user, request.getIdentifiers());
         setOAuthIdentifiers(user, request.getOAuthIdentifiers());
@@ -352,7 +353,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public void removeUser(String applicationId, String id) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         User user = getEnsuredUser(application, id);
         application.removeUser(user);
         storeApplication(application);
@@ -372,28 +373,28 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserResponse getUserById(String applicationId, String id) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         User user = application.fetchUserById(id);
         return responseMapper.toResponse(user);
     }
 
     @Override
     public UserResponse getUserByIdentifier(String applicationId, String identifier) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         User user = application.fetchUserByIdentifier(identifier);
         return responseMapper.toResponse(user);
     }
 
     @Override
     public UserResponse getUserByOAuthIdentifier(String applicationId, OAuthPlatform platform, String identifier) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         User user = application.fetchUserByOAuthIdentifier(platform, identifier);
         return responseMapper.toResponse(user);
     }
 
     @Override
     public PaginatedResult<List<UserResponse>> listUsersByApplicationId(String applicationId) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         PaginatedResult<List<User>> result = application.fetchAllUsers();
         return new PaginatedResult<>(new PaginatedResultMapper<List<UserResponse>, List<User>>() {
             @Override
@@ -413,7 +414,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserResponse updateRoles(UserRoleUpdateRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
         user.setPlayingRoles(getRoles(application, request.getRoleIds()));
         application.updateUser(user);
@@ -423,7 +424,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserResponse addIdentifier(IdentifierAddRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
         IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getType());
         policy.addIdentifier(request.getIdentifier(), user);
@@ -434,7 +435,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserResponse removeIdentifier(IdentifierRemoveRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
         IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getType());
         Identifier identifier = getEnsuredIdentifer(policy, user, request.getIdentifier());
@@ -447,7 +448,7 @@ public class SAAMServer implements SAAM {
     @Override
     public IdentifierVerificationCodeResponse generateVerificationCode(
             IdentifierVerificationCodeGenerateRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
         IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getIdentifierType());
         Identifier identifier = getEnsuredIdentifer(policy, user, request.getIdentifier());
@@ -475,7 +476,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserResponse verifyIdentifier(IdentifierVerifyRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
         IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getIdentifierType());
         Identifier identifier = getEnsuredIdentifer(policy, user, request.getIdentifier());
@@ -488,7 +489,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserResponse connectOAuthIdentifier(OAuthIdentifierConnectRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
         OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
         OAuthIdentifier identifier = policy.fetchIdentifierByUserAndId(user, request.getIdentifier());
@@ -505,7 +506,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserResponse disconnectOAuthIdentifier(OAuthIdentifierDisconnectRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
         OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
         OAuthIdentifier identifier = policy.fetchIdentifierByUserAndId(user, request.getIdentifier());
@@ -526,7 +527,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserResponse changePassword(PasswordChangeRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
         user.changePassword(request.getOldPassword(), request.getNewPassword());
         application.updateUser(user);
@@ -536,7 +537,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public PasswordResetCodeResponse generateResetCode(PasswordResetCodeGenerateRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getIdentifierType());
         User user = application.fetchUserById(request.getUserId());
         Identifier identifier = getEnsuredIdentifer(policy, user, request.getIdentifier());
@@ -548,7 +549,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserResponse resetPassword(PasswordResetRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
         user.resetPassword(request.getResetCode(), request.getNewPassword());
         application.updateUser(user);
@@ -558,8 +559,8 @@ public class SAAMServer implements SAAM {
 
     @Override
     public APIKeyResponse addAPIKey(APIKeyAddRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
-        User user = application.fetchUserById(request.getUserId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
+        User user = getEnsuredUser(application, request.getUserId());
         APIKey apiKey = application.createAPIKey(user, request.getName());
         storeApplication(application);
         return responseMapper.toResponse(apiKey);
@@ -567,8 +568,8 @@ public class SAAMServer implements SAAM {
 
     @Override
     public APIKeyResponse updateAPIKey(APIKeyUpdateRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
-        APIKey apiKey = getEnsuredAPIKey(application, request.getKey());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
+        APIKey apiKey = getEnsuredAPIKey(application, request.getId());
         apiKey.setName(request.getName());
         apiKey.setActive(request.isActive());
         application.updateAPIKey(apiKey);
@@ -576,37 +577,43 @@ public class SAAMServer implements SAAM {
         return responseMapper.toResponse(apiKey);
     }
 
-    private APIKey getEnsuredAPIKey(Application application, String key) {
-        APIKey apiKey = application.fetchAPIKeyByKey(key);
+    @Override
+    public void verifyAPIKey(APIKeyVerifyRequest request) {
+        Application application = getEnsuredApplicationById(request.getApplicationId());
+        application.verifyAPIKey(request.getId(), request.getSecretKey());
+    }
+
+    private APIKey getEnsuredAPIKey(Application application, String id) {
+        APIKey apiKey = application.fetchAPIKeyById(id);
         if (null == apiKey) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
                     .message("No such API key found.")
                     .details("entity", APIKey.class.getSimpleName())
                     .details("applicationId", application.getId())
-                    .details("key", key)
+                    .details("id", id)
                     .build();
         }
         return apiKey;
     }
 
     @Override
-    public void removeAPIKey(String applicationId, String key) {
-        Application application = getCheckedApplicationById(applicationId);
-        APIKey apiKey = getEnsuredAPIKey(application, key);
+    public void removeAPIKeyById(String applicationId, String id) {
+        Application application = getEnsuredApplicationById(applicationId);
+        APIKey apiKey = getEnsuredAPIKey(application, id);
         application.removeAPIKey(apiKey);
         storeApplication(application);
     }
 
     @Override
-    public APIKeyResponse getAPIKeyByKey(String applicationId, String key) {
-        Application application = getCheckedApplicationById(applicationId);
-        APIKey apiKey = getEnsuredAPIKey(application, key);
+    public APIKeyResponse getAPIKeyById(String applicationId, String id) {
+        Application application = getEnsuredApplicationById(applicationId);
+        APIKey apiKey = application.fetchAPIKeyById(id);
         return responseMapper.toResponse(apiKey);
     }
 
     @Override
     public List<APIKeyResponse> listAPIKeysByApplicationIdAndUserId(String applicationId, String userId) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         User user = application.fetchUserById(userId);
         List<APIKey> apiKeys = application.fetchAPIKeysByOwner(user);
         List<APIKeyResponse> responses = new ArrayList<>();
@@ -618,7 +625,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserSessionResponse login(CredentialLoginRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserByIdentifier(request.getIdentifier());
         UserSession session = userAuthenticator.login(
                 user, request.getPassword(), request.getSessionDetails(), request.getSessionTimeout());
@@ -628,7 +635,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserSessionResponse login(OAuthLoginRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserByOAuthIdentifier(request.getPlatform(), request.getIdentifier());
         UserSession session = userAuthenticator.login(
                 user, request.getSessionDetails(), request.getSessionTimeout());
@@ -638,8 +645,8 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserSessionResponse createUserSession(UserSessionCreateRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
-        User user = application.fetchUserById(request.getUserId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
+        User user = getEnsuredUser(application, request.getUserId());
         UserSession session = application.createUserSession(
                 user, request.getDetails(), request.getSessionTimeout());
         storeApplication(application);
@@ -648,29 +655,42 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserSessionResponse getUserSessionByKey(String applicationId, String key) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         UserSession session = application.fetchUserSessionByKey(key);
         return responseMapper.toResponse(session);
     }
 
     @Override
-    public void cleanUserSession(String applicationId, String sessionKey) {
-        Application application = getCheckedApplicationById(applicationId);
-        UserSession session = application.fetchUserSessionByKey(sessionKey);
+    public void removeUserSessionByKey(String applicationId, String sessionKey) {
+        Application application = getEnsuredApplicationById(applicationId);
+        UserSession session = getEnsuredUserSession(application, sessionKey);
         application.removeUserSession(session);
         storeApplication(application);
     }
 
+    private UserSession getEnsuredUserSession(Application application, String key) {
+        UserSession session = application.fetchUserSessionByKey(key);
+        if (null == session) {
+            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
+                    .message("No such user session found.")
+                    .details("entity", UserSession.class.getSimpleName())
+                    .details("applicationId", application.getId())
+                    .details("key", key)
+                    .build();
+        }
+        return session;
+    }
+
     @Override
-    public void cleanAllUserSessions(String applicationId, String userId) {
-        Application application = getCheckedApplicationById(applicationId);
+    public void removeUserSessionsByUserId(String applicationId, String userId) {
+        Application application = getEnsuredApplicationById(applicationId);
         User user = application.fetchUserById(userId);
         application.removeAllUserSession(user);
     }
 
     @Override
     public PaginatedResult<List<UserSessionResponse>> listUserSessionsByUserId(String applicationId, String userId) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         User user = application.fetchUserById(userId);
         PaginatedResult<List<UserSession>> result = application.fetchUserSessionsByUser(user);
         return new PaginatedResult<>(new PaginatedResultMapper<List<UserSessionResponse>, List<UserSession>>() {
@@ -691,7 +711,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public RoleResponse addRole(RoleAddRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         Role role = application.addRole(request.getName());
         storeApplication(application);
         return responseMapper.toResponse(role);
@@ -699,32 +719,45 @@ public class SAAMServer implements SAAM {
 
     @Override
     public RoleResponse updateRole(RoleUpdateRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
-        Role role = application.fetchRoleById(request.getId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
+        Role role = getEnsuredRole(application, request.getId());
         role.setName(request.getName());
         application.updateRole(role);
         storeApplication(application);
         return responseMapper.toResponse(role);
     }
 
+    private Role getEnsuredRole(Application application, String id) {
+        Role role = application.fetchRoleById(id);
+        if (null == role) {
+            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
+                    .message("No such role found.")
+                    .details("entity", Role.class.getSimpleName())
+                    .details("applicationId", application.getId())
+                    .details("id", id)
+                    .build();
+        }
+        return role;
+    }
+
     @Override
     public void removeRole(String applicationId, String roleId) {
-        Application application = getCheckedApplicationById(applicationId);
-        Role role = application.fetchRoleById(roleId);
+        Application application = getEnsuredApplicationById(applicationId);
+        Role role = getEnsuredRole(application, roleId);
         application.removeRole(role);
         storeApplication(application);
     }
 
     @Override
     public RoleResponse getRoleById(String applicationId, String id) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         Role role = application.fetchRoleById(id);
         return responseMapper.toResponse(role);
     }
 
     @Override
     public PaginatedResult<List<RoleResponse>> listRoles(String applicationId) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         PaginatedResult<List<Role>> result = application.fetchAllRoles();
         return new PaginatedResult<>(new PaginatedResultMapper<List<RoleResponse>, List<Role>>() {
             @Override
@@ -744,20 +777,12 @@ public class SAAMServer implements SAAM {
 
     @Override
     public ResourceResponse storeResource(ResourceStoreRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
-        Principal owner = application.fetchPrincipalById(request.getUserId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
+        Principal owner = getEnsuredPrincipal(application, request.getOwnerId());
         String[] keys = readParentKeyAndName(request.getKey());
         Resource parent = null;
         if (null != keys[0]) {
-            parent = application.fetchResourceByKey(keys[0]);
-            if (null == parent) {
-                throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
-                        .message("No such parent resource found, " + keys[0])
-                        .details("type", "Resource")
-                        .details("userId", request.getUserId())
-                        .details("key", keys[0])
-                        .build();
-            }
+            parent = getEnsuredResource(application, keys[0]);
         }
         Resource resource = application.fetchResourceByKey(request.getKey());
         if (null == resource) {
@@ -766,6 +791,19 @@ public class SAAMServer implements SAAM {
             storeApplication(application);
         }
         return responseMapper.toResponse(resource);
+    }
+
+    private Principal getEnsuredPrincipal(Application application, String id) {
+        Principal principal = application.fetchPrincipalById(id);
+        if (null == principal) {
+            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
+                    .message("No such principal found, " + id)
+                    .details("entity", Principal.class.getSimpleName())
+                    .details("applicationId", application.getId())
+                    .details("id", id)
+                    .build();
+        }
+        return principal;
     }
 
     private String[] readParentKeyAndName(String key) {
@@ -778,17 +816,30 @@ public class SAAMServer implements SAAM {
         return new String[] {parentKey, name};
     }
 
+    private Resource getEnsuredResource(Application application, String key) {
+        Resource resource = application.fetchResourceByKey(key);
+        if (null == resource) {
+            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
+                    .message("No such parent resource found, " + key)
+                    .details("type", "Resource")
+                    .details("applicationId", application.getId())
+                    .details("key", key)
+                    .build();
+        }
+        return resource;
+    }
+
     @Override
     public void removeResource(String applicationId, String key) {
-        Application application = getCheckedApplicationById(applicationId);
-        Resource resource = application.fetchResourceByKey(key);
+        Application application = getEnsuredApplicationById(applicationId);
+        Resource resource = getEnsuredResource(application, key);
         application.removeResource(resource);
         storeApplication(application);
     }
 
     @Override
     public ResourceResponse getResourceByKey(String applicationId, String key) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         Resource resource = application.fetchResourceByKey(key);
         return responseMapper.toResponse(resource);
     }
@@ -796,19 +847,11 @@ public class SAAMServer implements SAAM {
     @Override
     public PaginatedResult<List<ResourceResponse>> getResourcesByOwnerId(
             String applicationId, String ownerId, String parentKey) {
-        Application application = getCheckedApplicationById(applicationId);
-        Principal owner = application.fetchPrincipalById(ownerId);
+        Application application = getEnsuredApplicationById(applicationId);
+        Principal owner = getEnsuredPrincipal(application, ownerId);
         Resource parent = null;
         if (null != parentKey && parentKey.trim().length() > 0) {
-            parent = application.fetchResourceByKey(parentKey);
-            if (null == parent) {
-                throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
-                        .message("No such resource found for the given key")
-                        .details("entity", Resource.class.getSimpleName())
-                        .details("applicationId", application.getId())
-                        .details("key", parentKey)
-                        .build();
-            }
+            parent = getEnsuredResource(application, parentKey);
         }
         PaginatedResult<List<Resource>> result = application.fetchResourcesByOwner(owner, parent);
         return new PaginatedResult<>(new PaginatedResultMapper<List<ResourceResponse>, List<Resource>>() {
@@ -833,18 +876,11 @@ public class SAAMServer implements SAAM {
     @Override
     public PaginatedResult<List<ResourceResponse>> getGrantedResources(
             String applicationId, String principalId, String parentKey) {
-        Application application = getCheckedApplicationById(applicationId);
-        Principal principal = application.fetchPrincipalById(principalId);
+        Application application = getEnsuredApplicationById(applicationId);
+        Principal principal = getEnsuredPrincipal(application, principalId);
         Resource parent = null;
         if (null != parentKey && parentKey.trim().length() > 0) {
-            parent = application.fetchResourceByKey(parentKey);
-            if (null == parent) {
-                throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
-                        .message("No such parent resource found, " + parentKey)
-                        .details("type", "Resource")
-                        .details("key", parentKey)
-                        .build();
-            }
+            parent = getEnsuredResource(application, parentKey);
         }
         PaginatedResult<List<Resource>> result = application.fetchPermissionAssignedResources(principal, parent);
         return new PaginatedResult<>(new PaginatedResultMapper<List<ResourceResponse>, List<Resource>>() {
@@ -857,17 +893,10 @@ public class SAAMServer implements SAAM {
 
     @Override
     public PaginatedResult<List<ResourceResponse>> listResources(String applicationId, String parentKey) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         Resource parent = null;
         if (null != parentKey && parentKey.trim().length() > 0) {
-            parent = application.fetchResourceByKey(parentKey);
-            if (null == parent) {
-                throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
-                        .message("No such parent resource found, " + parentKey)
-                        .details("type", "Resource")
-                        .details("key", parentKey)
-                        .build();
-            }
+            parent = getEnsuredResource(application, parentKey);
         }
         PaginatedResult<List<Resource>> result = application.fetchAllResources(parent);
         return new PaginatedResult<>(new PaginatedResultMapper<List<ResourceResponse>, List<Resource>>() {
@@ -878,68 +907,10 @@ public class SAAMServer implements SAAM {
         }, result);
     }
 
-//    @Override
-//    public ActionResponse addAction(ActionAddRequest request) {
-//        Application application = getCheckedApplicationById(request.getApplicationId());
-//        Resource resource = null;
-//        if (null != request.getResourceKey()) {
-//            resource = application.fetchResourceByKey(request.getResourceKey());
-//            if (null == resource) {
-//                throw new NoSuchEntityFoundException("No such resource found, " + request.getResourceKey());
-//            }
-//        }
-//        Action action = application.createAction(request.getCode(), request.getName(), resource);
-//        storeApplication(application);
-//        return responseMapper.toResponse(action);
-//    }
-//
-//    @Override
-//    public ActionResponse updateAction(ActionUpdateRequest request) {
-//        Application application = getCheckedApplicationById(request.getApplicationId());
-//        Action action = application.fetchAction(request.getCode());
-//        action.setName(request.getName());
-//        application.updateAction(action);
-//        storeApplication(application);
-//        return responseMapper.toResponse(action);
-//    }
-//
-//    @Override
-//    public void removeAction(String applicationId, String code) {
-//        Application application = getCheckedApplicationById(applicationId);
-//        Action action = application.fetchAction(code);
-//        application.removeAction(action);
-//        storeApplication(application);
-//    }
-//
-//    @Override
-//    public ActionResponse getActionByCode(String applicationId, String code) {
-//        Application application = getCheckedApplicationById(applicationId);
-//        Action action = application.fetchAction(code);
-//        return responseMapper.toResponse(action);
-//    }
-//
-//    @Override
-//    public PaginatedResult<List<ActionResponse>> getActionsByResourceKey(String applicationId, String resourceKey) {
-//        Application application = getCheckedApplicationById(applicationId);
-//        Resource resource = application.fetchResourceByKey(resourceKey);
-//        if (null == resource) {
-//            throw new NoSuchEntityFoundException("No such resource found, " + resourceKey);
-//        }
-//        PaginatedResult<List<Action>> result = application.fetchActionsByResource(resource);
-//        return new PaginatedResult<>(actionResponsePageMapper, "getActionsByResource", result);
-//    }
-//
-//    @Override
-//    public PaginatedResult<List<ActionResponse>> listActions(String applicationId) {
-//        Application application = getCheckedApplicationById(applicationId);
-//        PaginatedResult<List<Action>> result = application.fetchAllActions();
-//        return new PaginatedResult<>(actionResponsePageMapper, "listActions", result);
-//    }
-
     @Override
     public PermissionResponse storePermission(PermissionStoreRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
-        Principal principal = application.fetchPrincipalById(request.getPrincipalId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
+        Principal principal = getEnsuredPrincipal(application, request.getPrincipalId());
         Resource resource = application.fetchResourceByKey(request.getResourceKey());
         Permission permission = resource.fetchPermissionById(principal);
         if (null == permission) {
@@ -955,38 +926,43 @@ public class SAAMServer implements SAAM {
 
     @Override
     public void removePermission(String applicationId, String resourceKey, String principalId) {
-        Application application = getCheckedApplicationById(applicationId);
-        Principal principal = application.fetchPrincipalById(principalId);
-        Resource resource = application.fetchResourceByKey(resourceKey);
-        Permission permission = resource.fetchPermissionById(principal);
+        Application application = getEnsuredApplicationById(applicationId);
+        Principal principal = getEnsuredPrincipal(application, principalId);
+        Resource resource = getEnsuredResource(application, resourceKey);
+        Permission permission = getEnsuredPermission(resource, principal);
         resource.removePermission(permission);
         application.updateResource(resource);
         storeApplication(application);
     }
 
+    private Permission getEnsuredPermission(Resource resource, Principal principal) {
+        Permission permission = resource.fetchPermissionById(principal);
+        if (null == permission) {
+            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
+                    .message("No such permission resource found")
+                    .details("type", "Permission")
+                    .details("applicationId", resource.getApplication().getId())
+                    .details("resourceKey", resource.getKey())
+                    .details("principalId", principal.getId())
+                    .build();
+        }
+        return permission;
+    }
+
     @Override
     public PermissionResponse getPermissionByPrincipalId(
             String applicationId, String resourceKey, String principalId) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         Principal principal = application.fetchPrincipalById(principalId);
         Resource resource = application.fetchResourceByKey(resourceKey);
         Permission permission = resource.fetchPermissionById(principal);
         return responseMapper.toResponse(permission);
     }
 
-//    @Override
-//    public PaginatedResult<List<PermissionResponse>> getPermissionsByPrincipalId(
-//            String applicationId, String principalId) {
-//        Application application = getCheckedApplicationById(applicationId);
-//        Principal principal = application.fetchPrincipalById(principalId);
-//        PaginatedResult<List<Permission>> result = application.fetchPermissionsByPrincipal(principal);
-//        return new PaginatedResult<>(permissionResponsePageMapper, "getPermissionByPrincipalId", result);
-//    }
-
     @Override
     public PaginatedResult<List<PermissionResponse>> listPermissions(
             String applicationId, String resourceKey) {
-        Application application = getCheckedApplicationById(applicationId);
+        Application application = getEnsuredApplicationById(applicationId);
         Resource resource = application.fetchResourceByKey(resourceKey);
         PaginatedResult<List<Permission>> result = resource.fetchAllPermissions();
         return new PaginatedResult<>(new PaginatedResultMapper<List<PermissionResponse>, List<Permission>>() {
@@ -1007,7 +983,7 @@ public class SAAMServer implements SAAM {
 
     @Override
     public PermissionCheckResponse checkPermission(PermissionCheckRequest request) {
-        Application application = getCheckedApplicationById(request.getApplicationId());
+        Application application = getEnsuredApplicationById(request.getApplicationId());
         if (null == application) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
                     .message("No such application found, " + request.getApplicationId())

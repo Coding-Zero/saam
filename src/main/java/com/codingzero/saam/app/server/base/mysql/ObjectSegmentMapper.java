@@ -137,7 +137,7 @@ public class ObjectSegmentMapper {
                 Key.fromBytes(rs.getBytes("application_id")).toHexString(),
                 Key.fromBytes(rs.getBytes("id")).toHexString(),
                 new Date(rs.getTimestamp("creation_time").getTime()),
-                rs.getString("key"),
+                rs.getString("secret_key"),
                 rs.getString("name"),
                 Key.fromBytes(rs.getBytes("user_id")).toHexString(),
                 rs.getBoolean("is_active")
@@ -149,7 +149,7 @@ public class ObjectSegmentMapper {
                 principalOS.getApplicationId(),
                 principalOS.getId(),
                 principalOS.getCreationTime(),
-                rs.getString("key"),
+                rs.getString("secret_key"),
                 rs.getString("name"),
                 Key.fromBytes(rs.getBytes("user_id")).toHexString(),
                 rs.getBoolean("is_active")

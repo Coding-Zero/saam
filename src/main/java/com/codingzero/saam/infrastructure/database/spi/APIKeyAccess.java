@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface APIKeyAccess extends TransactionalService {
 
-    String generateKey();
+    String generateSecretKey();
 
     void insert(APIKeyOS os);
 
@@ -20,8 +20,6 @@ public interface APIKeyAccess extends TransactionalService {
     void deleteByUserId(String applicationId, String userId);
 
     void deleteByApplicationId(String id);
-
-    APIKeyOS selectByKey(String applicationId, String key);
 
     APIKeyOS selectByPrincipalOS(PrincipalOS os);
 

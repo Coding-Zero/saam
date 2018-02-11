@@ -98,9 +98,11 @@ public interface Application {
 
     void updateAPIKey(APIKey apiKey);
 
+    void verifyAPIKey(String id, String secretKey);
+
     void removeAPIKey(APIKey apiKey);
 
-    APIKey fetchAPIKeyByKey(String key);
+    APIKey fetchAPIKeyById(String id);
 
     List<APIKey> fetchAPIKeysByOwner(User user);
 

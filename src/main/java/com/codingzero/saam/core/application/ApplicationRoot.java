@@ -1,6 +1,7 @@
 package com.codingzero.saam.core.application;
 
 import com.codingzero.saam.common.ApplicationStatus;
+import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.common.PasswordPolicy;
@@ -20,6 +21,7 @@ import com.codingzero.saam.core.UserSession;
 import com.codingzero.saam.core.UsernamePolicy;
 import com.codingzero.saam.infrastructure.database.ApplicationOS;
 import com.codingzero.utilities.ddd.EntityObject;
+import com.codingzero.utilities.error.BusinessError;
 import com.codingzero.utilities.pagination.PaginatedResult;
 
 import java.util.ArrayList;
@@ -299,6 +301,9 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     public User fetchUserByOAuthIdentifier(OAuthPlatform platform, String identifier) {
         OAuthIdentifierPolicy policy =
                 oAuthIdentifierPolicyRepository.findByPlatform(this, platform);
+        if (null == policy) {
+            return null;
+        }
         OAuthIdentifier id = policy.fetchIdentifierById(identifier);
         if (null != id) {
             return id.getUser();
@@ -325,6 +330,19 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     }
 
     @Override
+    public void verifyAPIKey(String id, String secretKey) {
+        APIKey apiKey = fetchAPIKeyById(id);
+        if (null == apiKey
+                || !apiKey.getSecretKey().equals(secretKey)
+                || !apiKey.isActive()
+                || apiKey.getOwner() == null) {
+            throw BusinessError.raise(Errors.AUTHENTICATION_FAILED)
+                    .message("Failed to verify API key, " + id)
+                    .build();
+        }
+    }
+
+    @Override
     public void removeAPIKey(APIKey apiKey) {
         APIKeyEntity entity = (APIKeyEntity) apiKey;
         entity.markAsVoid();
@@ -332,8 +350,8 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     }
 
     @Override
-    public APIKey fetchAPIKeyByKey(String key) {
-        return apiKeyRepository.findByKey(this, key) ;
+    public APIKey fetchAPIKeyById(String id) {
+        return apiKeyRepository.findById(this, id) ;
     }
 
     @Override

@@ -4,13 +4,13 @@ package com.codingzero.saam.app;
 public class APIKeyUpdateRequest {
 
     private String applicationId;
-    private String key;
+    private String id;
     private String name;
     private boolean isActive;
 
-    public APIKeyUpdateRequest(String applicationId, String key, String name, boolean isActive) {
+    public APIKeyUpdateRequest(String applicationId, String id, String name, boolean isActive) {
         this.applicationId = applicationId;
-        this.key = key;
+        this.id = id;
         this.name = name;
         this.isActive = isActive;
     }
@@ -19,8 +19,8 @@ public class APIKeyUpdateRequest {
         return applicationId;
     }
 
-    public String getKey() {
-        return key;
+    public String getId() {
+        return id;
     }
 
     public String getName() {
