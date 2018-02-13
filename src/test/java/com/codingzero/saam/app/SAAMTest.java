@@ -68,6 +68,16 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testRequestOAuthAuthorizationUrl_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.requestOAuthAuthorizationUrl(
+                new OAuthAuthorizationUrlRequest(app.getId(), OAuthPlatform.GOOGLE, Collections.emptyMap()));
+    }
+
+    @Test
     public void testRequestOAuthAuthorizationUrl_WithoutPolicy() {
         ApplicationResponse app = createSimpleApplication();
         Map<String, Object> parameters = new HashMap<>();
@@ -91,6 +101,16 @@ public abstract class SAAMTest {
         assertNotNull(response);
         assertEquals(app.getId(), response.getApplicationId());
         assertEquals(OAuthPlatform.GOOGLE, response.getPlatform());
+    }
+
+    @Test
+    public void testRequestOAuthAccessToken_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.requestOAuthAccessToken(
+                new OAuthAccessTokenRequest(app.getId(), OAuthPlatform.GOOGLE, Collections.emptyMap()));
     }
 
     @Test
@@ -124,6 +144,20 @@ public abstract class SAAMTest {
         assertEquals(email, response.getIdentifier());
         assertNotNull(response.getCode());
         assertTrue((response.getExpirationTime().getTime() - timestamp >= 1000));
+    }
+
+    @Test
+    public void testGenerateVerificationCode_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String email = getIdentifier(user, IdentifierType.EMAIL).getContent();
+
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.generateVerificationCode(
+                new IdentifierVerificationCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email, 1000));
     }
 
     @Test
@@ -187,6 +221,20 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testGenerateResetCode_InactiveApplication() {
+        ApplicationResponse app = createApplication(false);
+        UserResponse user = registerUser(app.getId());
+        String email = getIdentifier(user, IdentifierType.EMAIL).getContent();
+
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.generateResetCode(
+                new PasswordResetCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email, 1000));
+    }
+
+    @Test
     public void testGenerateResetCode_WithoutPolicy() {
         ApplicationResponse app = createSimpleApplication();
         UserResponse user = saam.register(new UserRegisterRequest(
@@ -234,13 +282,29 @@ public abstract class SAAMTest {
                         app.getId(),
                         newName,
                         newDesc,
-                        ApplicationStatus.DEACTIVE);
+                        ApplicationStatus.ACTIVE);
         ApplicationResponse actualApp = saam.updateApplication(request);
         assertEquals(app.getId(), actualApp.getId());
         assertEquals(newName, actualApp.getName());
         assertEquals(newDesc, actualApp.getDescription());
         assertEquals(app.getCreationTime(), actualApp.getCreationTime());
-        assertEquals(ApplicationStatus.DEACTIVE, actualApp.getStatus());
+        assertEquals(ApplicationStatus.ACTIVE, actualApp.getStatus());
+    }
+
+    @Test
+    public void testUpdateApplication_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        String newName = getApplicationName();
+        String newDesc = "new description";
+        ApplicationResponse actualApp = saam.updateApplication(
+                new ApplicationUpdateRequest(app.getId(), newName, newDesc, ApplicationStatus.ACTIVE));
+        assertEquals(app.getId(), actualApp.getId());
+        assertEquals(newName, actualApp.getName());
+        assertEquals(newDesc, actualApp.getDescription());
+        assertEquals(app.getCreationTime(), actualApp.getCreationTime());
+        assertEquals(ApplicationStatus.ACTIVE, actualApp.getStatus());
     }
 
     @Test
@@ -270,6 +334,16 @@ public abstract class SAAMTest {
         assertNotEquals(policy.getMaxLength(), actualPolicy.getMaxLength());
         assertNotEquals(policy.isNeedCapital(), actualPolicy.isNeedCapital());
         assertNotEquals(policy.isNeedSpecialChar(), actualPolicy.isNeedSpecialChar());
+    }
+
+    @Test
+    public void testUpdatePasswordPolicy_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.updatePasswordPolicy(new PasswordPolicyUpdateRequest(
+                app.getId(), new PasswordPolicy(8, 50, false, false)));
     }
 
     @Test
@@ -334,6 +408,16 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testAddUsernamePolicy_InactiveApplication() {
+        ApplicationResponse app = createSimpleApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.addUsernamePolicy(
+                new UsernamePolicyAddRequest(app.getId()));
+    }
+
+    @Test
     public void testAddUsernamePolicy_Duplicate() {
         ApplicationResponse app = createApplication();
         thrown.expect(BusinessError.class);
@@ -356,10 +440,30 @@ public abstract class SAAMTest {
     }
 
     @Test
-    public void testUpdateUsernamePolicy_NotExist() {
-        ApplicationResponse app = createSimpleApplication();
+    public void testUpdateUsernamePolicy_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
         thrown.expect(BusinessError.class);
         saam.updateUsernamePolicy(new UsernamePolicyUpdateRequest(app.getId(), false));
+    }
+
+    @Test
+    public void testUpdateUsernamePolicy_NotExist() {
+        ApplicationResponse app = createSimpleApplication();
+
+        thrown.expect(BusinessError.class);
+        saam.updateUsernamePolicy(new UsernamePolicyUpdateRequest(app.getId(), false));
+    }
+
+    @Test
+    public void testAddEmailPolicy_InactiveApplication() {
+        ApplicationResponse app = createSimpleApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.addEmailPolicy(
+                new EmailPolicyAddRequest(app.getId(), false, Arrays.asList("foo.com")));
     }
 
     @Test
@@ -389,6 +493,17 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testUpdateEmailPolicy_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.updateEmailPolicy(
+                new EmailPolicyUpdateRequest(
+                        app.getId(), false, Arrays.asList("foo.com"), false));
+    }
+
+    @Test
     public void testUpdateEmailPolicy_NotExist() {
         ApplicationResponse app = createSimpleApplication();
         thrown.expect(BusinessError.class);
@@ -398,33 +513,61 @@ public abstract class SAAMTest {
     }
 
     @Test
-    public void testRemoveIdentifierPolicy_Username() {
+    public void testRemoveUsernamePolicy() {
         ApplicationResponse app = createApplication();
-        assertNotNull(app.getUsernamePolicy());
+
         app = saam.removeIdentifierPolicy(app.getId(), IdentifierType.USERNAME);
         assertNull(app.getUsernamePolicy());
     }
 
     @Test
-    public void testRemoveIdentifierPolicy_Username_NotExist() {
+    public void testRemoveUsernamePolicy_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.removeIdentifierPolicy(app.getId(), IdentifierType.USERNAME);
+    }
+
+    @Test
+    public void testRemoveUsernamePolicy_NotExist() {
         ApplicationResponse app = createSimpleApplication();
         thrown.expect(BusinessError.class);
         saam.removeIdentifierPolicy(app.getId(), IdentifierType.USERNAME);
     }
 
     @Test
-    public void testRemoveIdentifierPolicy_Email() {
+    public void testRemoveEmailPolicy() {
         ApplicationResponse app = createApplication();
-        assertNotNull(app.getEmailPolicy());
+
         app = saam.removeIdentifierPolicy(app.getId(), IdentifierType.EMAIL);
         assertNull(app.getEmailPolicy());
     }
 
     @Test
-    public void testRemoveIdentifierPolicy_Email_NotExist() {
+    public void testRemoveEmailPolicy_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.removeIdentifierPolicy(app.getId(), IdentifierType.EMAIL);
+    }
+
+    @Test
+    public void testRemoveEmailPolicy_NotExist() {
         ApplicationResponse app = createSimpleApplication();
         thrown.expect(BusinessError.class);
         saam.removeIdentifierPolicy(app.getId(), IdentifierType.EMAIL);
+    }
+
+    @Test
+    public void testAddOAuthIdentifierPolicy_InactiveApplication() {
+        ApplicationResponse app = createSimpleApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.addOAuthIdentifierPolicy(
+                new OAuthIdentifierPolicyAddRequest(app.getId(), OAuthPlatform.GOOGLE, Collections.emptyMap()));
     }
 
     @Test
@@ -460,6 +603,19 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testUpdateOAuthIdentifierPolicy_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        Map<String, Object> configurations = new HashMap<>();
+        configurations.put("key1", "value1");
+        saam.updateOAuthIdentifierPolicy(
+                new OAuthIdentifierPolicyUpdateRequest(
+                        app.getId(), OAuthPlatform.GOOGLE, configurations, false));
+    }
+
+    @Test
     public void testUpdateOAuthIdentifierPolicy_NotExist() {
         ApplicationResponse app = createSimpleApplication();
         thrown.expect(BusinessError.class);
@@ -476,6 +632,15 @@ public abstract class SAAMTest {
             app = saam.removeOAuthIdentifierPolicy(app.getId(), oldPolicy.getPlatform());
         }
         assertEquals(0, app.getOAuthIdentifierPolicies().size());
+    }
+
+    @Test
+    public void testRemoveOAuthIdentifierPolicy_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.removeOAuthIdentifierPolicy(app.getId(), OAuthPlatform.GOOGLE);
     }
 
     @Test
@@ -497,6 +662,15 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testCreateUser_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        registerUser(app.getId());
+    }
+
+    @Test
     public void testCreateUser_Plain() {
         ApplicationResponse app = createApplication();
         UserResponse user = saam.register(new UserRegisterRequest(app.getId()));
@@ -514,6 +688,16 @@ public abstract class SAAMTest {
         saam.removeUser(user.getApplicationId(), user.getId());
         UserResponse actualUser = saam.getUserById(user.getApplicationId(), user.getId());
         assertNull(actualUser);
+    }
+
+    @Test
+    public void testRemoveUser_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.removeUser(user.getApplicationId(), user.getId());
     }
 
     @Test
@@ -583,13 +767,26 @@ public abstract class SAAMTest {
     @Test
     public void testUpdateRoles() {
         ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
         String roleName = getRoleName();
         RoleResponse role = createRole(app.getId(), roleName);
-        UserResponse user = registerUser(app.getId());
         UserResponse actualUser = saam.updateRoles(
                 new UserRoleUpdateRequest(app.getId(), user.getId(), Arrays.asList(role.getId())));
         assertEquals(1, actualUser.getRoles().size());
         assertEquals(roleName, actualUser.getRoles().get(0).getName());
+    }
+
+    @Test
+    public void testUpdateRoles_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String roleName = getRoleName();
+        RoleResponse role = createRole(app.getId(), roleName);
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.updateRoles(
+                new UserRoleUpdateRequest(app.getId(), user.getId(), Arrays.asList(role.getId())));
     }
 
     @Test
@@ -613,6 +810,18 @@ public abstract class SAAMTest {
                 new PasswordChangeRequest(app.getId(), user.getId(), oldPassword, newPassword));
         saam.changePassword(
                 new PasswordChangeRequest(app.getId(), user.getId(), newPassword, oldPassword));
+    }
+
+    @Test
+    public void testChangePassword_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.changePassword(
+                new PasswordChangeRequest(
+                        app.getId(), user.getId(), "Password!1", "Password!"));
     }
 
     @Test
@@ -662,6 +871,31 @@ public abstract class SAAMTest {
                 new PasswordChangeRequest(app.getId(), user.getId(), password, "NewPassword2!"));
         assertUser(user, actualUser);
     }
+
+    @Test
+    public void testResetPassword_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String identifier = getIdentifier(user, IdentifierType.USERNAME).getContent();
+        PasswordResetCodeResponse resetCode = saam.generateResetCode(
+                new PasswordResetCodeGenerateRequest(
+                        app.getId(),
+                        user.getId(),
+                        IdentifierType.USERNAME,
+                        identifier,
+                        1000));
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.resetPassword(
+                new PasswordResetRequest(
+                        app.getId(),
+                        user.getId(),
+                        resetCode.getCode(),
+                        "NewPassword!1"));
+    }
+
 
     @Test
     public void testResetPassword_NoPasswordSet() {
@@ -766,6 +1000,19 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testAddIdentifier_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.addIdentifier(
+                new IdentifierAddRequest(app.getId(), user.getId(), IdentifierType.USERNAME, getUsername()));
+    }
+
+    @Test
     public void testAddIdentifier_DuplicateIdentifier() {
         ApplicationResponse app = createApplication();
         UserResponse user = registerUser(app.getId());
@@ -802,6 +1049,19 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testRemoveIdentifier_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String username = getIdentifier(user, IdentifierType.USERNAME).getContent();
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.removeIdentifier(
+                new IdentifierRemoveRequest(app.getId(), user.getId(), IdentifierType.USERNAME, username));
+    }
+
+    @Test
     public void testRemoveIdentifier_NotExist() {
         ApplicationResponse app = createApplication();
         String username = getUsername();
@@ -829,6 +1089,22 @@ public abstract class SAAMTest {
         assertEquals(user.getId(), actualUser.getId());
         assertEquals(user.getCreationTime(), actualUser.getCreationTime());
         assertEquals(true, email.isVerified());
+    }
+
+    @Test
+    public void testVerifyIdentifier_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        UserResponse.Identifier email = getIdentifier(user, IdentifierType.EMAIL);
+        IdentifierVerificationCodeResponse code = saam.generateVerificationCode(
+                new IdentifierVerificationCodeGenerateRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), 1000));
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.verifyIdentifier(
+                new IdentifierVerifyRequest(
+                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), code.getCode()));
     }
 
     @Test
@@ -895,6 +1171,25 @@ public abstract class SAAMTest {
         assertEquals(OAuthPlatform.GOOGLE, identifier.getPlatform());
         assertEquals(googleOAuthIdentifier, identifier.getContent());
         assertEquals(0, identifier.getProperties().size());
+    }
+
+    @Test
+    public void testConnectOAuthIdentifier_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        String googleOAuthIdentifier = getGoogleOAuthIdentifier();
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.connectOAuthIdentifier(
+                new OAuthIdentifierConnectRequest(
+                        app.getId(),
+                        user.getId(),
+                        OAuthPlatform.GOOGLE,
+                        googleOAuthIdentifier,
+                        Collections.emptyMap()));
     }
 
     @Test
@@ -965,6 +1260,20 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testDisconnectOAuthIdentifier_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String googleOAuthIdentifier = getOAuthIdentifier(user, OAuthPlatform.GOOGLE).getContent();
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.disconnectOAuthIdentifier(
+                new OAuthIdentifierDisconnectRequest(
+                        app.getId(), user.getId(), OAuthPlatform.GOOGLE, googleOAuthIdentifier));
+    }
+
+    @Test
     public void testDisconnectOAuthIdentifier_NotExist() {
         ApplicationResponse app = createApplication();
         UserResponse user = saam.register(new UserRegisterRequest(
@@ -994,6 +1303,20 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testAddAPIKey_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = saam.register(new UserRegisterRequest(
+                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        String name = getAPIKeyName();
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.addAPIKey(
+                new APIKeyAddRequest(app.getId(), user.getId(), name));
+    }
+
+    @Test
     public void testAddAPIKey_NoUserFound() {
         ApplicationResponse app = createApplication();
         UserResponse user = saam.register(new UserRegisterRequest(
@@ -1008,9 +1331,11 @@ public abstract class SAAMTest {
 
     @Test
     public void testUpdateAPIKey() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
         String name = getAPIKeyName();
         boolean isActive = false;
-        APIKeyResponse apiKey = createAPIKey();
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
         APIKeyResponse actualAPIKey = saam.updateAPIKey(
                 new APIKeyUpdateRequest(apiKey.getApplicationId(), apiKey.getId(), name, isActive));
         assertEquals(apiKey.getApplicationId(), actualAPIKey.getApplicationId());
@@ -1022,10 +1347,27 @@ public abstract class SAAMTest {
     }
 
     @Test
-    public void testUpdateAPIKey_NotExist() {
+    public void testUpdateAPIKey_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
         String name = getAPIKeyName();
         boolean isActive = false;
-        APIKeyResponse apiKey = createAPIKey();
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.updateAPIKey(
+                new APIKeyUpdateRequest(apiKey.getApplicationId(), apiKey.getId(), name, isActive));
+    }
+
+    @Test
+    public void testUpdateAPIKey_NotExist() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String name = getAPIKeyName();
+        boolean isActive = false;
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
         saam.removeAPIKeyById(apiKey.getApplicationId(), apiKey.getId());
 
         thrown.expect(BusinessError.class);
@@ -1035,7 +1377,23 @@ public abstract class SAAMTest {
 
     @Test
     public void testVerifyAPIkey() {
-        APIKeyResponse apiKey = createAPIKey();
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
+        saam.verifyAPIKey(
+                new APIKeyVerifyRequest(
+                        apiKey.getApplicationId(), apiKey.getId(), apiKey.getSecretKey()));
+    }
+
+    @Test
+    public void testVerifyAPIkey_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
         saam.verifyAPIKey(
                 new APIKeyVerifyRequest(
                         apiKey.getApplicationId(), apiKey.getId(), apiKey.getSecretKey()));
@@ -1043,7 +1401,9 @@ public abstract class SAAMTest {
 
     @Test
     public void testVerifyAPIkey_NotExist() {
-        APIKeyResponse apiKey = createAPIKey();
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
         saam.removeAPIKeyById(apiKey.getApplicationId(), apiKey.getId());
 
         thrown.expect(BusinessError.class);
@@ -1054,7 +1414,9 @@ public abstract class SAAMTest {
 
     @Test
     public void testVerifyAPIkey_WrongSecretKey() {
-        APIKeyResponse apiKey = createAPIKey();
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
 
         thrown.expect(BusinessError.class);
         saam.verifyAPIKey(
@@ -1064,7 +1426,9 @@ public abstract class SAAMTest {
 
     @Test
     public void testVerifyAPIkey_Inactive() {
-        APIKeyResponse apiKey = createAPIKey();
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
         saam.updateAPIKey(
                 new APIKeyUpdateRequest(
                         apiKey.getApplicationId(), apiKey.getId(), apiKey.getName(), false));
@@ -1077,7 +1441,9 @@ public abstract class SAAMTest {
 
     @Test
     public void testVerifyAPIkey_NoSuchUser() {
-        APIKeyResponse apiKey = createAPIKey();
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
         saam.removeUser(apiKey.getApplicationId(), apiKey.getUserId());
 
         thrown.expect(BusinessError.class);
@@ -1088,15 +1454,31 @@ public abstract class SAAMTest {
 
     @Test
     public void testRemoveAPIKeyById() {
-        APIKeyResponse apiKey = createAPIKey();
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
         saam.removeAPIKeyById(apiKey.getApplicationId(), apiKey.getId());
         APIKeyResponse actualAPIKey = saam.getAPIKeyById(apiKey.getApplicationId(), apiKey.getId());
         assertNull(actualAPIKey);
     }
 
     @Test
+    public void testRemoveAPIKeyById_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.removeAPIKeyById(apiKey.getApplicationId(), apiKey.getId());
+    }
+
+    @Test
     public void testRemoveAPIKey_NotExist() {
-        APIKeyResponse apiKey = createAPIKey();
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
         saam.removeAPIKeyById(apiKey.getApplicationId(), apiKey.getId());
 
         thrown.expect(BusinessError.class);
@@ -1145,6 +1527,26 @@ public abstract class SAAMTest {
         assertNotNull(session.getKey());
         assertNotNull(session.getCreationTime());
         assertTrue((session.getExpirationTime().getTime() > session.getCreationTime().getTime()));
+    }
+
+    @Test
+    public void testLogin_Credential_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        UserResponse.Identifier username = getIdentifier(user, IdentifierType.USERNAME);
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.login(
+                new CredentialLoginRequest(
+                        app.getId(),
+                        username.getContent(),
+                        "Password!",
+                        sessionDetails,
+                        1000));
     }
 
     @Test
@@ -1214,6 +1616,26 @@ public abstract class SAAMTest {
         assertNotNull(session.getKey());
         assertNotNull(session.getCreationTime());
         assertTrue((session.getExpirationTime().getTime() > session.getCreationTime().getTime()));
+    }
+
+    @Test
+    public void testLogin_OAuth_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        UserResponse.OAuthIdentifier googleOAuth = getOAuthIdentifier(user, OAuthPlatform.GOOGLE);
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.login(
+                new OAuthLoginRequest(
+                        app.getId(),
+                        googleOAuth.getPlatform(),
+                        googleOAuth.getContent(),
+                        sessionDetails,
+                        1000));
     }
 
     @Test
@@ -1289,6 +1711,24 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testCreateUserSession_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.createUserSession(
+                new UserSessionCreateRequest(
+                        app.getId(),
+                        user.getId(),
+                        sessionDetails,
+                        1000));
+    }
+
+    @Test
     public void testCreateUserSession_NoSuchUser() {
         ApplicationResponse app = createApplication();
         UserResponse user = registerUser(app.getId());
@@ -1346,6 +1786,25 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testRemoveUserSessionByKey_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        Map<String, Object> sessionDetails = new HashMap<>();
+        sessionDetails.put("key1", "value1");
+        UserSessionResponse session = saam.createUserSession(
+                new UserSessionCreateRequest(
+                        app.getId(),
+                        user.getId(),
+                        sessionDetails,
+                        1000));
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.removeUserSessionByKey(session.getApplicationId(), session.getKey());
+    }
+
+    @Test
     public void testRemoveUserSessionByKey_NotExist() {
         ApplicationResponse app = createApplication();
         UserResponse user = registerUser(app.getId());
@@ -1398,6 +1857,17 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testAddRole_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        String name = getRoleName();
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.addRole(new RoleAddRequest(app.getId(), name));
+    }
+
+    @Test
     public void testAddRole_DuplicateName() {
         ApplicationResponse app = createApplication();
         String name = getRoleName();
@@ -1418,6 +1888,19 @@ public abstract class SAAMTest {
         assertEquals(role.getApplicationId(), role.getApplicationId());
         assertEquals(role.getId(), role.getId());
         assertEquals(newName, actualRole.getName());
+    }
+
+    @Test
+    public void testUpdateRole_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        String name = getRoleName();
+        RoleResponse role = saam.addRole(new RoleAddRequest(app.getId(), name));
+        String newName = getRoleName();
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.updateRole(new RoleUpdateRequest(app.getId(), role.getId(), newName));
     }
 
     @Test
@@ -1451,6 +1934,18 @@ public abstract class SAAMTest {
         saam.removeRole(app.getId(), role.getId());
         RoleResponse actualRole = saam.getRoleById(app.getId(), role.getId());
         assertNull(actualRole);
+    }
+
+    @Test
+    public void testRemoveRole_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        String name = getRoleName();
+        RoleResponse role = saam.addRole(new RoleAddRequest(app.getId(), name));
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.removeRole(app.getId(), role.getId());
     }
 
     @Test
@@ -1502,6 +1997,19 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testStoreResource_UserOwner_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String key = getResourceKey();
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), key));
+    }
+
+    @Test
     public void testStoreResource_RoleOwner() {
         ApplicationResponse app = createApplication();
         RoleResponse role = createRole(app.getId(), getRoleName());
@@ -1512,6 +2020,19 @@ public abstract class SAAMTest {
         assertEquals(app.getId(), resource.getApplicationId());
         assertEquals(role.getId(), resource.getOwnerId());
         assertEquals(key, resource.getKey());
+    }
+
+    @Test
+    public void testStoreResource_RoleOwner_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        RoleResponse role = createRole(app.getId(), getRoleName());
+        String key = getResourceKey();
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.storeResource(
+                new ResourceStoreRequest(app.getId(), role.getId(), key));
     }
 
     @Test
@@ -1526,6 +2047,20 @@ public abstract class SAAMTest {
         assertEquals(app.getId(), resource.getApplicationId());
         assertEquals(user.getId(), resource.getOwnerId());
         assertEquals(key, resource.getKey());
+    }
+
+    @Test
+    public void testStoreResource_APIKeyOwner_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        APIKeyResponse apiKey = createAPIKey(app.getId(), user.getId());
+        String key = getResourceKey();
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.storeResource(
+                new ResourceStoreRequest(app.getId(), apiKey.getId(), key));
     }
 
     @Test
@@ -1611,6 +2146,20 @@ public abstract class SAAMTest {
         ResourceResponse actualResource =
                 saam.getResourceByKey(resource.getApplicationId(), resource.getKey());
         assertNull(actualResource);
+    }
+
+    @Test
+    public void testRemoveResource_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        String key = getResourceKey();
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), key));
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.removeResource(resource.getApplicationId(), resource.getKey());
     }
 
     @Test
@@ -1840,6 +2389,19 @@ public abstract class SAAMTest {
     }
 
     @Test
+    public void testStorePermission_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), getResourceKey()));
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        createPermission(app.getId(), resource.getKey(), user.getId());
+    }
+
+    @Test
     public void testStorePermission_Update() {
         ApplicationResponse app = createApplication();
         UserResponse user = registerUser(app.getId());
@@ -1880,6 +2442,20 @@ public abstract class SAAMTest {
         PermissionResponse actualPermission =
                 saam.getPermissionByPrincipalId(app.getId(), resource.getKey(), user.getId());
         assertNull(actualPermission);
+    }
+
+    @Test
+    public void testRemovePermission_InactiveApplication() {
+        ApplicationResponse app = createApplication();
+        UserResponse user = registerUser(app.getId());
+        ResourceResponse resource = saam.storeResource(
+                new ResourceStoreRequest(app.getId(), user.getId(), getResourceKey()));
+        createPermission(app.getId(), resource.getKey(), user.getId());
+
+        updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
+
+        thrown.expect(BusinessError.class);
+        saam.removePermission(app.getId(), resource.getKey(), user.getId());
     }
 
     @Test
@@ -2217,11 +2793,11 @@ public abstract class SAAMTest {
         return apiKeys;
     }
 
-    private APIKeyResponse createAPIKey() {
-        ApplicationResponse app = createApplication();
-        UserResponse user = registerUser(app.getId());
-        return createAPIKey(app.getId(), user.getId());
-    }
+//    private APIKeyResponse createAPIKey() {
+//        ApplicationResponse app = createApplication();
+//        UserResponse user = registerUser(app.getId());
+//        return createAPIKey(app.getId(), user.getId());
+//    }
 
     private APIKeyResponse createAPIKey(String applicationId, String userId) {
         String name = getAPIKeyName();
@@ -2315,6 +2891,11 @@ public abstract class SAAMTest {
                 new ApplicationAddRequest(name, "description"));
         generatedApplications.add(app);
         return app;
+    }
+
+    private ApplicationResponse updateApplicationStatus(ApplicationResponse app, ApplicationStatus status) {
+        return saam.updateApplication(new ApplicationUpdateRequest(
+                app.getId(), app.getName(), app.getDescription(), status));
     }
 
     private String getApplicationName() {
