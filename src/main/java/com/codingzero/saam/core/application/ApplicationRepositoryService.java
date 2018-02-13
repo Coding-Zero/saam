@@ -52,6 +52,7 @@ public class ApplicationRepositoryService implements ApplicationRepository {
         flushDirtyOAuthIdentifierPolicies(entity);
         flushDirtyPrincipals(entity);
         flushDirtyUserSessions(entity);
+        flushRemovingUserSessions(entity);
         flushDirtyResources(entity);
         return factory.reconstitute(entity.getObjectSegment());
     }
@@ -98,6 +99,13 @@ public class ApplicationRepositoryService implements ApplicationRepository {
             } else {
                 userSessionRepository.store(entity);
             }
+        }
+    }
+
+    private void flushRemovingUserSessions(ApplicationRoot application) {
+        List<UserEntity> entities = application.getRemovingUserSessions();
+        for (UserEntity entity: entities) {
+            userSessionRepository.remove(entity);
         }
     }
 

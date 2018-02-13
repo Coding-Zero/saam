@@ -45,6 +45,8 @@ import com.codingzero.saam.app.UserSessionCreateRequest;
 import com.codingzero.saam.app.UserSessionResponse;
 import com.codingzero.saam.app.UsernamePolicyAddRequest;
 import com.codingzero.saam.app.UsernamePolicyUpdateRequest;
+import com.codingzero.saam.common.ApplicationStatus;
+import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.common.PasswordResetCode;
@@ -191,6 +193,7 @@ public class SAAMServer implements SAAM {
     @Override
     public String requestOAuthAuthorizationUrl(OAuthAuthorizationUrlRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
+        checkForApplicationStatus(application, request.getPlatform());
         OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
         return oAuthPlatformAgent.getAuthorizationUrl(
                 request.getPlatform(), policy.getConfigurations(), request.getParameters());
@@ -199,10 +202,23 @@ public class SAAMServer implements SAAM {
     @Override
     public OAuthAccessTokenResponse requestOAuthAccessToken(OAuthAccessTokenRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
+        checkForApplicationStatus(application, request.getPlatform());
         OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
         OAuthAccessToken token = oAuthPlatformAgent.requestAccessToken(
                 policy.getPlatform(), policy.getConfigurations(), request.getParameters());
         return responseMapper.toResponse(application, token);
+    }
+
+    private void checkForApplicationStatus(Application application, OAuthPlatform platform) {
+        if (application.getStatus() == ApplicationStatus.DEACTIVE) {
+            throw BusinessError.raise(Errors.INVALID_STATUS)
+                    .message("No OAuth operations allowed for inactive application.")
+                    .details("entity", Application.class.getSimpleName())
+                    .details("id", application.getId())
+                    .details("status", application.getStatus())
+                    .details("platform", platform)
+                    .build();
+        }
     }
 
     @Override
@@ -686,6 +702,7 @@ public class SAAMServer implements SAAM {
         Application application = getEnsuredApplicationById(applicationId);
         User user = application.fetchUserById(userId);
         application.removeAllUserSession(user);
+        storeApplication(application);
     }
 
     @Override

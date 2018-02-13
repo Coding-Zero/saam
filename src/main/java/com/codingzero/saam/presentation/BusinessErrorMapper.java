@@ -121,6 +121,15 @@ public class BusinessErrorMapper implements ExceptionMapper<BusinessError> {
         if (Errors.WRONG_PASSWORD == type) {
             return 400123;
         }
+        if (Errors.IDENTIFIER_UNVERIFIED == type) {
+            return 400124;
+        }
+        if (Errors.INVALID_IDENTIFIER_POLICY == type) {
+            return 400125;
+        }
+        if (Errors.INVALID_STATUS == type) {
+            return 400126;
+        }
         throw new IllegalArgumentException("No such error code found for type, " + type.getName());
     }
 }

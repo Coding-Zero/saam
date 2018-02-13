@@ -54,6 +54,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     private Map<OAuthPlatform, OAuthIdentifierPolicyEntity> dirtyOAuthIdentifierPolicies;
     private Map<String, PrincipalEntity> dirtyPrincipals;
     private Map<String, UserSessionEntity> dirtyUserSessions;
+    private Map<String, UserEntity> removingUserSessions;
     private Map<String, ResourceEntity> dirtyResources;
 
     public ApplicationRoot(ApplicationOS objectSegment,
@@ -96,6 +97,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
         this.dirtyOAuthIdentifierPolicies = new HashMap<>();
         this.dirtyPrincipals = new HashMap<>();
         this.dirtyUserSessions = new HashMap<>();
+        this.removingUserSessions = new HashMap<>();
         this.dirtyResources = new HashMap<>();
     }
 
@@ -113,6 +115,10 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     public List<UserSessionEntity> getDirtyUserSessions() {
         return Collections.unmodifiableList(new ArrayList<>(dirtyUserSessions.values()));
+    }
+
+    public List<UserEntity> getRemovingUserSessions() {
+        return Collections.unmodifiableList(new ArrayList<>(removingUserSessions.values()));
     }
 
     public List<ResourceEntity> getDirtyResources() {
@@ -134,6 +140,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
         if (name.equalsIgnoreCase(getName())) {
             return;
         }
+        checkForInvalidStatus();
         factory.checkForNameFormat(name);
         factory.checkForDuplicateName(name);
         getObjectSegment().setName(name);
@@ -151,6 +158,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
         if (description.equalsIgnoreCase(getDescription())) {
             return;
         }
+        checkForInvalidStatus();
         getObjectSegment().setDescription(description);
         markAsDirty();
     }
@@ -181,12 +189,14 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void setPasswordPolicy(PasswordPolicy policy) {
+        checkForInvalidStatus();
         getObjectSegment().setPasswordPolicy(policy);
         markAsDirty();
     }
 
     @Override
     public UsernamePolicy createUsernamePolicy() {
+        checkForInvalidStatus();
         UsernamePolicyEntity entity =
                 usernameIdentifierPolicyFactory.generate(this);
         dirtyIdentifierPolicies.put(entity.getType(), entity);
@@ -196,6 +206,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     @Override
     public EmailPolicy createEmailPolicy(
             boolean isVerificationRequired, List<String> domains) {
+        checkForInvalidStatus();
         EmailPolicyEntity entity =
                 emailIdentifierPolicyFactory.generate(this, isVerificationRequired, domains);
         dirtyIdentifierPolicies.put(entity.getType(), entity);
@@ -204,12 +215,14 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void updateIdentifierPolicy(IdentifierPolicy policy) {
+        checkForInvalidStatus();
         IdentifierPolicyEntity entity = (IdentifierPolicyEntity) policy;
         dirtyIdentifierPolicies.put(entity.getType(), entity);
     }
 
     @Override
     public void removeIdentifierPolicy(IdentifierPolicy policy) {
+        checkForInvalidStatus();
         IdentifierPolicyEntity entity = (IdentifierPolicyEntity) policy;
         entity.markAsVoid();
         dirtyIdentifierPolicies.put(entity.getType(), entity);
@@ -226,20 +239,25 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     }
 
     @Override
-    public OAuthIdentifierPolicy createOAuthIdentifierPolicy(OAuthPlatform platform, Map<String, Object> configuration) {
-        OAuthIdentifierPolicyEntity entity = oAuthIdentifierPolicyFactory.generate(this, platform, configuration);
+    public OAuthIdentifierPolicy createOAuthIdentifierPolicy(OAuthPlatform platform,
+                                                             Map<String, Object> configuration) {
+        checkForInvalidStatus();
+        OAuthIdentifierPolicyEntity entity =
+                oAuthIdentifierPolicyFactory.generate(this, platform, configuration);
         dirtyOAuthIdentifierPolicies.put(entity.getPlatform(), entity);
         return entity;
     }
 
     @Override
     public void updateOAuthIdentifierPolicy(OAuthIdentifierPolicy policy) {
+        checkForInvalidStatus();
         OAuthIdentifierPolicyEntity entity = (OAuthIdentifierPolicyEntity) policy;
         dirtyOAuthIdentifierPolicies.put(entity.getPlatform(), entity);
     }
 
     @Override
     public void removeOAuthIdentifierPolicy(OAuthIdentifierPolicy policy) {
+        checkForInvalidStatus();
         OAuthIdentifierPolicyEntity entity = (OAuthIdentifierPolicyEntity) policy;
         entity.markAsVoid();
         dirtyOAuthIdentifierPolicies.put(entity.getPlatform(), entity);
@@ -262,6 +280,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public User createUser() {
+        checkForInvalidStatus();
         UserEntity entity = userFactory.generate(this);
         dirtyPrincipals.put(entity.getId(), entity);
         return entity;
@@ -269,12 +288,14 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void updateUser(User user) {
+        checkForInvalidStatus();
         PrincipalEntity entity = (PrincipalEntity) user;
         dirtyPrincipals.put(entity.getId(), entity);
     }
 
     @Override
     public void removeUser(User user) {
+        checkForInvalidStatus();
         PrincipalEntity entity = (PrincipalEntity) user;
         entity.markAsVoid();
         dirtyPrincipals.put(entity.getId(), entity);
@@ -318,6 +339,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public APIKey createAPIKey(User user, String name) {
+        checkForInvalidStatus();
         APIKeyEntity entity = apiKeyFactory.generate(this, user, name);
         dirtyPrincipals.put(entity.getId(), entity);
         return entity;
@@ -325,12 +347,14 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void updateAPIKey(APIKey apiKey) {
+        checkForInvalidStatus();
         PrincipalEntity entity = (PrincipalEntity) apiKey;
         dirtyPrincipals.put(entity.getId(), entity);
     }
 
     @Override
     public void verifyAPIKey(String id, String secretKey) {
+        checkForInvalidStatus();
         APIKey apiKey = fetchAPIKeyById(id);
         if (null == apiKey
                 || !apiKey.getSecretKey().equals(secretKey)
@@ -344,6 +368,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void removeAPIKey(APIKey apiKey) {
+        checkForInvalidStatus();
         APIKeyEntity entity = (APIKeyEntity) apiKey;
         entity.markAsVoid();
         dirtyPrincipals.put(entity.getId(), entity);
@@ -361,6 +386,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public UserSession createUserSession(User user, Map<String, Object> details, long timeout) {
+        checkForInvalidStatus();
         UserSessionEntity entity = userSessionFactory.generate(user, details, timeout);
         dirtyUserSessions.put(entity.getKey(), entity);
         return entity;
@@ -368,6 +394,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void removeUserSession(UserSession session) {
+        checkForInvalidStatus();
         UserSessionEntity entity = (UserSessionEntity) session;
         entity.markAsVoid();
         dirtyUserSessions.put(entity.getKey(), entity);
@@ -375,7 +402,8 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void removeAllUserSession(User user) {
-        userSessionRepository.remove(user);
+        checkForInvalidStatus();
+        removingUserSessions.put(user.getId().toLowerCase(), (UserEntity) user);
     }
 
     @Override
@@ -390,6 +418,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public Role addRole(String name) {
+        checkForInvalidStatus();
         RoleEntity entity = roleFactory.generate(this, name);
         dirtyPrincipals.put(entity.getId(), entity);
         return entity;
@@ -397,12 +426,14 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void updateRole(Role role) {
+        checkForInvalidStatus();
         PrincipalEntity entity = (PrincipalEntity) role;
         dirtyPrincipals.put(entity.getId(), entity);
     }
 
     @Override
     public void removeRole(Role role) {
+        checkForInvalidStatus();
         RoleEntity entity = (RoleEntity) role;
         entity.markAsVoid();
         dirtyPrincipals.put(entity.getId(), entity);
@@ -420,6 +451,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public Resource createResource(String name, Principal owner, Resource parent) {
+        checkForInvalidStatus();
         if (owner.getType() == PrincipalType.API_KEY) {
             APIKey apiKey = (APIKey) owner;
             owner = apiKey.getOwner();
@@ -431,12 +463,14 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
 
     @Override
     public void updateResource(Resource resource) {
+        checkForInvalidStatus();
         ResourceEntity entity = (ResourceEntity) resource;
         dirtyResources.put(entity.getKey(), entity);
     }
 
     @Override
     public void removeResource(Resource resource) {
+        checkForInvalidStatus();
         ResourceEntity entity = (ResourceEntity) resource;
         entity.markAsVoid();
         dirtyResources.put(entity.getKey(), entity);
@@ -460,6 +494,17 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     @Override
     public PaginatedResult<List<Resource>> fetchAllResources(Resource parentResource) {
         return resourceRepository.findAll(this, parentResource);
+    }
+
+    private void checkForInvalidStatus() {
+        if (getStatus() == ApplicationStatus.DEACTIVE) {
+            throw BusinessError.raise(Errors.INVALID_STATUS)
+                    .message("No operations allowed for inactive application.")
+                    .details("entity", Application.class.getSimpleName())
+                    .details("id", getId())
+                    .details("status", getStatus())
+                    .build();
+        }
     }
 
 }

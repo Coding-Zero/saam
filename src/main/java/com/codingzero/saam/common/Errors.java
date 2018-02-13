@@ -30,7 +30,8 @@ public enum Errors implements ErrorType {
     PASSWORD_POLICY_UNAVAILABLE("PasswordPolicyUnavailable"),
     WRONG_PASSWORD("WrongPassword"),
     IDENTIFIER_UNVERIFIED("IdentifierUnverified"),
-    INVALID_IDENTIFIER_POLICY("InvalidIdentifierPolicy")
+    INVALID_IDENTIFIER_POLICY("InvalidIdentifierPolicy"),
+    INVALID_STATUS("InvalidStatus")
     ;
 
     private final String name;
