@@ -24,7 +24,7 @@ public interface SAAM {
 
     ApplicationResponse updateApplication(ApplicationUpdateRequest request);
 
-    ApplicationResponse updatePasswordPolicy(PasswordPolicyUpdateRequest request);
+    ApplicationResponse setPasswordPolicy(PasswordPolicySetRequest request);
 
     void removeApplication(String id);
 

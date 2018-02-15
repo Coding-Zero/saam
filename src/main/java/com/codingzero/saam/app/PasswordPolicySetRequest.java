@@ -3,12 +3,12 @@ package com.codingzero.saam.app;
 import com.codingzero.saam.common.PasswordPolicy;
 
 
-public class PasswordPolicyUpdateRequest {
+public class PasswordPolicySetRequest {
 
     private String applicationId;
     private PasswordPolicy passwordPolicy;
 
-    public PasswordPolicyUpdateRequest(String applicationId, PasswordPolicy passwordPolicy) {
+    public PasswordPolicySetRequest(String applicationId, PasswordPolicy passwordPolicy) {
         this.applicationId = applicationId;
         this.passwordPolicy = passwordPolicy;
     }
