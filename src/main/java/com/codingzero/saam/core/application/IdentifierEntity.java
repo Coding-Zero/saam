@@ -74,7 +74,7 @@ public class IdentifierEntity extends EntityObject<IdentifierOS> implements Iden
         if (!getPolicy().isVerificationRequired()) {
             throw BusinessError.raise(Errors.INVALID_IDENTIFIER_POLICY)
                     .message("Verification is not required for identifier, " + getPolicy().getType())
-                    .details("applicationId", getPolicy().getApplication())
+                    .details("applicationId", getPolicy().getApplication().getId())
                     .details("identifierType", getPolicy().getType())
                     .details("identifier", getContent())
                     .build();

@@ -11,8 +11,11 @@ public class PasswordResetCodeGenerateRequest {
     private String identifier;
     private long timeout;
 
-    public PasswordResetCodeGenerateRequest(String applicationId, String userId,
-                                            IdentifierType identifierType, String identifier, long timeout) {
+    public PasswordResetCodeGenerateRequest(String applicationId,
+                                            String userId,
+                                            IdentifierType identifierType,
+                                            String identifier,
+                                            long timeout) {
         this.applicationId = applicationId;
         this.userId = userId;
         this.identifierType = identifierType;

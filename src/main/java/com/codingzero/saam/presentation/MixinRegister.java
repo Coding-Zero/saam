@@ -19,7 +19,7 @@ import com.codingzero.saam.app.OAuthIdentifierPolicyAddRequest;
 import com.codingzero.saam.app.OAuthIdentifierPolicyUpdateRequest;
 import com.codingzero.saam.app.OAuthLoginRequest;
 import com.codingzero.saam.app.PasswordChangeRequest;
-import com.codingzero.saam.app.PasswordPolicyUpdateRequest;
+import com.codingzero.saam.app.PasswordPolicySetRequest;
 import com.codingzero.saam.app.PasswordResetCodeGenerateRequest;
 import com.codingzero.saam.app.PasswordResetRequest;
 import com.codingzero.saam.app.PermissionStoreRequest;
@@ -84,7 +84,7 @@ public class MixinRegister {
         mapper.addMixIn(PasswordResetCode.class, PasswordResetCodeModel.class);
         mapper.addMixIn(ApplicationAddRequest.class, ApplicationAddRequestModel.class);
         mapper.addMixIn(ApplicationUpdateRequest.class, ApplicationUpdateRequestModel.class);
-        mapper.addMixIn(PasswordPolicyUpdateRequest.class, PasswordPolicyUpdateRequestModel.class);
+        mapper.addMixIn(PasswordPolicySetRequest.class, PasswordPolicyUpdateRequestModel.class);
         mapper.addMixIn(OAuthAuthorizationUrlRequest.class, OAuthAuthorizationUrlRequestModel.class);
         mapper.addMixIn(OAuthAccessTokenRequest.class, OAuthAccessTokenRequestModel.class);
         mapper.addMixIn(UsernamePolicyAddRequest.class, UsernamePolicyAddRequestModel.class);

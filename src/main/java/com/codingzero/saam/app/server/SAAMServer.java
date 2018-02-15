@@ -24,7 +24,7 @@ import com.codingzero.saam.app.OAuthIdentifierPolicyAddRequest;
 import com.codingzero.saam.app.OAuthIdentifierPolicyUpdateRequest;
 import com.codingzero.saam.app.OAuthLoginRequest;
 import com.codingzero.saam.app.PasswordChangeRequest;
-import com.codingzero.saam.app.PasswordPolicyUpdateRequest;
+import com.codingzero.saam.app.PasswordPolicySetRequest;
 import com.codingzero.saam.app.PasswordResetCodeGenerateRequest;
 import com.codingzero.saam.app.PasswordResetCodeResponse;
 import com.codingzero.saam.app.PasswordResetRequest;
@@ -152,7 +152,7 @@ public class SAAMServer implements SAAM {
     }
 
     @Override
-    public ApplicationResponse updatePasswordPolicy(PasswordPolicyUpdateRequest request) {
+    public ApplicationResponse setPasswordPolicy(PasswordPolicySetRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         application.setPasswordPolicy(request.getPasswordPolicy());
         application = storeApplication(application);
@@ -454,7 +454,7 @@ public class SAAMServer implements SAAM {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
         IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getType());
-        Identifier identifier = getEnsuredIdentifer(policy, user, request.getIdentifier());
+        Identifier identifier = getEnsuredIdentifier(policy, user, request.getIdentifier());
         policy.removeIdentifier(identifier);
         application.updateIdentifierPolicy(policy);
         storeApplication(application);
@@ -465,9 +465,9 @@ public class SAAMServer implements SAAM {
     public IdentifierVerificationCodeResponse generateVerificationCode(
             IdentifierVerificationCodeGenerateRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = application.fetchUserById(request.getUserId());
+        User user = getEnsuredUser(application, request.getUserId());
         IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getIdentifierType());
-        Identifier identifier = getEnsuredIdentifer(policy, user, request.getIdentifier());
+        Identifier identifier = getEnsuredIdentifier(policy, user, request.getIdentifier());
         identifier.generateVerificationCode(request.getTimeout());
         policy.updateIdentifier(identifier);
         application.updateIdentifierPolicy(policy);
@@ -475,8 +475,8 @@ public class SAAMServer implements SAAM {
         return responseMapper.toResponse(identifier);
     }
 
-    private Identifier getEnsuredIdentifer(IdentifierPolicy policy, User user, String content) {
-        Identifier identifier = policy.fetchIdentifierByUserAndId(user, content);
+    private Identifier getEnsuredIdentifier(IdentifierPolicy policy, User user, String content) {
+        Identifier identifier = policy.fetchIdentifierByUserAndContent(user, content);
         if (null == identifier) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
                     .message("No such identifier found, " + content + " for user, " + user.getId())
@@ -495,7 +495,7 @@ public class SAAMServer implements SAAM {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = application.fetchUserById(request.getUserId());
         IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getIdentifierType());
-        Identifier identifier = getEnsuredIdentifer(policy, user, request.getIdentifier());
+        Identifier identifier = getEnsuredIdentifier(policy, user, request.getIdentifier());
         identifier.verify(request.getVerificationCode());
         policy.updateIdentifier(identifier);
         application.updateIdentifierPolicy(policy);
@@ -556,7 +556,7 @@ public class SAAMServer implements SAAM {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getIdentifierType());
         User user = application.fetchUserById(request.getUserId());
-        Identifier identifier = getEnsuredIdentifer(policy, user, request.getIdentifier());
+        Identifier identifier = getEnsuredIdentifier(policy, user, request.getIdentifier());
         PasswordResetCode resetCode = user.generatePasswordResetCode(identifier, request.getTimeout());
         application.updateUser(user);
         storeApplication(application);

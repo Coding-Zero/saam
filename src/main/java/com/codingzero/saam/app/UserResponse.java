@@ -18,15 +18,22 @@ public class UserResponse {
     private List<Role> roles;
     private List<Identifier> identifiers;
     private List<OAuthIdentifier> oAuthIdentifiers;
+    private boolean isPasswordSet;
 
-    public UserResponse(String applicationId, String id, Date creationTime,
-                        List<Role> roles, List<Identifier> identifiers, List<OAuthIdentifier> oAuthIdentifiers) {
+    public UserResponse(String applicationId,
+                        String id,
+                        Date creationTime,
+                        List<Role> roles,
+                        List<Identifier> identifiers,
+                        List<OAuthIdentifier> oAuthIdentifiers,
+                        boolean isPasswordSet) {
         this.applicationId = applicationId;
         this.id = id;
         this.creationTime = creationTime.getTime();
         this.roles = Collections.unmodifiableList(roles);
         this.identifiers = Collections.unmodifiableList(identifiers);
         this.oAuthIdentifiers = Collections.unmodifiableList(oAuthIdentifiers);
+        this.isPasswordSet = isPasswordSet;
     }
 
     public String getApplicationId() {
@@ -51,6 +58,10 @@ public class UserResponse {
 
     public List<OAuthIdentifier> getOAuthIdentifiers() {
         return oAuthIdentifiers;
+    }
+
+    public boolean isPasswordSet() {
+        return isPasswordSet;
     }
 
     public static class Role {

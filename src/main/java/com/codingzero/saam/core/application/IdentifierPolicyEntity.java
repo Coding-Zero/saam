@@ -165,16 +165,16 @@ public abstract class IdentifierPolicyEntity<T extends IdentifierPolicyOS>
     }
 
     @Override
-    public Identifier fetchIdentifierById(String content) {
+    public Identifier fetchIdentifierByContent(String content) {
         return identifierRepository.findByContent(this, content);
     }
 
     @Override
-    public Identifier fetchIdentifierByUserAndId(User user, String content) {
+    public Identifier fetchIdentifierByUserAndContent(User user, String content) {
         if (null == content) {
             return null;
         }
-        Identifier identifier = fetchIdentifierById(content);
+        Identifier identifier = fetchIdentifierByContent(content);
         if (null != identifier
                 && identifier.getUser().getId().equalsIgnoreCase(user.getId())) {
             return identifier;

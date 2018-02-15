@@ -110,8 +110,8 @@ public class ResponseMapper {
                 source.getCreationTime(),
                 toUserRoles(source),
                 toUserIdentifiers(source),
-                toUserSSOIdentifiers(source)
-        );
+                toUserSSOIdentifiers(source),
+                source.isPasswordSet());
     }
 
     private List<UserResponse.Role> toUserRoles(User source) {
