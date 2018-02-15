@@ -14,6 +14,8 @@ public interface User extends Principal {
 
     /**Password**/
 
+    boolean isPasswordSet();
+
     void changePassword(String oldPassword, String newPassword);
 
     boolean verifyPassword(String password);

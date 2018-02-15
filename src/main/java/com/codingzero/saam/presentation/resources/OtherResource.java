@@ -33,30 +33,6 @@ public class OtherResource extends AbstractResource {
     }
 
     @POST
-    @Path("/{id}/identifier-verification-codes")
-    @Timed(name = "create-identifier-verification-code")
-    public Response createVerification(@PathParam("id") String id,
-                                       ObjectNode requestBody) throws IOException {
-        requestBody.put("applicationId", id);
-        IdentifierVerificationCodeGenerateRequest request = getObjectMapper().readValue(
-                requestBody.toString(), IdentifierVerificationCodeGenerateRequest.class);
-        IdentifierVerificationCodeResponse response = getApp().generateVerificationCode(request);
-        return ok(response);
-    }
-
-    @POST
-    @Path("/{id}/password-reset-codes")
-    @Timed(name = "create-password-reset-code")
-    public Response createPasswordResetCode(@PathParam("id") String id,
-                                            ObjectNode requestBody) throws IOException {
-        requestBody.put("applicationId", id);
-        PasswordResetCodeGenerateRequest request = getObjectMapper().readValue(
-                requestBody.toString(), PasswordResetCodeGenerateRequest.class);
-        PasswordResetCodeResponse response = getApp().generateResetCode(request);
-        return ok(response);
-    }
-
-    @POST
     @Path("/{id}/oauth-auth-url/{platform}")
     @Timed(name = "request-oauth-auth-url")
     public Response requestOAuthAuthUrl(@PathParam("id") String id,
@@ -90,5 +66,27 @@ public class OtherResource extends AbstractResource {
         return created(response);
     }
 
+    @POST
+    @Path("/{id}/identifier-verification-codes")
+    @Timed(name = "create-identifier-verification-code")
+    public Response createVerification(@PathParam("id") String id,
+                                       ObjectNode requestBody) throws IOException {
+        requestBody.put("applicationId", id);
+        IdentifierVerificationCodeGenerateRequest request = getObjectMapper().readValue(
+                requestBody.toString(), IdentifierVerificationCodeGenerateRequest.class);
+        IdentifierVerificationCodeResponse response = getApp().generateVerificationCode(request);
+        return ok(response);
+    }
 
+    @POST
+    @Path("/{id}/password-reset-codes")
+    @Timed(name = "create-password-reset-code")
+    public Response createPasswordResetCode(@PathParam("id") String id,
+                                            ObjectNode requestBody) throws IOException {
+        requestBody.put("applicationId", id);
+        PasswordResetCodeGenerateRequest request = getObjectMapper().readValue(
+                requestBody.toString(), PasswordResetCodeGenerateRequest.class);
+        PasswordResetCodeResponse response = getApp().generateResetCode(request);
+        return ok(response);
+    }
 }

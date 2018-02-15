@@ -299,6 +299,22 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
         PrincipalEntity entity = (PrincipalEntity) user;
         entity.markAsVoid();
         dirtyPrincipals.put(entity.getId(), entity);
+        List<IdentifierPolicy> policies = fetchAllIdentifierPolicies();
+        for (IdentifierPolicy policy: policies) {
+            List<Identifier> identifiers = policy.fetchIdentifiersByUser(user);
+            for (Identifier identifier: identifiers) {
+                policy.removeIdentifier(identifier);
+            }
+            dirtyIdentifierPolicies.put(policy.getType(), (IdentifierPolicyEntity) policy);
+        }
+        List<OAuthIdentifierPolicy> oauthPolicies = fetchAllOAuthIdentifierPolicies();
+        for (OAuthIdentifierPolicy policy: oauthPolicies) {
+            List<OAuthIdentifier> identifiers = policy.fetchIdentifiersByUser(user);
+            for (OAuthIdentifier identifier: identifiers) {
+                policy.removeIdentifier(identifier);
+            }
+            dirtyOAuthIdentifierPolicies.put(policy.getPlatform(), (OAuthIdentifierPolicyEntity) policy);
+        }
     }
 
     @Override
@@ -310,7 +326,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     public User fetchUserByIdentifier(String identifier) {
         List<IdentifierPolicy> policies = identifierPolicyRepository.findAll(this);
         for (IdentifierPolicy policy: policies) {
-            Identifier id = policy.fetchIdentifierById(identifier);
+            Identifier id = policy.fetchIdentifierByContent(identifier);
             if (null != id) {
                 return id.getUser();
             }

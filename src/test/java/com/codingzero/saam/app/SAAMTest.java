@@ -324,10 +324,10 @@ public abstract class SAAMTest {
     }
 
     @Test
-    public void testUpdatePasswordPolicy() {
+    public void testSetPasswordPolicy() {
         ApplicationResponse app = createApplication();
         PasswordPolicy policy = app.getPasswordPolicy();
-        app = saam.updatePasswordPolicy(new PasswordPolicyUpdateRequest(
+        app = saam.setPasswordPolicy(new PasswordPolicySetRequest(
                 app.getId(), new PasswordPolicy(8, 50, false, false)));
         PasswordPolicy actualPolicy = app.getPasswordPolicy();
         assertNotEquals(policy.getMinLength(), actualPolicy.getMinLength());
@@ -337,19 +337,19 @@ public abstract class SAAMTest {
     }
 
     @Test
-    public void testUpdatePasswordPolicy_InactiveApplication() {
+    public void testSetPasswordPolicy_InactiveApplication() {
         ApplicationResponse app = createApplication();
         app = updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
 
         thrown.expect(BusinessError.class);
-        saam.updatePasswordPolicy(new PasswordPolicyUpdateRequest(
+        saam.setPasswordPolicy(new PasswordPolicySetRequest(
                 app.getId(), new PasswordPolicy(8, 50, false, false)));
     }
 
     @Test
-    public void testUpdatePasswordPolicy_NullValue() {
+    public void testSetPasswordPolicy_NullValue() {
         ApplicationResponse app = createApplication();
-        app = saam.updatePasswordPolicy(new PasswordPolicyUpdateRequest(
+        app = saam.setPasswordPolicy(new PasswordPolicySetRequest(
                 app.getId(), null));
         PasswordPolicy actualPolicy = app.getPasswordPolicy();
         assertNull(actualPolicy);
@@ -688,6 +688,22 @@ public abstract class SAAMTest {
         saam.removeUser(user.getApplicationId(), user.getId());
         UserResponse actualUser = saam.getUserById(user.getApplicationId(), user.getId());
         assertNull(actualUser);
+
+        List<UserResponse.Identifier> identifiers = user.getIdentifiers();
+        Map<IdentifierType, String> newIdentifiers = new HashMap<>();
+        for (UserResponse.Identifier identifier: identifiers) {
+            newIdentifiers.put(identifier.getType(), identifier.getContent());
+        }
+
+        List<UserResponse.OAuthIdentifier> oAuthIdentifiers = user.getOAuthIdentifiers();
+        Map<OAuthPlatform, UserRegisterRequest.OAuthIdentifier> newOAuthIdentifiers = new HashMap<>();
+        for (UserResponse.OAuthIdentifier identifier: oAuthIdentifiers) {
+            newOAuthIdentifiers.put(
+                    identifier.getPlatform(),
+                    new UserRegisterRequest.OAuthIdentifier(identifier.getContent(), identifier.getProperties()));
+        }
+
+        registerUser(app.getId(), newIdentifiers, newOAuthIdentifiers);
     }
 
     @Test
@@ -2872,7 +2888,7 @@ public abstract class SAAMTest {
         ApplicationResponse app = saam.addApplication(
                 new ApplicationAddRequest(name, "description"));
         generatedApplications.add(app);
-        app = saam.updatePasswordPolicy(new PasswordPolicyUpdateRequest(
+        app = saam.setPasswordPolicy(new PasswordPolicySetRequest(
                 app.getId(), new PasswordPolicy(6, 35, true, true)));
         app = saam.addEmailPolicy(
                 new EmailPolicyAddRequest(app.getId(), isEmailVerificationRequired, Collections.emptyList()));

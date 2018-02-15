@@ -162,12 +162,12 @@ public class ApplicationRootTest {
     public void testFetchUserByIdentifier() {
         String identifierContent = "foo@foo.com";
         IdentifierPolicy usernamePolicy = mock(IdentifierPolicy.class);
-        when(usernamePolicy.fetchIdentifierById(identifierContent)).thenReturn(null);
+        when(usernamePolicy.fetchIdentifierByContent(identifierContent)).thenReturn(null);
         IdentifierPolicy emailPolicy = mock(IdentifierPolicy.class);
         List<IdentifierPolicy> policies = Arrays.asList(usernamePolicy, emailPolicy);
         when(identifierPolicyRepository.findAll(entity)).thenReturn(policies);
         Identifier identifier = mock(Identifier.class);
-        when(emailPolicy.fetchIdentifierById(identifierContent)).thenReturn(identifier);
+        when(emailPolicy.fetchIdentifierByContent(identifierContent)).thenReturn(identifier);
         User user = mock(User.class);
         when(identifier.getUser()).thenReturn(user);
         User actualUser = entity.fetchUserByIdentifier(identifierContent);
@@ -178,12 +178,12 @@ public class ApplicationRootTest {
     public void testFetchUserByIdentifier_NotFound() {
         String identifierContent = "foo@foo.com";
         IdentifierPolicy usernamePolicy = mock(IdentifierPolicy.class);
-        when(usernamePolicy.fetchIdentifierById(identifierContent)).thenReturn(null);
+        when(usernamePolicy.fetchIdentifierByContent(identifierContent)).thenReturn(null);
         IdentifierPolicy emailPolicy = mock(IdentifierPolicy.class);
         List<IdentifierPolicy> policies = Arrays.asList(usernamePolicy, emailPolicy);
         when(identifierPolicyRepository.findAll(entity)).thenReturn(policies);
         Identifier identifier = mock(Identifier.class);
-        when(emailPolicy.fetchIdentifierById(identifierContent)).thenReturn(identifier);
+        when(emailPolicy.fetchIdentifierByContent(identifierContent)).thenReturn(identifier);
         User actualUser = entity.fetchUserByIdentifier("foo");
         assertEquals(null, actualUser);
     }

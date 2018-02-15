@@ -182,7 +182,7 @@ public class IdentifierPolicyEntityTest {
         when(user.getId()).thenReturn("userid");
         when(identifier.getUser()).thenReturn(user);
         when(identifierRepository.findByContent(entity, content)).thenReturn(identifier);
-        Identifier foundIdentifier = entity.fetchIdentifierByUserAndId(user, content);
+        Identifier foundIdentifier = entity.fetchIdentifierByUserAndContent(user, content);
         assertEquals(identifier, foundIdentifier);
     }
 
@@ -190,7 +190,7 @@ public class IdentifierPolicyEntityTest {
     public void testFetchIdentifierByUserAndId_NullContent() {
         String content = null;
         User user = mock(User.class);
-        Identifier foundIdentifier = entity.fetchIdentifierByUserAndId(user, content);
+        Identifier foundIdentifier = entity.fetchIdentifierByUserAndContent(user, content);
         assertEquals(null, foundIdentifier);
     }
 
@@ -204,7 +204,7 @@ public class IdentifierPolicyEntityTest {
         when(identifierRepository.findByContent(entity, content)).thenReturn(identifier);
         User user2 = mock(User.class);
         when(user2.getId()).thenReturn("userid-2");
-        Identifier foundIdentifier = entity.fetchIdentifierByUserAndId(user2, content);
+        Identifier foundIdentifier = entity.fetchIdentifierByUserAndContent(user2, content);
         assertEquals(null, foundIdentifier);
     }
 

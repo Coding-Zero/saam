@@ -42,9 +42,9 @@ public interface IdentifierPolicy {
 
     void removeIdentifier(Identifier identifier);
 
-    Identifier fetchIdentifierById(String content);
+    Identifier fetchIdentifierByContent(String content);
 
-    Identifier fetchIdentifierByUserAndId(User user, String content);
+    Identifier fetchIdentifierByUserAndContent(User user, String content);
 
     List<Identifier> fetchIdentifiersByUser(User user);
 

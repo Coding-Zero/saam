@@ -23,11 +23,6 @@ public class PrincipalRepositoryService {
     }
 
     public void store(PrincipalEntity entity) {
-//        if (entity.isNew()) {
-//            access.insert((PrincipalOS) entity.getObjectSegment());
-//        } else if (entity.isDirty()) {
-//            access.update((PrincipalOS) entity.getObjectSegment());
-//        }
         if (entity.getType() == PrincipalType.USER) {
             userRepository.store((UserEntity) entity);
         } else if (entity.getType() == PrincipalType.ROLE) {

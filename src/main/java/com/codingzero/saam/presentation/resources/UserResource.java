@@ -7,6 +7,8 @@ import com.codingzero.saam.app.IdentifierVerifyRequest;
 import com.codingzero.saam.app.OAuthIdentifierConnectRequest;
 import com.codingzero.saam.app.OAuthIdentifierDisconnectRequest;
 import com.codingzero.saam.app.PasswordChangeRequest;
+import com.codingzero.saam.app.PasswordResetCodeGenerateRequest;
+import com.codingzero.saam.app.PasswordResetCodeResponse;
 import com.codingzero.saam.app.PasswordResetRequest;
 import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.UserRegisterRequest;
@@ -108,7 +110,7 @@ public class UserResource extends AbstractResource {
     }
 
     @PATCH
-    @Path("/{id}/_update_roles")
+    @Path("/{id}/roles")
     @Timed(name = "update-user-roles")
     public Response updateRoles(@PathParam("applicationId") String applicationId,
                                 @PathParam("id") String id,
@@ -122,36 +124,30 @@ public class UserResource extends AbstractResource {
     }
 
     @PATCH
-    @Path("/{id}/_change_password")
+    @Path("/{id}/password")
     @Timed(name = "change-user-password")
     public Response changePassword(@PathParam("applicationId") String applicationId,
                                    @PathParam("id") String id,
+                                   @QueryParam("reset") Boolean isReset,
                                    ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", applicationId);
         requestBody.put("userId", id);
-        PasswordChangeRequest request = getObjectMapper().readValue(
-                requestBody.toString(), PasswordChangeRequest.class);
-        UserResponse response = getApp().changePassword(request);
-        return ok(response);
-    }
-
-    @PATCH
-    @Path("/{id}/_reset_password")
-    @Timed(name = "reset-user-password")
-    public Response resetPassword(@PathParam("applicationId") String applicationId,
-                                   @PathParam("id") String id,
-                                   ObjectNode requestBody) throws IOException {
-        requestBody.put("applicationId", applicationId);
-        requestBody.put("userId", id);
-        PasswordResetRequest request = getObjectMapper().readValue(
-                requestBody.toString(), PasswordResetRequest.class);
-        UserResponse response = getApp().resetPassword(request);
+        UserResponse response;
+        if (null == isReset || !isReset) {
+            PasswordChangeRequest request = getObjectMapper().readValue(
+                    requestBody.toString(), PasswordChangeRequest.class);
+            response = getApp().changePassword(request);
+        } else {
+            PasswordResetRequest request = getObjectMapper().readValue(
+                    requestBody.toString(), PasswordResetRequest.class);
+            response = getApp().resetPassword(request);
+        }
         return ok(response);
     }
 
     @POST
     @Path("/{id}/identifiers/{type}")
-    @Timed(name = "create-identifier")
+    @Timed(name = "add-identifier")
     public Response createIdentifier(@PathParam("applicationId") String applicationId,
                                      @PathParam("id") String id,
                                      @PathParam("type") String type,
@@ -167,28 +163,28 @@ public class UserResource extends AbstractResource {
 
     @DELETE
     @Path("/{id}/identifiers/{type}/{content}")
-    @Timed(name = "delete-identifier")
+    @Timed(name = "remove-identifier")
     public Response removeIdentifier(@PathParam("applicationId") String applicationId,
                                      @PathParam("id") String id,
-                                     @PathParam("type") String type,
+                                     @PathParam("type") IdentifierType type,
                                      @PathParam("content") String content) {
         IdentifierRemoveRequest request =
-                new IdentifierRemoveRequest(applicationId, id, IdentifierType.valueOf(type), content);
+                new IdentifierRemoveRequest(applicationId, id, type, content);
         UserResponse response = getApp().removeIdentifier(request);
         return ok(response);
     }
 
     @PATCH
-    @Path("/{id}/identifiers/{type}/{content}/_verify")
+    @Path("/{id}/identifiers/{type}/{content}/verified")
     @Timed(name = "verify-identifier")
     public Response verifyIdentifier(@PathParam("applicationId") String applicationId,
                                      @PathParam("id") String id,
-                                     @PathParam("type") String type,
+                                     @PathParam("type") IdentifierType type,
                                      @PathParam("content") String content,
                                      ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", applicationId);
         requestBody.put("userId", id);
-        requestBody.put("type", type);
+        requestBody.put("identifierType", type.name());
         requestBody.put("identifier", content);
         IdentifierVerifyRequest request = getObjectMapper().readValue(
                 requestBody.toString(), IdentifierVerifyRequest.class);

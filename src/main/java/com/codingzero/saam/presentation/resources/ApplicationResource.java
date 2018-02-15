@@ -8,7 +8,7 @@ import com.codingzero.saam.app.EmailPolicyAddRequest;
 import com.codingzero.saam.app.EmailPolicyUpdateRequest;
 import com.codingzero.saam.app.OAuthIdentifierPolicyAddRequest;
 import com.codingzero.saam.app.OAuthIdentifierPolicyUpdateRequest;
-import com.codingzero.saam.app.PasswordPolicyUpdateRequest;
+import com.codingzero.saam.app.PasswordPolicySetRequest;
 import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.UsernamePolicyAddRequest;
 import com.codingzero.saam.app.UsernamePolicyUpdateRequest;
@@ -42,7 +42,7 @@ public class ApplicationResource extends AbstractResource {
     }
 
     @POST
-    @Timed(name = "create-application")
+    @Timed(name = "add-application")
     public Response create(ApplicationAddRequest request) {
         ApplicationResponse response = getApp().addApplication(request);
         return created(response);
@@ -64,9 +64,9 @@ public class ApplicationResource extends AbstractResource {
     @Timed(name = "update-password-policy")
     public Response updatePasswordPolicy(@PathParam("id") String id, ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", id);
-        PasswordPolicyUpdateRequest request = getObjectMapper().readValue(
-                requestBody.toString(), PasswordPolicyUpdateRequest.class);
-        ApplicationResponse response = getApp().updatePasswordPolicy(request);
+        PasswordPolicySetRequest request = getObjectMapper().readValue(
+                requestBody.toString(), PasswordPolicySetRequest.class);
+        ApplicationResponse response = getApp().setPasswordPolicy(request);
         return ok(response);
     }
 
@@ -161,16 +161,18 @@ public class ApplicationResource extends AbstractResource {
     @Timed(name = "delete-identifier-policy")
     public Response deleteIdentifierPolicy(@PathParam("id") String id,
                                            @PathParam("type") String type) {
-        getApp().removeIdentifierPolicy(id, IdentifierType.valueOf(type));
-        return noContent();
+        ApplicationResponse response = getApp().removeIdentifierPolicy(id, IdentifierType.valueOf(type));
+        return ok(response);
     }
 
     @POST
-    @Path("/{id}/oauth-identifier-policies")
+    @Path("/{id}/oauth-identifier-policies/{platform}")
     @Timed(name = "create-oauth-identifier-policy")
     public Response createOAuthIdentifierPolicy(@PathParam("id") String id,
+                                                @PathParam("platform") OAuthPlatform platform,
                                                 ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", id);
+        requestBody.set("platform", getObjectMapper().valueToTree(platform));
         OAuthIdentifierPolicyAddRequest request = getObjectMapper().readValue(
                 requestBody.toString(), OAuthIdentifierPolicyAddRequest.class);
         ApplicationResponse response = getApp().addOAuthIdentifierPolicy(request);
@@ -196,8 +198,8 @@ public class ApplicationResource extends AbstractResource {
     @Timed(name = "delete-oauth-identifier-policy")
     public Response deleteOAuthIdentifierPolicy(@PathParam("id") String id,
                                                 @PathParam("platform") OAuthPlatform platform) {
-        getApp().removeOAuthIdentifierPolicy(id, platform);
-        return noContent();
+        ApplicationResponse response = getApp().removeOAuthIdentifierPolicy(id, platform);
+        return ok(response);
     }
 
 

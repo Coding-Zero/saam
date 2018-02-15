@@ -55,6 +55,11 @@ public class UserEntity extends PrincipalEntity<UserOS> implements User {
     }
 
     @Override
+    public boolean isPasswordSet() {
+        return getObjectSegment().getPassword() != null;
+    }
+
+    @Override
     public boolean verifyPassword(String password) {
         checkForNoPasswordPolicy();
         if (null == getObjectSegment().getPassword()) {
