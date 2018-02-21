@@ -126,8 +126,8 @@ public class IdentifierEntityTest {
     @Test
     public void testVerify_AlreadyVerified() {
         when(objectSegment.isVerified()).thenReturn(true);
+        thrown.expect(BusinessError.class);
         entity.verify("code-abc");
-        assertEquals(false, entity.isDirty());
     }
 
     @Test

@@ -35,38 +35,36 @@ public class UserSessionResource extends AbstractResource {
 
     @POST
     @Timed(name = "create-user-session")
-    public Response register(@PathParam("applicationId") String applicationId,
-                             @QueryParam("type") String type,
-                             ObjectNode requestBody) throws IOException {
+    public Response createUserSession(@PathParam("applicationId") String applicationId,
+                                      ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", applicationId);
-        if (StringUtils.isEmpty(type)) {
-            return create(requestBody);
-        } else if (type.equalsIgnoreCase("CREDENTIAL-LOGIN")) {
-            return loginWithCredential(requestBody);
-        } else if (type.equalsIgnoreCase("OAUTH-LOGIN")) {
-            return loginWithOAuth(requestBody);
-        }
-        throw new IllegalArgumentException("Unsupported type, " + type);
+        UserSessionCreateRequest request = getObjectMapper().readValue(
+                requestBody.toString(), UserSessionCreateRequest.class);
+        UserSessionResponse response = getApp().createUserSession(request);
+        return created(response);
     }
 
-    private Response loginWithCredential(ObjectNode requestBody) throws IOException {
+    @POST
+    @Path("/_credential-login")
+    @Timed(name = "credential-login")
+    public Response loginWithCredential(@PathParam("applicationId") String applicationId,
+                                        ObjectNode requestBody) throws IOException {
+        requestBody.put("applicationId", applicationId);
         CredentialLoginRequest request = getObjectMapper().readValue(
                 requestBody.toString(), CredentialLoginRequest.class);
         UserSessionResponse response = getApp().login(request);
         return created(response);
     }
 
-    private Response loginWithOAuth(ObjectNode requestBody) throws IOException {
+    @POST
+    @Timed(name = "oauth-login")
+    @Path("/_oauth-login")
+    public Response loginWithOAuth(@PathParam("applicationId") String applicationId,
+                                   ObjectNode requestBody) throws IOException {
+        requestBody.put("applicationId", applicationId);
         OAuthLoginRequest request = getObjectMapper().readValue(
                 requestBody.toString(), OAuthLoginRequest.class);
         UserSessionResponse response = getApp().login(request);
-        return created(response);
-    }
-
-    private Response create(ObjectNode requestBody) throws IOException {
-        UserSessionCreateRequest request = getObjectMapper().readValue(
-                requestBody.toString(), UserSessionCreateRequest.class);
-        UserSessionResponse response = getApp().createUserSession(request);
         return created(response);
     }
 
@@ -80,7 +78,7 @@ public class UserSessionResource extends AbstractResource {
     }
 
     @DELETE
-    @Path("/_user-id/{userId}")
+    @Path("/user-id/{userId}")
     @Timed(name = "delete-user-sessions")
     public Response deleteAll(@PathParam("applicationId") String applicationId,
                            @PathParam("userId") String userId) {
@@ -98,7 +96,7 @@ public class UserSessionResource extends AbstractResource {
     }
 
     @GET
-    @Path("/_user-id/{userId}")
+    @Path("/user-id/{userId}")
     @Timed(name = "list-api-keys-by-user-id")
     public Response listByUserId(@PathParam("applicationId") String applicationId,
                                  @PathParam("userId") String userId,

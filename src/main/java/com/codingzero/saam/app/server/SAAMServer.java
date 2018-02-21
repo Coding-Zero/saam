@@ -630,7 +630,7 @@ public class SAAMServer implements SAAM {
     @Override
     public List<APIKeyResponse> listAPIKeysByApplicationIdAndUserId(String applicationId, String userId) {
         Application application = getEnsuredApplicationById(applicationId);
-        User user = application.fetchUserById(userId);
+        User user = getEnsuredUser(application, userId);
         List<APIKey> apiKeys = application.fetchAPIKeysByOwner(user);
         List<APIKeyResponse> responses = new ArrayList<>();
         for (APIKey apiKey: apiKeys) {
@@ -670,13 +670,6 @@ public class SAAMServer implements SAAM {
     }
 
     @Override
-    public UserSessionResponse getUserSessionByKey(String applicationId, String key) {
-        Application application = getEnsuredApplicationById(applicationId);
-        UserSession session = application.fetchUserSessionByKey(key);
-        return responseMapper.toResponse(session);
-    }
-
-    @Override
     public void removeUserSessionByKey(String applicationId, String sessionKey) {
         Application application = getEnsuredApplicationById(applicationId);
         UserSession session = getEnsuredUserSession(application, sessionKey);
@@ -703,6 +696,13 @@ public class SAAMServer implements SAAM {
         User user = application.fetchUserById(userId);
         application.removeAllUserSession(user);
         storeApplication(application);
+    }
+
+    @Override
+    public UserSessionResponse getUserSessionByKey(String applicationId, String key) {
+        Application application = getEnsuredApplicationById(applicationId);
+        UserSession session = application.fetchUserSessionByKey(key);
+        return responseMapper.toResponse(session);
     }
 
     @Override
@@ -796,17 +796,14 @@ public class SAAMServer implements SAAM {
     public ResourceResponse storeResource(ResourceStoreRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         Principal owner = getEnsuredPrincipal(application, request.getOwnerId());
-        String[] keys = readParentKeyAndName(request.getKey());
-        Resource parent = null;
-        if (null != keys[0]) {
-            parent = getEnsuredResource(application, keys[0]);
-        }
         Resource resource = application.fetchResourceByKey(request.getKey());
         if (null == resource) {
-            resource = application.createResource(keys[1], owner, parent);
+            resource = application.createResource(request.getKey(), owner);
+        } else {
             resource.setOwner(owner);
-            storeApplication(application);
+            application.updateResource(resource);
         }
+        storeApplication(application);
         return responseMapper.toResponse(resource);
     }
 

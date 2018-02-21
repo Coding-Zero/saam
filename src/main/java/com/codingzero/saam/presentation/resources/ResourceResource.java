@@ -63,7 +63,7 @@ public class ResourceResource extends AbstractResource {
     }
 
     @GET
-    @Path("/_owner-id/{ownerId}")
+    @Path("/owner-id/{ownerId}")
     @Timed(name = "list-resource-by-owner-id")
     public Response listByUserId(@PathParam("applicationId") String applicationId,
                                  @PathParam("ownerId") String ownerId,
@@ -78,11 +78,10 @@ public class ResourceResource extends AbstractResource {
     }
 
     @GET
-    @Path("/_granted/{principalId}")
+    @Path("/granted/{principalId}")
     @Timed(name = "list-resource-by-owner-id")
     public Response listGrantedResources(@PathParam("applicationId") String applicationId,
                                          @PathParam("principalId") String principalId,
-                                         @QueryParam("parentKey") String parentKey,
                                          @QueryParam("start") int start,
                                          @QueryParam("size") int size) {
         PaginatedResult<List<ResourceResponse>> result =

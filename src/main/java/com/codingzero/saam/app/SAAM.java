@@ -100,11 +100,11 @@ public interface SAAM {
 
     UserSessionResponse createUserSession(UserSessionCreateRequest request);
 
-    UserSessionResponse getUserSessionByKey(String applicationId, String key);
-
     void removeUserSessionByKey(String applicationId, String sessionKey);
 
     void removeUserSessionsByUserId(String applicationId, String userId);
+
+    UserSessionResponse getUserSessionByKey(String applicationId, String key);
 
     PaginatedResult<List<UserSessionResponse>> listUserSessionsByUserId(String applicationId, String userId);
 

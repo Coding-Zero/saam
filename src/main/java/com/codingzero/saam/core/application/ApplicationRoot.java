@@ -5,7 +5,7 @@ import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.common.PasswordPolicy;
-import com.codingzero.saam.common.PrincipalType;
+import com.codingzero.saam.common.ResourceKeySeparator;
 import com.codingzero.saam.core.APIKey;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.core.EmailPolicy;
@@ -466,15 +466,42 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     }
 
     @Override
-    public Resource createResource(String name, Principal owner, Resource parent) {
+    public Resource createResource(String key, Principal owner) {
         checkForInvalidStatus();
-        if (owner.getType() == PrincipalType.API_KEY) {
-            APIKey apiKey = (APIKey) owner;
-            owner = apiKey.getOwner();
+        owner = resourceFactory.getRealOwner(owner);
+        String parentKey = readParentKey(key);
+        Resource parent = null;
+        if (null != parentKey) {
+            parent = getParentResource(parentKey, owner);
         }
+        String name = readName(key);
         ResourceEntity entity = resourceFactory.generate(this, name, owner, parent);
         dirtyResources.put(entity.getKey(), entity);
         return entity;
+    }
+
+    private Resource getParentResource(String key, Principal owner) {
+        Resource parent = fetchResourceByKey(key);
+        if (null == parent) {
+            return createResource(key, owner);
+        }
+        return parent;
+    }
+
+    private String readParentKey(String key) {
+        int position = key.lastIndexOf(ResourceKeySeparator.VALUE);
+        if (-1 == position) {
+            return null;
+        }
+        return key.substring(0, position);
+    }
+
+    private String readName(String key) {
+        int position = key.lastIndexOf(ResourceKeySeparator.VALUE);
+        if (-1 == position) {
+            return key;
+        }
+        return key.substring(position + 1);
     }
 
     @Override

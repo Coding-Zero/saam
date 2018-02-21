@@ -2142,13 +2142,16 @@ public abstract class SAAMTest {
     }
 
     @Test
-    public void testStoreResource_NoParentFound() {
+    public void testStoreResource_NoParentExist() {
         ApplicationResponse app = createApplication();
         UserResponse user = registerUser(app.getId());
         String key = getResourceKey(getResourceKey());
-        thrown.expect(BusinessError.class);
-        saam.storeResource(
+        ResourceResponse resource = saam.storeResource(
                 new ResourceStoreRequest(app.getId(), user.getId(), key));
+        assertNotNull(resource);
+        assertEquals(app.getId(), resource.getApplicationId());
+        assertEquals(user.getId(), resource.getOwnerId());
+        assertEquals(key, resource.getKey());
     }
 
     @Test

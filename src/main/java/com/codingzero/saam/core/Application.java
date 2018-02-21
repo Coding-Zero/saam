@@ -120,7 +120,7 @@ public interface Application {
 
     /**Resource**/
 
-    Resource createResource(String name, Principal owner, Resource parent);
+    Resource createResource(String key, Principal owner);
 
     void updateResource(Resource resource);
 

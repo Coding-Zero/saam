@@ -73,7 +73,7 @@ public class APIKeyResource extends AbstractResource {
     }
 
     @GET
-    @Path("/_user-id/{userId}")
+    @Path("/user-id/{userId}")
     @Timed(name = "list-api-keys-by-user-id")
     public Response listByUserId(@PathParam("applicationId") String applicationId,
                                  @PathParam("userId") String userId) {

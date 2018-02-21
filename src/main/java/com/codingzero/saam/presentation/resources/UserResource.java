@@ -192,17 +192,18 @@ public class UserResource extends AbstractResource {
         return ok(response);
     }
 
-    @PUT
-    @Path("/{id}/oauth-identifiers/{platform}/{content}")
-    @Timed(name = "update-oauth-identifier")
+    @PATCH
+    @Path("/{id}/oauth-identifiers/{platform}/{identifier}")
+    @Timed(name = "connect-oauth-identifier")
     public Response updateOAuthIdentifier(@PathParam("applicationId") String applicationId,
                                           @PathParam("id") String id,
                                           @PathParam("platform") OAuthPlatform platform,
-                                          @PathParam("content") String content,
+                                          @PathParam("identifier") String identifier,
                                           ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", applicationId);
         requestBody.put("userId", id);
         requestBody.set("platform", getObjectMapper().valueToTree(platform));
+        requestBody.put("identifier", identifier);
         OAuthIdentifierConnectRequest request = getObjectMapper().readValue(
                 requestBody.toString(), OAuthIdentifierConnectRequest.class);
         UserResponse response = getApp().connectOAuthIdentifier(request);

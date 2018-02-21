@@ -88,9 +88,6 @@ public class IdentifierEntity extends EntityObject<IdentifierOS> implements Iden
 
     @Override
     public void verify(String code) {
-        if (isVerified()) {
-            return;
-        }
         IdentifierVerificationCode verificationCode = getObjectSegment().getVerificationCode();
         if (null == verificationCode
                 || !verificationCode.getCode().equals(code)) {
