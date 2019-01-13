@@ -1,12 +1,15 @@
-package com.codingzero.saam.core.application;
+package com.codingzero.saam.core.identifier;
 
 import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.common.IdentifierVerificationCode;
+import com.codingzero.saam.core.Application;
+import com.codingzero.saam.core.ApplicationRepository;
 import com.codingzero.saam.core.Identifier;
 import com.codingzero.saam.core.IdentifierPolicy;
 import com.codingzero.saam.core.User;
+import com.codingzero.saam.core.principal.user.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.IdentifierOS;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierVerificationCodeGenerator;
+import com.codingzero.saam.infrastructure.database.IdentifierVerificationCodeGenerator;
 import com.codingzero.utilities.ddd.EntityObject;
 import com.codingzero.utilities.error.BusinessError;
 
@@ -14,42 +17,45 @@ import java.util.Date;
 
 public class IdentifierEntity extends EntityObject<IdentifierOS> implements Identifier {
 
+    private Application application;
     private User user;
-    private IdentifierPolicy policy;
     private IdentifierVerificationCodeGenerator verificationCodeGenerator;
     private UserRepositoryService userRepository;
+    private ApplicationRepository applicationRepository;
 
     public IdentifierEntity(IdentifierOS objectSegment,
-                            IdentifierPolicy policy,
+                            Application application,
                             User user,
                             IdentifierVerificationCodeGenerator verificationCodeGenerator,
-                            UserRepositoryService userRepository) {
+                            UserRepositoryService userRepository,
+                            ApplicationRepository applicationRepository) {
         super(objectSegment);
+        this.application = application;
         this.user = user;
-        this.policy = policy;
         this.verificationCodeGenerator = verificationCodeGenerator;
         this.userRepository = userRepository;
+        this.applicationRepository = applicationRepository;
+    }
+
+    @Override
+    public Application getApplication() {
+        if (null == application) {
+            application = applicationRepository.findById(getObjectSegment().getId().getApplicationId());
+        }
+        return application;
     }
 
     @Override
     public User getUser() {
         if (null == user) {
-            user = userRepository.findById(getPolicy().getApplication(), getObjectSegment().getUserId());
+            user = userRepository.findById(getApplication(), getObjectSegment().getUserId());
         }
         return user;
     }
 
     @Override
-    public IdentifierPolicy getPolicy() {
-        if (null == policy) {
-            policy = getUser().getApplication().fetchIdentifierPolicy(getObjectSegment().getIdentifierType());
-        }
-        return policy;
-    }
-
-    @Override
     public String getContent() {
-        return getObjectSegment().getContent();
+        return getObjectSegment().getId().getContent();
     }
 
     @Override
@@ -60,7 +66,7 @@ public class IdentifierEntity extends EntityObject<IdentifierOS> implements Iden
     @Override
     public IdentifierVerificationCode generateVerificationCode(long timeout) {
         checkForVerificationIsNotRequired();
-        String code = verificationCodeGenerator.generate(getObjectSegment().getIdentifierType());
+        String code = verificationCodeGenerator.generate(getObjectSegment().getId().getType());
         Date expirationTime = new Date(System.currentTimeMillis() + timeout);
         getObjectSegment().setVerificationCode(
                 new IdentifierVerificationCode(code, expirationTime));
@@ -68,6 +74,11 @@ public class IdentifierEntity extends EntityObject<IdentifierOS> implements Iden
         getObjectSegment().setUpdateTime(new Date(System.currentTimeMillis()));
         markAsDirty();
         return getObjectSegment().getVerificationCode();
+    }
+
+    @Override
+    public IdentifierPolicy getPolicy() {
+        return getApplication().fetchIdentifierPolicy(getObjectSegment().getId().getType());
     }
 
     private void checkForVerificationIsNotRequired() {

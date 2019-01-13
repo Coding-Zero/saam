@@ -1,30 +1,42 @@
-package com.codingzero.saam.core.application;
+package com.codingzero.saam.core.identifier;
 
 import com.codingzero.saam.common.Errors;
+import com.codingzero.saam.common.IdentifierKey;
+import com.codingzero.saam.common.IdentifierType;
+import com.codingzero.saam.core.Application;
+import com.codingzero.saam.core.ApplicationRepository;
+import com.codingzero.saam.core.Identifier;
+import com.codingzero.saam.core.IdentifierFactory;
 import com.codingzero.saam.core.IdentifierPolicy;
 import com.codingzero.saam.core.User;
+import com.codingzero.saam.core.principal.user.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.IdentifierOS;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierAccess;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierVerificationCodeGenerator;
+import com.codingzero.saam.infrastructure.database.IdentifierAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierVerificationCodeGenerator;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.Date;
 
-public class IdentifierFactoryService {
+public class IdentifierFactoryService implements IdentifierFactory {
 
     private IdentifierAccess access;
     private IdentifierVerificationCodeGenerator verificationCodeGenerator;
     private UserRepositoryService userRepository;
+    private ApplicationRepository applicationRepository;
 
     public IdentifierFactoryService(IdentifierAccess access,
                                     IdentifierVerificationCodeGenerator verificationCodeGenerator,
-                                    UserRepositoryService userRepository) {
+                                    UserRepositoryService userRepository, ApplicationRepository applicationRepository) {
         this.access = access;
         this.verificationCodeGenerator = verificationCodeGenerator;
         this.userRepository = userRepository;
+        this.applicationRepository = applicationRepository;
     }
 
-    public IdentifierEntity generate(IdentifierPolicy policy, String content, User user) {
+    @Override
+    public Identifier generate(IdentifierPolicy policy, String content, User user) {
+        Application application = policy.getApplication();
+        IdentifierType type = policy.getType();
         checkForPolicy(policy);
         policy.check(content);
         checkForDuplicateIdentifierContent(policy, content);
@@ -34,16 +46,14 @@ public class IdentifierFactoryService {
         }
         Date currentDateTime = new Date(System.currentTimeMillis());
         IdentifierOS os = new IdentifierOS(
-                user.getApplication().getId(),
-                policy.getType(),
-                content,
+                new IdentifierKey(application.getId(), type, content),
                 user.getId(),
                 isVerified,
                 null,
                 currentDateTime,
                 currentDateTime
-                );
-        IdentifierEntity entity = reconstitute(os, policy, user);
+        );
+        IdentifierEntity entity = reconstitute(os, application, user);
         entity.markAsNew();
         return entity;
     }
@@ -72,11 +82,17 @@ public class IdentifierFactoryService {
         }
     }
 
-    public IdentifierEntity reconstitute(IdentifierOS os, IdentifierPolicy policy, User user) {
+    public IdentifierEntity reconstitute(IdentifierOS os, Application application, User user) {
         if (null == os) {
             return null;
         }
-        return new IdentifierEntity(os, policy, user, verificationCodeGenerator, userRepository);
+        return new IdentifierEntity(
+                os,
+                application,
+                user,
+                verificationCodeGenerator,
+                userRepository,
+                applicationRepository);
     }
 
 }
