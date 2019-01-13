@@ -4,50 +4,50 @@ import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.server.base.IdentifierVerificationCodeGeneratorImpl;
 import com.codingzero.saam.app.server.base.password.PasswordHelperImpl;
 import com.codingzero.saam.core.ApplicationRepository;
-import com.codingzero.saam.core.application.APIKeyFactoryService;
-import com.codingzero.saam.core.application.APIKeyRepositoryService;
+import com.codingzero.saam.core.principal.apikey.APIKeyFactoryService;
+import com.codingzero.saam.core.principal.apikey.APIKeyRepositoryService;
 import com.codingzero.saam.core.application.ApplicationFactoryService;
 import com.codingzero.saam.core.application.ApplicationRepositoryService;
 import com.codingzero.saam.core.application.EmailPolicyFactoryService;
 import com.codingzero.saam.core.application.EmailPolicyRepositoryService;
-import com.codingzero.saam.core.application.IdentifierFactoryService;
+import com.codingzero.saam.core.identifier.IdentifierFactoryService;
 import com.codingzero.saam.core.application.IdentifierPolicyRepositoryService;
-import com.codingzero.saam.core.application.IdentifierRepositoryService;
-import com.codingzero.saam.core.application.OAuthIdentifierFactoryService;
+import com.codingzero.saam.core.identifier.IdentifierRepositoryService;
+import com.codingzero.saam.core.oauthidentifier.OAuthIdentifierFactoryService;
 import com.codingzero.saam.core.application.OAuthIdentifierPolicyFactoryService;
 import com.codingzero.saam.core.application.OAuthIdentifierPolicyRepositoryService;
-import com.codingzero.saam.core.application.OAuthIdentifierRepositoryService;
-import com.codingzero.saam.core.application.PermissionFactoryService;
-import com.codingzero.saam.core.application.PermissionRepositoryService;
-import com.codingzero.saam.core.application.PrincipalRepositoryService;
-import com.codingzero.saam.core.application.ResourceFactoryService;
-import com.codingzero.saam.core.application.ResourceRepositoryService;
-import com.codingzero.saam.core.application.RoleFactoryService;
-import com.codingzero.saam.core.application.RoleRepositoryService;
-import com.codingzero.saam.core.application.UserFactoryService;
-import com.codingzero.saam.core.application.UserRepositoryService;
-import com.codingzero.saam.core.application.UserSessionFactoryService;
-import com.codingzero.saam.core.application.UserSessionRepositoryService;
+import com.codingzero.saam.core.oauthidentifier.OAuthIdentifierRepositoryService;
+import com.codingzero.saam.core.resource.PermissionFactoryService;
+import com.codingzero.saam.core.resource.PermissionRepositoryService;
+import com.codingzero.saam.core.principal.PrincipalRepositoryService;
+import com.codingzero.saam.core.resource.ResourceFactoryService;
+import com.codingzero.saam.core.resource.ResourceRepositoryService;
+import com.codingzero.saam.core.principal.role.RoleFactoryService;
+import com.codingzero.saam.core.principal.role.RoleRepositoryService;
+import com.codingzero.saam.core.principal.user.UserFactoryService;
+import com.codingzero.saam.core.principal.user.UserRepositoryService;
+import com.codingzero.saam.core.usersession.UserSessionFactoryService;
+import com.codingzero.saam.core.usersession.UserSessionRepositoryService;
 import com.codingzero.saam.core.application.UsernamePolicyFactoryService;
 import com.codingzero.saam.core.application.UsernamePolicyRepositoryService;
 import com.codingzero.saam.core.services.UserAuthenticator;
-import com.codingzero.saam.infrastructure.database.spi.APIKeyAccess;
-import com.codingzero.saam.infrastructure.database.spi.ApplicationAccess;
-import com.codingzero.saam.infrastructure.database.spi.EmailPolicyAccess;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierAccess;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierVerificationCodeGenerator;
-import com.codingzero.saam.infrastructure.database.spi.OAuthIdentifierAccess;
-import com.codingzero.saam.infrastructure.database.spi.OAuthIdentifierPolicyAccess;
-import com.codingzero.saam.infrastructure.database.spi.OAuthPlatformAgent;
-import com.codingzero.saam.infrastructure.database.spi.PasswordHelper;
-import com.codingzero.saam.infrastructure.database.spi.PermissionAccess;
-import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
-import com.codingzero.saam.infrastructure.database.spi.ResourceAccess;
-import com.codingzero.saam.infrastructure.database.spi.RoleAccess;
-import com.codingzero.saam.infrastructure.database.spi.UserAccess;
-import com.codingzero.saam.infrastructure.database.spi.UserSessionAccess;
-import com.codingzero.saam.infrastructure.database.spi.UsernamePolicyAccess;
+import com.codingzero.saam.infrastructure.database.APIKeyAccess;
+import com.codingzero.saam.infrastructure.database.ApplicationAccess;
+import com.codingzero.saam.infrastructure.database.EmailPolicyAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierVerificationCodeGenerator;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.database.PasswordHelper;
+import com.codingzero.saam.infrastructure.database.PermissionAccess;
+import com.codingzero.saam.infrastructure.database.PrincipalAccess;
+import com.codingzero.saam.infrastructure.database.ResourceAccess;
+import com.codingzero.saam.infrastructure.database.RoleAccess;
+import com.codingzero.saam.infrastructure.database.UserAccess;
+import com.codingzero.saam.infrastructure.database.UserSessionAccess;
+import com.codingzero.saam.infrastructure.database.UsernamePolicyAccess;
 import com.codingzero.utilities.transaction.TransactionManager;
 
 public class SAAMBuilder {
@@ -100,7 +100,7 @@ public class SAAMBuilder {
 
     public UserAuthenticator getUserAuthenticator() {
         if (null == userAuthenticator) {
-            userAuthenticator = new UserAuthenticator();
+            userAuthenticator = new UserAuthenticator(userSessionFactory);
         }
         return userAuthenticator;
     }
@@ -285,7 +285,7 @@ public class SAAMBuilder {
 
     public RoleFactoryService getRoleFactory() {
         if (null == roleFactory) {
-            roleFactory = new RoleFactoryService(getRoleAccess(), getPrincipalAccess());
+            roleFactory = new RoleFactoryService(getRoleAccess(), getPrincipalAccess(), applicationStatusVerifier);
         }
         return roleFactory;
     }
@@ -298,7 +298,7 @@ public class SAAMBuilder {
     public RoleRepositoryService getRoleRepository() {
         if (null == roleRepository) {
             roleRepository = new RoleRepositoryService(
-                    getRoleAccess(), getPrincipalAccess(), getRoleFactory());
+                    getRoleAccess(), getPrincipalAccess(), getRoleFactory(), applicationStatusVerifier);
         }
         return roleRepository;
     }
@@ -313,7 +313,7 @@ public class SAAMBuilder {
             userFactory = new UserFactoryService(
                     getPrincipalAccess(),
                     getRoleRepository(),
-                    getPasswordHelper());
+                    getPasswordHelper(), applicationStatusVerifier);
         }
         return userFactory;
     }
@@ -328,8 +328,8 @@ public class SAAMBuilder {
             userRepository = new UserRepositoryService(
                     getUserAccess(),
                     getPrincipalAccess(),
-                    getUserFactory()
-            );
+                    identifierAccess, oAuthIdentifierAccess, userSessionAccess, getUserFactory(),
+                    applicationStatusVerifier);
         }
         return userRepository;
     }
@@ -342,7 +342,7 @@ public class SAAMBuilder {
     public UserSessionFactoryService getUserSessionFactory() {
         if (null == userSessionFactory) {
             userSessionFactory =
-                    new UserSessionFactoryService(getUserSessionAccess(), getUserRepository());
+                    new UserSessionFactoryService(getUserSessionAccess(), getUserRepository(), applicationStatusVerifier);
         }
         return userSessionFactory;
     }
@@ -355,7 +355,7 @@ public class SAAMBuilder {
     public UserSessionRepositoryService getUserSessionRepository() {
         if (null == userSessionRepository) {
             userSessionRepository =
-                    new UserSessionRepositoryService(getUserSessionAccess(), getUserSessionFactory());
+                    new UserSessionRepositoryService(getUserSessionAccess(), getUserSessionFactory(), applicationStatusVerifier);
         }
         return userSessionRepository;
     }
@@ -410,7 +410,7 @@ public class SAAMBuilder {
     public IdentifierFactoryService getIdentifierFactory() {
         if (null == identifierFactory) {
             identifierFactory = new IdentifierFactoryService(
-                    getIdentifierAccess(), getIdentifierVerificationCodeGenerator(), getUserRepository());
+                    getIdentifierAccess(), getIdentifierVerificationCodeGenerator(), getUserRepository(), application);
         }
         return identifierFactory;
     }
@@ -596,7 +596,7 @@ public class SAAMBuilder {
             resourceFactory = new ResourceFactoryService(
                     getResourceAccess(),
                     getPermissionFactory(),
-                    getPermissionRepository());
+                    getPermissionRepository(), principalRepository, applicationStatusVerifier);
         }
         return resourceFactory;
     }
@@ -610,8 +610,8 @@ public class SAAMBuilder {
         if (null == resourceRepository) {
             resourceRepository = new ResourceRepositoryService(
                     getResourceAccess(),
-                    getResourceFactory(),
-                    getPermissionRepository());
+                    permissionResourceIndexAccess, getResourceFactory(),
+                    getPermissionRepository(), applicationStatusVerifier);
         }
         return resourceRepository;
     }
@@ -640,8 +640,8 @@ public class SAAMBuilder {
                     getRoleFactory(),
                     getRoleRepository(),
                     getResourceFactory(),
-                    getResourceRepository()
-            );
+                    getResourceRepository(),
+                    applicationStatusVerifier);
         }
         return applicationFactory;
     }

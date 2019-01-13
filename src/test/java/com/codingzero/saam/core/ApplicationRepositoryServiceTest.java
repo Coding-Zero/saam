@@ -5,12 +5,12 @@ import com.codingzero.saam.core.application.ApplicationRepositoryService;
 import com.codingzero.saam.core.application.ApplicationRoot;
 import com.codingzero.saam.core.application.IdentifierPolicyRepositoryService;
 import com.codingzero.saam.core.application.OAuthIdentifierPolicyRepositoryService;
-import com.codingzero.saam.core.application.PermissionRepositoryService;
-import com.codingzero.saam.core.application.PrincipalRepositoryService;
-import com.codingzero.saam.core.application.ResourceRepositoryService;
-import com.codingzero.saam.core.application.UserSessionRepositoryService;
+import com.codingzero.saam.core.resource.PermissionRepositoryService;
+import com.codingzero.saam.core.principal.PrincipalRepositoryService;
+import com.codingzero.saam.core.resource.ResourceRepositoryService;
+import com.codingzero.saam.core.usersession.UserSessionRepositoryService;
 import com.codingzero.saam.infrastructure.database.ApplicationOS;
-import com.codingzero.saam.infrastructure.database.spi.ApplicationAccess;
+import com.codingzero.saam.infrastructure.database.ApplicationAccess;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultPage;
@@ -107,7 +107,7 @@ public class ApplicationRepositoryServiceTest {
         verify(identifierPolicyRepository, times(1)).removeAll(entity);
         verify(oAuthIdentifierPolicyRepository, times(1)).removeAll(entity);
         verify(userSessionRepository, times(1)).removeAll(entity);
-        verify(resourceRepository, times(1)).removeAll(entity);
+        verify(resourceRepository, times(1)).removeByApplication(entity);
         verify(principalRepository, times(1)).removeAll(entity);
         verify(access, times(1)).delete(os);
     }

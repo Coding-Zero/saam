@@ -1,6 +1,7 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.common.PrincipalType;
+import com.codingzero.saam.infrastructure.database.RoleAccess;
 import com.codingzero.saam.infrastructure.database.RoleOS;
 import com.codingzero.utilities.transaction.TransactionManager;
 import com.codingzero.utilities.transaction.TransactionManagerBuilder;

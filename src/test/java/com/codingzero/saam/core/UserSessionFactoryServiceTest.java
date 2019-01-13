@@ -1,10 +1,10 @@
 package com.codingzero.saam.core;
 
-import com.codingzero.saam.core.application.UserRepositoryService;
-import com.codingzero.saam.core.application.UserSessionEntity;
-import com.codingzero.saam.core.application.UserSessionFactoryService;
+import com.codingzero.saam.core.principal.user.UserRepositoryService;
+import com.codingzero.saam.core.usersession.UserSessionEntity;
+import com.codingzero.saam.core.usersession.UserSessionFactoryService;
 import com.codingzero.saam.infrastructure.database.UserSessionOS;
-import com.codingzero.saam.infrastructure.database.spi.UserSessionAccess;
+import com.codingzero.saam.infrastructure.database.UserSessionAccess;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class UserSessionFactoryServiceTest {
         userRepository = mock(UserRepositoryService.class);
         service = new UserSessionFactoryService(
                 access,
-                userRepository);
+                userRepository, applicationStatusVerifier);
     }
 
     @Test

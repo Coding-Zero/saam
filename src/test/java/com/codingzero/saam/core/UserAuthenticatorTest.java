@@ -23,7 +23,7 @@ public class UserAuthenticatorTest {
 
     @Before
     public void setUp() {
-        service = new UserAuthenticator();
+        service = new UserAuthenticator(userSessionFactory);
     }
 
     @Test

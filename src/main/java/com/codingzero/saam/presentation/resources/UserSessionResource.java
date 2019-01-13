@@ -1,16 +1,15 @@
 package com.codingzero.saam.presentation.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.codingzero.saam.app.CredentialLoginRequest;
-import com.codingzero.saam.app.OAuthLoginRequest;
+import com.codingzero.saam.app.requests.CredentialLoginRequest;
+import com.codingzero.saam.app.requests.OAuthLoginRequest;
 import com.codingzero.saam.app.SAAM;
-import com.codingzero.saam.app.UserSessionCreateRequest;
-import com.codingzero.saam.app.UserSessionResponse;
+import com.codingzero.saam.app.requests.UserSessionCreateRequest;
+import com.codingzero.saam.app.responses.UserSessionResponse;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -34,7 +33,7 @@ public class UserSessionResource extends AbstractResource {
     }
 
     @POST
-    @Timed(name = "create-user-session")
+    @Timed(name = "create-user-usersession")
     public Response createUserSession(@PathParam("applicationId") String applicationId,
                                       ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", applicationId);
@@ -70,7 +69,7 @@ public class UserSessionResource extends AbstractResource {
 
     @DELETE
     @Path("/{key}")
-    @Timed(name = "delete-user-session")
+    @Timed(name = "delete-user-usersession")
     public Response delete(@PathParam("applicationId") String applicationId,
                            @PathParam("key") String key) {
         getApp().removeUserSessionByKey(applicationId, key);
@@ -88,7 +87,7 @@ public class UserSessionResource extends AbstractResource {
 
     @GET
     @Path("/{key}")
-    @Timed(name = "get-user-session")
+    @Timed(name = "get-user-usersession")
     public Response getByKey(@PathParam("applicationId") String applicationId,
                              @PathParam("key") String key) {
         UserSessionResponse response = getApp().getUserSessionByKey(applicationId, key);

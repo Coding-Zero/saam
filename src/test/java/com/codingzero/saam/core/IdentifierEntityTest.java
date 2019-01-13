@@ -2,11 +2,11 @@ package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.IdentifierVerificationCode;
-import com.codingzero.saam.core.application.IdentifierEntity;
-import com.codingzero.saam.core.application.UserEntity;
-import com.codingzero.saam.core.application.UserRepositoryService;
+import com.codingzero.saam.core.identifier.IdentifierEntity;
+import com.codingzero.saam.core.principal.user.UserEntity;
+import com.codingzero.saam.core.principal.user.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.IdentifierOS;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierVerificationCodeGenerator;
+import com.codingzero.saam.infrastructure.database.IdentifierVerificationCodeGenerator;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,10 +42,9 @@ public class IdentifierEntityTest {
         userRepository = mock(UserRepositoryService.class);
         entity = new IdentifierEntity(
                 objectSegment,
-                policy,
-                user,
+                application, user,
                 verificationCodeGenerator,
-                userRepository);
+                userRepository, applicationRepository);
     }
 
     @Test
@@ -60,10 +59,9 @@ public class IdentifierEntityTest {
         when(userRepository.findById(application, userId)).thenReturn(userEntity);
         entity = new IdentifierEntity(
                 objectSegment,
-                policy,
-                null,
+                application, null,
                 verificationCodeGenerator,
-                userRepository);
+                userRepository, applicationRepository);
         User user = entity.getUser();
         assertEquals(userEntity, user);
     }
@@ -73,10 +71,9 @@ public class IdentifierEntityTest {
         UserEntity userEntity = mock(UserEntity.class);
         entity = new IdentifierEntity(
                 objectSegment,
-                policy,
-                userEntity,
+                application, userEntity,
                 verificationCodeGenerator,
-                userRepository);
+                userRepository, applicationRepository);
         User user = entity.getUser();
         assertEquals(userEntity, user);
     }
@@ -90,10 +87,9 @@ public class IdentifierEntityTest {
         when(application.fetchIdentifierPolicy(IdentifierType.USERNAME)).thenReturn(policy);
         entity = new IdentifierEntity(
                 objectSegment,
-                null,
-                user,
+                application, user,
                 verificationCodeGenerator,
-                userRepository);
+                userRepository, applicationRepository);
         IdentifierPolicy foundPolicy = entity.getPolicy();
         assertEquals(policy, foundPolicy);
     }
@@ -102,10 +98,9 @@ public class IdentifierEntityTest {
     public void testGetPolicy_NotNull() {
         entity = new IdentifierEntity(
                 objectSegment,
-                policy,
-                user,
+                application, user,
                 verificationCodeGenerator,
-                userRepository);
+                userRepository, applicationRepository);
         IdentifierPolicy foundPolicy = entity.getPolicy();
         assertEquals(policy, foundPolicy);
     }

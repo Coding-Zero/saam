@@ -1,25 +1,25 @@
 package com.codingzero.saam.core;
 
-import com.codingzero.saam.core.application.APIKeyFactoryService;
-import com.codingzero.saam.core.application.APIKeyRepositoryService;
+import com.codingzero.saam.core.principal.apikey.APIKeyFactoryService;
+import com.codingzero.saam.core.principal.apikey.APIKeyRepositoryService;
 import com.codingzero.saam.core.application.ApplicationFactoryService;
 import com.codingzero.saam.core.application.ApplicationRoot;
 import com.codingzero.saam.core.application.EmailPolicyFactoryService;
 import com.codingzero.saam.core.application.IdentifierPolicyRepositoryService;
 import com.codingzero.saam.core.application.OAuthIdentifierPolicyFactoryService;
 import com.codingzero.saam.core.application.OAuthIdentifierPolicyRepositoryService;
-import com.codingzero.saam.core.application.PrincipalRepositoryService;
-import com.codingzero.saam.core.application.ResourceFactoryService;
-import com.codingzero.saam.core.application.ResourceRepositoryService;
-import com.codingzero.saam.core.application.RoleFactoryService;
-import com.codingzero.saam.core.application.RoleRepositoryService;
-import com.codingzero.saam.core.application.UserFactoryService;
-import com.codingzero.saam.core.application.UserRepositoryService;
-import com.codingzero.saam.core.application.UserSessionFactoryService;
-import com.codingzero.saam.core.application.UserSessionRepositoryService;
+import com.codingzero.saam.core.principal.PrincipalRepositoryService;
+import com.codingzero.saam.core.resource.ResourceFactoryService;
+import com.codingzero.saam.core.resource.ResourceRepositoryService;
+import com.codingzero.saam.core.principal.role.RoleFactoryService;
+import com.codingzero.saam.core.principal.role.RoleRepositoryService;
+import com.codingzero.saam.core.principal.user.UserFactoryService;
+import com.codingzero.saam.core.principal.user.UserRepositoryService;
+import com.codingzero.saam.core.usersession.UserSessionFactoryService;
+import com.codingzero.saam.core.usersession.UserSessionRepositoryService;
 import com.codingzero.saam.core.application.UsernamePolicyFactoryService;
 import com.codingzero.saam.infrastructure.database.ApplicationOS;
-import com.codingzero.saam.infrastructure.database.spi.ApplicationAccess;
+import com.codingzero.saam.infrastructure.database.ApplicationAccess;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
@@ -90,7 +90,7 @@ public class ApplicationFactoryServiceTest {
                 roleFactory,
                 roleRepository,
                 resourceFactory,
-                resourceRepository);
+                resourceRepository, applicationStatusVerifier);
     }
 
     @Test

@@ -1,7 +1,7 @@
 package com.codingzero.saam.app.server.base.password;
 
 import com.codingzero.saam.common.IdentifierType;
-import com.codingzero.saam.infrastructure.database.spi.PasswordHelper;
+import com.codingzero.saam.infrastructure.database.PasswordHelper;
 import com.codingzero.utilities.key.HMACKey;
 import com.codingzero.utilities.key.RandomKey;
 

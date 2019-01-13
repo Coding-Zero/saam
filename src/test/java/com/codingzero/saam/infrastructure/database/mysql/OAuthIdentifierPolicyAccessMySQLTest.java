@@ -1,6 +1,6 @@
 package com.codingzero.saam.infrastructure.database.mysql;
 
-import com.codingzero.saam.infrastructure.database.spi.OAuthIdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyAccess;
 import com.codingzero.saam.infrastructure.database.spi.OAuthIdentifierPolicyAccessTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

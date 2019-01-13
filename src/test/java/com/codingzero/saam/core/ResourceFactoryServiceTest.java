@@ -2,14 +2,12 @@ package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.common.ResourceKeySeparator;
-import com.codingzero.saam.core.application.APIKeyFactoryService;
-import com.codingzero.saam.core.application.PermissionFactoryService;
-import com.codingzero.saam.core.application.PermissionRepositoryService;
-import com.codingzero.saam.core.application.ResourceEntity;
-import com.codingzero.saam.core.application.ResourceFactoryService;
-import com.codingzero.saam.core.application.RoleEntity;
+import com.codingzero.saam.core.resource.PermissionFactoryService;
+import com.codingzero.saam.core.resource.PermissionRepositoryService;
+import com.codingzero.saam.core.resource.ResourceEntity;
+import com.codingzero.saam.core.resource.ResourceFactoryService;
 import com.codingzero.saam.infrastructure.database.ResourceOS;
-import com.codingzero.saam.infrastructure.database.spi.ResourceAccess;
+import com.codingzero.saam.infrastructure.database.ResourceAccess;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,7 +36,7 @@ public class ResourceFactoryServiceTest {
         service = new ResourceFactoryService(
                 access,
                 permissionFactory,
-                permissionRepository);
+                permissionRepository, principalRepository, applicationStatusVerifier);
     }
 
     @Test

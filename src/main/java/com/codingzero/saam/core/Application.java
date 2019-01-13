@@ -62,76 +62,76 @@ public interface Application {
 
     /**Principal**/
 
-    Principal fetchPrincipalById(String id);
+//    Principal fetchPrincipalById(String id);
 
     /**User**/
 
-    User createUser();
-
-    void updateUser(User user);
-
-    void removeUser(User user);
-
-    User fetchUserById(String id);
-
-    User fetchUserByIdentifier(String identifier);
-
-    User fetchUserByOAuthIdentifier(OAuthPlatform platform, String identifier);
-
-    PaginatedResult<List<User>> fetchAllUsers();
+//    User createUser();
+//
+//    void updateUser(User user);
+//
+//    void removeUser(User user);
+//
+//    User fetchUserById(String id);
+//
+//    User fetchUserByIdentifier(String identifier);
+//
+//    User fetchUserByOAuthIdentifier(OAuthPlatform platform, String identifier);
+//
+//    PaginatedResult<List<User>> fetchAllUsers();
 
     /**UserSession**/
 
-    UserSession createUserSession(User user, Map<String, Object> details, long timeout);
+//    UserSession createUserSession(User user, Map<String, Object> details, long timeout);
 
-    void removeUserSession(UserSession session);
+//    void removeUserSession(UserSession session);
+//
+//    void removeAllUserSession(User user);
 
-    void removeAllUserSession(User user);
+//    UserSession fetchUserSessionByKey(String key);
 
-    UserSession fetchUserSessionByKey(String key);
-
-    PaginatedResult<List<UserSession>> fetchUserSessionsByUser(User user);
+//    PaginatedResult<List<UserSession>> fetchUserSessionsBy(User user)
 
     /**APIKey**/
 
-    APIKey createAPIKey(User user, String name);
-
-    void updateAPIKey(APIKey apiKey);
-
-    void verifyAPIKey(String id, String secretKey);
-
-    void removeAPIKey(APIKey apiKey);
-
-    APIKey fetchAPIKeyById(String id);
-
-    List<APIKey> fetchAPIKeysByOwner(User user);
+//    APIKey createAPIKey(User user, String name);
+//
+//    void updateAPIKey(APIKey apiKey);
+//
+//    void verifyAPIKey(String id, String secretKey);
+//
+//    void removeAPIKey(APIKey apiKey);
+//
+//    APIKey fetchAPIKeyById(String id);
+//
+//    List<APIKey> fetchAPIKeysByOwner(User user);
 
     /**Role**/
 
-    Role addRole(String name);
-
-    void updateRole(Role role);
-
-    void removeRole(Role role);
-
-    Role fetchRoleById(String id);
-
-    PaginatedResult<List<Role>> fetchAllRoles();
+//    Role addRole(String name);
+//
+//    void updateRole(Role role);
+//
+//    void removeRole(Role role);
+//
+//    Role fetchRoleById(String id);
+//
+//    PaginatedResult<List<Role>> fetchAllRoles();
 
     /**Resource**/
 
-    Resource createResource(String key, Principal owner);
-
-    void updateResource(Resource resource);
-
-    void removeResource(Resource resource);
-
-    Resource fetchResourceByKey(String key);
-
-    PaginatedResult<List<Resource>> fetchResourcesByOwner(Principal owner, Resource parentResource);
-
-    PaginatedResult<List<Resource>> fetchPermissionAssignedResources(Principal principal);
-
-    PaginatedResult<List<Resource>> fetchAllResources(Resource parentResource);
+//    Resource createResource(String key, Principal owner);
+//
+//    void updateResource(Resource resource);
+//
+//    void removeResource(Resource resource);
+//
+//    Resource fetchResourceByKey(String key);
+//
+//    PaginatedResult<List<Resource>> fetchResourcesByOwner(Principal owner, Resource parentResource);
+//
+//    PaginatedResult<List<Resource>> fetchPermissionAssignedResources(Principal principal);
+//
+//    PaginatedResult<List<Resource>> fetchAllResources(Resource parentResource);
 
 }

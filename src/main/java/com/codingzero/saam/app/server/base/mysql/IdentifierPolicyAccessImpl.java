@@ -2,7 +2,7 @@ package com.codingzero.saam.app.server.base.mysql;
 
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
 import com.codingzero.utilities.key.Key;
 
 import javax.sql.DataSource;
@@ -11,7 +11,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,8 +1,11 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.common.PrincipalType;
+import com.codingzero.saam.infrastructure.database.PrincipalAccess;
 import com.codingzero.saam.infrastructure.database.PrincipalOS;
+import com.codingzero.saam.infrastructure.database.RoleAccess;
 import com.codingzero.saam.infrastructure.database.RoleOS;
+import com.codingzero.saam.infrastructure.database.UserAccess;
 import com.codingzero.saam.infrastructure.database.UserOS;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;

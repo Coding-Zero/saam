@@ -1,12 +1,12 @@
 package com.codingzero.saam.core;
 
-import com.codingzero.saam.core.application.RoleEntity;
-import com.codingzero.saam.core.application.RoleFactoryService;
-import com.codingzero.saam.core.application.RoleRepositoryService;
+import com.codingzero.saam.core.principal.role.RoleEntity;
+import com.codingzero.saam.core.principal.role.RoleFactoryService;
+import com.codingzero.saam.core.principal.role.RoleRepositoryService;
 import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import com.codingzero.saam.infrastructure.database.RoleOS;
-import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
-import com.codingzero.saam.infrastructure.database.spi.RoleAccess;
+import com.codingzero.saam.infrastructure.database.PrincipalAccess;
+import com.codingzero.saam.infrastructure.database.RoleAccess;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class RoleRepositoryServiceTest {
         service = new RoleRepositoryService(
                 access,
                 principalAccess,
-                factory);
+                factory, applicationStatusVerifier);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class RoleRepositoryServiceTest {
         String applicationId = "application-id";
         Application entity = mock(Application.class);
         when(entity.getId()).thenReturn(applicationId);
-        service.removeAll(entity);
+        service.removeByApplication(entity);
         verify(access, times(1)).deleteByApplicationId(applicationId);
     }
 

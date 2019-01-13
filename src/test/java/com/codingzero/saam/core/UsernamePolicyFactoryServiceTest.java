@@ -2,12 +2,12 @@ package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.UsernameFormat;
-import com.codingzero.saam.core.application.IdentifierFactoryService;
-import com.codingzero.saam.core.application.IdentifierRepositoryService;
+import com.codingzero.saam.core.identifier.IdentifierFactoryService;
+import com.codingzero.saam.core.identifier.IdentifierRepositoryService;
 import com.codingzero.saam.core.application.UsernamePolicyEntity;
 import com.codingzero.saam.core.application.UsernamePolicyFactoryService;
 import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

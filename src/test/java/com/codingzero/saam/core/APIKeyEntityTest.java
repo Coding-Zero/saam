@@ -1,9 +1,9 @@
 package com.codingzero.saam.core;
 
-import com.codingzero.saam.core.application.APIKeyEntity;
-import com.codingzero.saam.core.application.APIKeyFactoryService;
-import com.codingzero.saam.core.application.UserEntity;
-import com.codingzero.saam.core.application.UserRepositoryService;
+import com.codingzero.saam.core.principal.apikey.APIKeyEntity;
+import com.codingzero.saam.core.principal.apikey.APIKeyFactoryService;
+import com.codingzero.saam.core.principal.user.UserEntity;
+import com.codingzero.saam.core.principal.user.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
 import org.junit.Before;
 import org.junit.Rule;

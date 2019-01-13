@@ -5,7 +5,7 @@ import com.codingzero.saam.core.application.UsernamePolicyFactoryService;
 import com.codingzero.saam.core.application.UsernamePolicyRepositoryService;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
 import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.UsernamePolicyAccess;
+import com.codingzero.saam.infrastructure.database.UsernamePolicyAccess;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

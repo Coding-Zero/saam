@@ -2,8 +2,11 @@ package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.UsernameFormat;
+import com.codingzero.saam.infrastructure.database.EmailPolicyAccess;
 import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
+import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
+import com.codingzero.saam.infrastructure.database.UsernamePolicyAccess;
 import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
 import org.junit.After;
 import org.junit.Before;

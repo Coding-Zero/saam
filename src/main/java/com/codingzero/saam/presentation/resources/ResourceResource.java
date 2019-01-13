@@ -1,8 +1,8 @@
 package com.codingzero.saam.presentation.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.codingzero.saam.app.ResourceStoreRequest;
-import com.codingzero.saam.app.ResourceResponse;
+import com.codingzero.saam.app.requests.ResourceStoreRequest;
+import com.codingzero.saam.app.responses.ResourceResponse;
 import com.codingzero.saam.app.SAAM;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;

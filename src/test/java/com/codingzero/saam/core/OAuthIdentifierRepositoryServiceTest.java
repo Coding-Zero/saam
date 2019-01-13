@@ -1,11 +1,11 @@
 package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.OAuthPlatform;
-import com.codingzero.saam.core.application.OAuthIdentifierEntity;
-import com.codingzero.saam.core.application.OAuthIdentifierFactoryService;
-import com.codingzero.saam.core.application.OAuthIdentifierRepositoryService;
+import com.codingzero.saam.core.oauthidentifier.OAuthIdentifierEntity;
+import com.codingzero.saam.core.oauthidentifier.OAuthIdentifierFactoryService;
+import com.codingzero.saam.core.oauthidentifier.OAuthIdentifierRepositoryService;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierOS;
-import com.codingzero.saam.infrastructure.database.spi.OAuthIdentifierAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultPage;
@@ -84,7 +84,7 @@ public class OAuthIdentifierRepositoryServiceTest {
         when(policy.getApplication()).thenReturn(application);
         when(policy.getPlatform()).thenReturn(platform);
         OAuthIdentifierOS os = mock(OAuthIdentifierOS.class);
-        when(access.selectByPlatformAndContent(applicationId, platform, content)).thenReturn(os);
+        when(access.selectByKey(applicationId)).thenReturn(os);
         service.findByContent(policy, content);
         verify(factory, times(1)).reconstitute(os, policy, null);
     }
@@ -103,7 +103,7 @@ public class OAuthIdentifierRepositoryServiceTest {
         when(user.getId()).thenReturn(userId);
         OAuthIdentifierOS os = mock(OAuthIdentifierOS.class);
         List<OAuthIdentifierOS> osList = Arrays.asList(os);
-        when(access.selectByPlatformAndUserId(applicationId, platform, userId)).thenReturn(osList);
+        when(access.selectByUserId(applicationId, userId)).thenReturn(osList);
         service.findByPolicyAndUser(policy, user);
         verify(factory, times(osList.size())).reconstitute(os, policy, user);
     }

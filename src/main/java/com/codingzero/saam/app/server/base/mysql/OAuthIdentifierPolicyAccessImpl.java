@@ -2,7 +2,7 @@ package com.codingzero.saam.app.server.base.mysql;
 
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.OAuthIdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyAccess;
 import com.codingzero.utilities.key.Key;
 import com.fasterxml.jackson.core.JsonProcessingException;
 

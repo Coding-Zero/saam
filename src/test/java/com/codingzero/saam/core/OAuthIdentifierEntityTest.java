@@ -1,9 +1,9 @@
 package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.OAuthPlatform;
-import com.codingzero.saam.core.application.OAuthIdentifierEntity;
-import com.codingzero.saam.core.application.UserEntity;
-import com.codingzero.saam.core.application.UserRepositoryService;
+import com.codingzero.saam.core.oauthidentifier.OAuthIdentifierEntity;
+import com.codingzero.saam.core.principal.user.UserEntity;
+import com.codingzero.saam.core.principal.user.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierOS;
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,8 +40,7 @@ public class OAuthIdentifierEntityTest {
         userRepository = mock(UserRepositoryService.class);
         entity = new OAuthIdentifierEntity(
                 objectSegment,
-                policy,
-                user,
+                application, user,
                 userRepository);
     }
 
@@ -57,8 +56,7 @@ public class OAuthIdentifierEntityTest {
         when(userRepository.findById(application, userId)).thenReturn(userEntity);
         entity = new OAuthIdentifierEntity(
                 objectSegment,
-                policy,
-                null,
+                application, null,
                 userRepository);
         User user = entity.getUser();
         assertEquals(userEntity, user);
@@ -69,8 +67,7 @@ public class OAuthIdentifierEntityTest {
         UserEntity userEntity = mock(UserEntity.class);
         entity = new OAuthIdentifierEntity(
                 objectSegment,
-                policy,
-                userEntity,
+                application, userEntity,
                 userRepository);
         User user = entity.getUser();
         assertEquals(userEntity, user);
@@ -85,8 +82,7 @@ public class OAuthIdentifierEntityTest {
         when(application.fetchOAuthIdentifierPolicy(OAuthPlatform.GOOGLE)).thenReturn(policy);
         entity = new OAuthIdentifierEntity(
                 objectSegment,
-                null,
-                user,
+                application, user,
                 userRepository);
         OAuthIdentifierPolicy foundPolicy = entity.getPolicy();
         assertEquals(policy, foundPolicy);
@@ -96,8 +92,7 @@ public class OAuthIdentifierEntityTest {
     public void testGetPolicy_NotNull() {
         entity = new OAuthIdentifierEntity(
                 objectSegment,
-                policy,
-                user,
+                application, user,
                 userRepository);
         OAuthIdentifierPolicy foundPolicy = entity.getPolicy();
         assertEquals(policy, foundPolicy);

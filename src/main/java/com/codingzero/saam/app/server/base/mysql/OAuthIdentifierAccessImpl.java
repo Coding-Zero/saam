@@ -1,8 +1,9 @@
 package com.codingzero.saam.app.server.base.mysql;
 
+import com.codingzero.saam.common.OAuthIdentifierKey;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierOS;
-import com.codingzero.saam.infrastructure.database.spi.OAuthIdentifierAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
 import com.codingzero.utilities.key.HMACKey;
 import com.codingzero.utilities.key.Key;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
@@ -201,7 +202,7 @@ public class OAuthIdentifierAccessImpl extends AbstractAccess implements OAuthId
     }
 
     @Override
-    public OAuthIdentifierOS selectByPlatformAndContent(String applicationId, OAuthPlatform platform, String content) {
+    public OAuthIdentifierOS selectByKey(OAuthIdentifierKey key) {
         String contentHash = hash(content);
         Connection conn = getConnection();
         PreparedStatement stmt = null;
@@ -211,7 +212,7 @@ public class OAuthIdentifierAccessImpl extends AbstractAccess implements OAuthId
                             + " application_id=? AND platform=? AND content_hash=? LIMIT 1 ",
                     TABLE);
             stmt = conn.prepareCall(sql);
-            stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
+            stmt.setBytes(1, Key.fromHexString(key).getKey());
             stmt.setString(2, platform.name());
             stmt.setBytes(3, Key.fromHexString(contentHash).getKey());
             rs = stmt.executeQuery();
@@ -230,7 +231,7 @@ public class OAuthIdentifierAccessImpl extends AbstractAccess implements OAuthId
     }
 
     @Override
-    public List<OAuthIdentifierOS> selectByPlatformAndUserId(String applicationId, OAuthPlatform platform, String userId) {
+    public List<OAuthIdentifierOS> selectByUserId(String applicationId, String userId) {
         Connection conn = getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;

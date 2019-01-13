@@ -1,6 +1,6 @@
 package com.codingzero.saam.presentation.mixin;
 
-import com.codingzero.saam.app.UserRegisterRequest;
+import com.codingzero.saam.app.requests.UserRegisterRequest;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

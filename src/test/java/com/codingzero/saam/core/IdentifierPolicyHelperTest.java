@@ -1,8 +1,8 @@
 package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.IdentifierType;
-import com.codingzero.saam.core.application.IdentifierPolicyHelper;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
+import com.codingzero.saam.core.services.IdentifierPolicyHelper;
+import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;

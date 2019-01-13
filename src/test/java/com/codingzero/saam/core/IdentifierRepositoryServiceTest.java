@@ -1,11 +1,11 @@
 package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.IdentifierType;
-import com.codingzero.saam.core.application.IdentifierEntity;
-import com.codingzero.saam.core.application.IdentifierFactoryService;
-import com.codingzero.saam.core.application.IdentifierRepositoryService;
+import com.codingzero.saam.core.identifier.IdentifierEntity;
+import com.codingzero.saam.core.identifier.IdentifierFactoryService;
+import com.codingzero.saam.core.identifier.IdentifierRepositoryService;
 import com.codingzero.saam.infrastructure.database.IdentifierOS;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierAccess;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultPage;

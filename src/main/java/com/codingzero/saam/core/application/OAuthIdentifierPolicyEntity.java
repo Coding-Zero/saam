@@ -2,12 +2,12 @@ package com.codingzero.saam.core.application;
 
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.core.Application;
-import com.codingzero.saam.core.OAuthIdentifier;
 import com.codingzero.saam.core.OAuthIdentifierPolicy;
-import com.codingzero.saam.core.User;
+import com.codingzero.saam.core.oauthidentifier.OAuthIdentifierEntity;
+import com.codingzero.saam.core.oauthidentifier.OAuthIdentifierFactoryService;
+import com.codingzero.saam.core.oauthidentifier.OAuthIdentifierRepositoryService;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
 import com.codingzero.utilities.ddd.EntityObject;
-import com.codingzero.utilities.pagination.PaginatedResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,9 +35,9 @@ public class OAuthIdentifierPolicyEntity extends EntityObject<OAuthIdentifierPol
         this.dirtyIdentifiers = new HashMap<>();
     }
 
-    public List<OAuthIdentifierEntity> getDirtyIdentifiers() {
-        return Collections.unmodifiableList(new ArrayList<>(dirtyIdentifiers.values()));
-    }
+//    public List<OAuthIdentifierEntity> getDirtyIdentifiers() {
+//        return Collections.unmodifiableList(new ArrayList<>(dirtyIdentifiers.values()));
+//    }
 
     @Override
     public Application getApplication() {
@@ -89,51 +89,51 @@ public class OAuthIdentifierPolicyEntity extends EntityObject<OAuthIdentifierPol
         return getObjectSegment().getUpdateTime();
     }
 
-    @Override
-    public OAuthIdentifier addIdentifier(String content, Map<String, Object> properties, User user) {
-        OAuthIdentifierEntity entity = oAuthIdentifierFactory.generate(this, content, properties, user);
-        dirtyIdentifiers.put(entity.getPolicy().getPlatform(), entity);
-        return entity;
-    }
+//    @Override
+//    public OAuthIdentifier addIdentifier(String content, Map<String, Object> properties, User user) {
+//        OAuthIdentifierEntity entity = oAuthIdentifierFactory.generate(this, content, properties, user);
+//        dirtyIdentifiers.put(entity.getPolicy().getPlatform(), entity);
+//        return entity;
+//    }
 
-    @Override
-    public void updateIdentifier(OAuthIdentifier identifier) {
-        OAuthIdentifierEntity entity = (OAuthIdentifierEntity) identifier;
-        dirtyIdentifiers.put(entity.getPolicy().getPlatform(), entity);
-    }
+//    @Override
+//    public void updateIdentifier(OAuthIdentifier identifier) {
+//        OAuthIdentifierEntity entity = (OAuthIdentifierEntity) identifier;
+//        dirtyIdentifiers.put(entity.getPolicy().getPlatform(), entity);
+//    }
 
-    @Override
-    public void removeIdentifier(OAuthIdentifier identifier) {
-        OAuthIdentifierEntity entity = (OAuthIdentifierEntity) identifier;
-        entity.markAsVoid();
-        dirtyIdentifiers.put(entity.getPolicy().getPlatform(), entity);
-    }
+//    @Override
+//    public void removeIdentifier(OAuthIdentifier identifier) {
+//        OAuthIdentifierEntity entity = (OAuthIdentifierEntity) identifier;
+//        entity.markAsVoid();
+//        dirtyIdentifiers.put(entity.getPolicy().getPlatform(), entity);
+//    }
 
-    @Override
-    public OAuthIdentifier fetchIdentifierById(String content) {
-        return oAuthIdentifierRepository.findByContent(this, content);
-    }
+//    @Override
+//    public OAuthIdentifier fetchIdentifierById(String content) {
+//        return oAuthIdentifierRepository.findByContent(this, content);
+//    }
 
-    @Override
-    public OAuthIdentifier fetchIdentifierByUserAndId(User user, String content) {
-        if (null == content) {
-            return null;
-        }
-        OAuthIdentifier identifier = fetchIdentifierById(content);
-        if (null != identifier
-                && identifier.getUser().getId().equalsIgnoreCase(user.getId())) {
-            return identifier;
-        }
-        return null;
-    }
+//    @Override
+//    public OAuthIdentifier fetchIdentifierByUserAndId(User user, String content) {
+//        if (null == content) {
+//            return null;
+//        }
+//        OAuthIdentifier identifier = fetchIdentifierById(content);
+//        if (null != identifier
+//                && identifier.getUser().getId().equalsIgnoreCase(user.getId())) {
+//            return identifier;
+//        }
+//        return null;
+//    }
 
-    @Override
-    public List<OAuthIdentifier> fetchIdentifiersByUser(User user) {
-        return oAuthIdentifierRepository.findByPolicyAndUser(this, user);
-    }
+//    @Override
+//    public List<OAuthIdentifier> fetchIdentifiersByUser(User user) {
+//        return oAuthIdentifierRepository.findByPolicyAndUser(this, user);
+//    }
 
-    @Override
-    public PaginatedResult<List<OAuthIdentifier>> fetchAllIdentifiers() {
-        return oAuthIdentifierRepository.findByPolicy(this);
-    }
+//    @Override
+//    public PaginatedResult<List<OAuthIdentifier>> fetchAllIdentifiers() {
+//        return oAuthIdentifierRepository.findByPolicy(this);
+//    }
 }

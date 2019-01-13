@@ -1,12 +1,12 @@
 package com.codingzero.saam.core;
 
-import com.codingzero.saam.core.application.UserEntity;
-import com.codingzero.saam.core.application.UserFactoryService;
-import com.codingzero.saam.core.application.UserRepositoryService;
+import com.codingzero.saam.core.principal.user.UserEntity;
+import com.codingzero.saam.core.principal.user.UserFactoryService;
+import com.codingzero.saam.core.principal.user.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import com.codingzero.saam.infrastructure.database.UserOS;
-import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
-import com.codingzero.saam.infrastructure.database.spi.UserAccess;
+import com.codingzero.saam.infrastructure.database.PrincipalAccess;
+import com.codingzero.saam.infrastructure.database.UserAccess;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class UserRepositoryServiceTest {
         service = new UserRepositoryService(
                 access,
                 principalAccess,
-                factory);
+                identifierAccess, oAuthIdentifierAccess, userSessionAccess, factory, applicationStatusVerifier);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class UserRepositoryServiceTest {
         String applicationId = "application-id";
         Application entity = mock(Application.class);
         when(entity.getId()).thenReturn(applicationId);
-        service.removeAll(entity);
+        service.removeByApplication(entity);
         verify(access, times(1)).deleteByApplicationId(applicationId);
     }
 

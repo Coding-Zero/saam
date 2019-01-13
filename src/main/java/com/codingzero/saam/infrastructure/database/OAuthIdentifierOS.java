@@ -1,6 +1,6 @@
 package com.codingzero.saam.infrastructure.database;
 
-import com.codingzero.saam.common.OAuthPlatform;
+import com.codingzero.saam.common.OAuthIdentifierKey;
 
 import java.util.Collections;
 import java.util.Date;
@@ -9,35 +9,23 @@ import java.util.Map;
 
 public class OAuthIdentifierOS {
 
-    private String applicationId;
-    private OAuthPlatform platform;
-    private String content;
+    private OAuthIdentifierKey key;
     private String userId;
     private Map<String, Object> properties;
     private long creationTime;
     private long updateTime;
 
-    public OAuthIdentifierOS(String applicationId, OAuthPlatform platform, String content, String userId,
+    public OAuthIdentifierOS(OAuthIdentifierKey key, String userId,
                              Map<String, Object> properties, Date creationTime, Date updateTime) {
-        this.applicationId = applicationId;
+        this.key = key;
         this.userId = userId;
-        this.platform = platform;
-        this.content = content;
         setProperties(properties);
         this.creationTime = creationTime.getTime();
         setUpdateTime(updateTime);
     }
 
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public OAuthPlatform getPlatform() {
-        return platform;
-    }
-
-    public String getContent() {
-        return content;
+    public OAuthIdentifierKey getKey() {
+        return key;
     }
 
     public String getUserId() {

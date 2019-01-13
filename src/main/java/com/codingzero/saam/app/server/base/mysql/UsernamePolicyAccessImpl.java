@@ -3,7 +3,7 @@ package com.codingzero.saam.app.server.base.mysql;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
 import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.UsernamePolicyAccess;
+import com.codingzero.saam.infrastructure.database.UsernamePolicyAccess;
 import com.codingzero.utilities.key.Key;
 
 import javax.sql.DataSource;

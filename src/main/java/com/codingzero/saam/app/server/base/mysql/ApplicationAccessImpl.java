@@ -1,7 +1,7 @@
 package com.codingzero.saam.app.server.base.mysql;
 
 import com.codingzero.saam.infrastructure.database.ApplicationOS;
-import com.codingzero.saam.infrastructure.database.spi.ApplicationAccess;
+import com.codingzero.saam.infrastructure.database.ApplicationAccess;
 import com.codingzero.utilities.key.Key;
 import com.codingzero.utilities.key.RandomKey;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;

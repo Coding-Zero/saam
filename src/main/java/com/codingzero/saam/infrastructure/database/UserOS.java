@@ -1,6 +1,7 @@
 package com.codingzero.saam.infrastructure.database;
 
 import com.codingzero.saam.common.PasswordResetCode;
+import com.codingzero.saam.common.PrincipalId;
 import com.codingzero.saam.common.PrincipalType;
 
 import java.util.Collections;
@@ -14,9 +15,9 @@ public class UserOS extends PrincipalOS {
     private PasswordResetCode passwordResetCode;
     private List<String> roleIds;
 
-    public UserOS(String applicationId, String id, Date creationTime,
+    public UserOS(PrincipalId id, Date creationTime,
                   String password, PasswordResetCode passwordResetCode, List<String> roleIds) {
-        super(applicationId, id, PrincipalType.USER, creationTime);
+        super(id, PrincipalType.USER, creationTime);
         this.password = password;
         this.passwordResetCode = passwordResetCode;
         setRoleIds(roleIds);

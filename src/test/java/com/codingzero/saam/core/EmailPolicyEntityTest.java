@@ -2,8 +2,8 @@ package com.codingzero.saam.core;
 
 import com.codingzero.saam.core.application.EmailPolicyEntity;
 import com.codingzero.saam.core.application.EmailPolicyFactoryService;
-import com.codingzero.saam.core.application.IdentifierFactoryService;
-import com.codingzero.saam.core.application.IdentifierRepositoryService;
+import com.codingzero.saam.core.identifier.IdentifierFactoryService;
+import com.codingzero.saam.core.identifier.IdentifierRepositoryService;
 import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;

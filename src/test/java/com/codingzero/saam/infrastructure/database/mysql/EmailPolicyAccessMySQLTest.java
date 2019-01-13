@@ -1,7 +1,7 @@
 package com.codingzero.saam.infrastructure.database.mysql;
 
 import com.codingzero.saam.infrastructure.database.spi.EmailPolicyAccessTest;
-import com.codingzero.saam.infrastructure.database.spi.EmailPolicyAccess;
+import com.codingzero.saam.infrastructure.database.EmailPolicyAccess;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 

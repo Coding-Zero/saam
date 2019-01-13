@@ -27,20 +27,20 @@ public interface OAuthIdentifierPolicy {
 
     /**SSOIdentifier**/
 
-    OAuthIdentifier addIdentifier(String content, Map<String, Object> properties, User user);
-
-    void updateIdentifier(OAuthIdentifier identifier);
-
-    void removeIdentifier(OAuthIdentifier identifier);
-
-    OAuthIdentifier fetchIdentifierById(String content);
-
-    OAuthIdentifier fetchIdentifierByUserAndId(User user, String content);
+//    OAuthIdentifier addIdentifier(String content, Map<String, Object> properties, User user);
+//
+//    void updateIdentifier(OAuthIdentifier identifier);
+//
+//    void removeIdentifier(OAuthIdentifier identifier);
+//
+//    OAuthIdentifier fetchIdentifierById(String content);
+//
+//    OAuthIdentifier fetchIdentifierByUserAndId(User user, String content);
 
 //    OAuthIdentifier fetchDefaultIdentifier(User user);
 
-    List<OAuthIdentifier> fetchIdentifiersByUser(User user);
+//    List<OAuthIdentifier> fetchIdentifiersByUser(User user);
 
-    PaginatedResult<List<OAuthIdentifier>> fetchAllIdentifiers();
+//    PaginatedResult<List<OAuthIdentifier>> fetchAllIdentifiers();
 
 }

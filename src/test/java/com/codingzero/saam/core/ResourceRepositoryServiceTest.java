@@ -1,11 +1,11 @@
 package com.codingzero.saam.core;
 
-import com.codingzero.saam.core.application.PermissionRepositoryService;
-import com.codingzero.saam.core.application.ResourceEntity;
-import com.codingzero.saam.core.application.ResourceFactoryService;
-import com.codingzero.saam.core.application.ResourceRepositoryService;
+import com.codingzero.saam.core.resource.PermissionRepositoryService;
+import com.codingzero.saam.core.resource.ResourceEntity;
+import com.codingzero.saam.core.resource.ResourceFactoryService;
+import com.codingzero.saam.core.resource.ResourceRepositoryService;
 import com.codingzero.saam.infrastructure.database.ResourceOS;
-import com.codingzero.saam.infrastructure.database.spi.ResourceAccess;
+import com.codingzero.saam.infrastructure.database.ResourceAccess;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultPage;
@@ -39,8 +39,8 @@ public class ResourceRepositoryServiceTest {
         permissionRepository = mock(PermissionRepositoryService.class);
         service = new ResourceRepositoryService(
                 access,
-                factory,
-                permissionRepository);
+                permissionResourceIndexAccess, factory,
+                permissionRepository, applicationStatusVerifier);
     }
 
     @Test

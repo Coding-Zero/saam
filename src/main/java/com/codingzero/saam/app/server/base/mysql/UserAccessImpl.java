@@ -2,7 +2,7 @@ package com.codingzero.saam.app.server.base.mysql;
 
 import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import com.codingzero.saam.infrastructure.database.UserOS;
-import com.codingzero.saam.infrastructure.database.spi.UserAccess;
+import com.codingzero.saam.infrastructure.database.UserAccess;
 import com.codingzero.utilities.key.Key;
 import com.fasterxml.jackson.core.JsonProcessingException;
 

@@ -3,7 +3,7 @@ package com.codingzero.saam.core.application;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.EmailPolicyAccess;
+import com.codingzero.saam.infrastructure.database.EmailPolicyAccess;
 
 public class EmailPolicyRepositoryService {
 

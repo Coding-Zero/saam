@@ -3,12 +3,11 @@ package com.codingzero.saam.core;
 import com.codingzero.saam.common.Action;
 import com.codingzero.saam.common.PermissionType;
 import com.codingzero.saam.common.PrincipalType;
-import com.codingzero.saam.core.application.PermissionEntity;
-import com.codingzero.saam.core.application.PermissionFactoryService;
-import com.codingzero.saam.core.application.PermissionRepositoryService;
-import com.codingzero.saam.core.application.ResourceEntity;
-import com.codingzero.saam.core.application.ResourceFactoryService;
-import com.codingzero.saam.core.application.UserEntity;
+import com.codingzero.saam.core.resource.PermissionEntity;
+import com.codingzero.saam.core.resource.PermissionFactoryService;
+import com.codingzero.saam.core.resource.PermissionRepositoryService;
+import com.codingzero.saam.core.resource.ResourceEntity;
+import com.codingzero.saam.core.resource.ResourceFactoryService;
 import com.codingzero.saam.infrastructure.database.ResourceOS;
 import org.junit.Before;
 import org.junit.Rule;
@@ -57,7 +56,7 @@ public class ResourceEntityTest {
                 owner,
                 factory,
                 permissionFactory,
-                permissionRepository);
+                permissionRepository, principalRepository);
     }
 
     @Test
@@ -152,7 +151,7 @@ public class ResourceEntityTest {
         when(resource.getKey()).thenReturn("resource");
         when(permission.getResource()).thenReturn(resource);
         when(permissionFactory.generate(entity, principal, actions)).thenReturn(permission);
-        entity.addPermission(principal, actions);
+        entity.assignPermission(principal, actions);
         List<PermissionEntity> dirtyPermissions = entity.getDirtyPermissions();
         assertEquals(1, dirtyPermissions.size());
         assertEquals(permission, dirtyPermissions.get(0));
@@ -172,7 +171,7 @@ public class ResourceEntityTest {
         when(permission.containAction("act")).thenReturn(true);
         when(permissionRepository.findById(entity, apiKeyOwner)).thenReturn(permission);
         when(permissionFactory.generate(entity, apiKey, actions)).thenReturn(permission);
-        entity.addPermission(apiKey, actions);
+        entity.assignPermission(apiKey, actions);
         List<PermissionEntity> dirtyPermissions = entity.getDirtyPermissions();
         assertEquals(1, dirtyPermissions.size());
         assertEquals(permission, dirtyPermissions.get(0));
@@ -187,7 +186,7 @@ public class ResourceEntityTest {
         when(apiKey.getOwner()).thenReturn(apiKeyOwner);
         when(permissionRepository.findById(entity, apiKeyOwner)).thenReturn(null);
         thrown.expect(IllegalArgumentException.class);
-        entity.addPermission(apiKey, actions);
+        entity.assignPermission(apiKey, actions);
     }
 
     @Test
@@ -201,7 +200,7 @@ public class ResourceEntityTest {
         when(permission.containAction("act")).thenReturn(false);
         when(permissionRepository.findById(entity, apiKeyOwner)).thenReturn(permission);
         thrown.expect(IllegalArgumentException.class);
-        entity.addPermission(apiKey, actions);
+        entity.assignPermission(apiKey, actions);
     }
 
     @Test
@@ -216,7 +215,7 @@ public class ResourceEntityTest {
         Permission permission = mock(Permission.class);
         when(permission.getActions()).thenReturn(actions);
         when(permissionRepository.findById(entity, principal)).thenReturn(permission);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.ALLOW, type);
     }
 
@@ -238,7 +237,7 @@ public class ResourceEntityTest {
         when(playingRole1.getId()).thenReturn("role-id-1");
         when(permissionRepository.findById(entity, playingRole1)).thenReturn(null);
         when(playingRole2.getId()).thenReturn(ownerId);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.ALLOW, type);
     }
 
@@ -259,7 +258,7 @@ public class ResourceEntityTest {
         when(playingRole.getId()).thenReturn("role-id-1");
         when(permissionRepository.findById(entity, playingRole)).thenReturn(null);
 
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.NONE, type);
     }
 
@@ -271,7 +270,7 @@ public class ResourceEntityTest {
         when(principal.getType()).thenReturn(PrincipalType.USER);
         when(principal.getId()).thenReturn(principalId);
         when(owner.getId()).thenReturn(principalId);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.ALLOW, type);
     }
 
@@ -284,7 +283,7 @@ public class ResourceEntityTest {
         when(principal.getId()).thenReturn(principalId);
         when(owner.getId()).thenReturn("owner-id");
         when(permissionRepository.findById(entity, principal)).thenReturn(null);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.NONE, type);
     }
 
@@ -300,7 +299,7 @@ public class ResourceEntityTest {
         Permission permission = mock(Permission.class);
         when(permission.getActions()).thenReturn(actions);
         when(permissionRepository.findById(entity, principal)).thenReturn(permission);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.NONE, type);
     }
 
@@ -316,7 +315,7 @@ public class ResourceEntityTest {
         Permission permission = mock(Permission.class);
         when(permission.getActions()).thenReturn(actions);
         when(permissionRepository.findById(entity, principal)).thenReturn(permission);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.DENY, type);
     }
 
@@ -332,7 +331,7 @@ public class ResourceEntityTest {
         Permission permission = mock(Permission.class);
         when(permission.getActions()).thenReturn(actions);
         when(permissionRepository.findById(entity, principal)).thenReturn(permission);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.ALLOW, type);
     }
 
@@ -344,7 +343,7 @@ public class ResourceEntityTest {
         when(principal.getType()).thenReturn(PrincipalType.ROLE);
         when(principal.getId()).thenReturn(principalId);
         when(owner.getId()).thenReturn(principalId);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.ALLOW, type);
     }
 
@@ -357,7 +356,7 @@ public class ResourceEntityTest {
         when(principal.getId()).thenReturn(principalId);
         when(owner.getId()).thenReturn("owner-id");
         when(permissionRepository.findById(entity, principal)).thenReturn(null);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.NONE, type);
     }
 
@@ -373,7 +372,7 @@ public class ResourceEntityTest {
         Permission permission = mock(Permission.class);
         when(permission.getActions()).thenReturn(actions);
         when(permissionRepository.findById(entity, principal)).thenReturn(permission);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.NONE, type);
     }
 
@@ -389,7 +388,7 @@ public class ResourceEntityTest {
         Permission permission = mock(Permission.class);
         when(permission.getActions()).thenReturn(actions);
         when(permissionRepository.findById(entity, principal)).thenReturn(permission);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.DENY, type);
     }
 
@@ -405,7 +404,7 @@ public class ResourceEntityTest {
         Permission permission = mock(Permission.class);
         when(permission.getActions()).thenReturn(actions);
         when(permissionRepository.findById(entity, principal)).thenReturn(permission);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.ALLOW, type);
     }
 
@@ -423,7 +422,7 @@ public class ResourceEntityTest {
         User apiKeyOwner = mock(User.class);
         when(apiKeyOwner.getId()).thenReturn(ownerId);
         when(principal.getOwner()).thenReturn(apiKeyOwner);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.ALLOW, type);
     }
 
@@ -435,7 +434,7 @@ public class ResourceEntityTest {
         when(principal.getType()).thenReturn(PrincipalType.API_KEY);
         when(principal.getId()).thenReturn(principalId);
         when(owner.getId()).thenReturn(principalId);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.ALLOW, type);
     }
 
@@ -454,7 +453,7 @@ public class ResourceEntityTest {
         when(principal.getOwner()).thenReturn(apiKeyOwner);
         when(permissionRepository.findById(entity, apiKeyOwner)).thenReturn(null);
 
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.NONE, type);
     }
 
@@ -479,7 +478,7 @@ public class ResourceEntityTest {
         when(apiKeyOwnerPermission.getActions()).thenReturn(apiKeyOwnerActions);
         when(permissionRepository.findById(entity, apiKeyOwner)).thenReturn(apiKeyOwnerPermission);
 
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.NONE, type);
     }
 
@@ -495,7 +494,7 @@ public class ResourceEntityTest {
         Permission permission = mock(Permission.class);
         when(permission.getActions()).thenReturn(actions);
         when(permissionRepository.findById(entity, principal)).thenReturn(permission);
-        PermissionType type = entity.checkPermission(principal, actionCode);
+        PermissionType type = entity.verifyPermission(principal, actionCode);
         assertEquals(PermissionType.DENY, type);
     }
 

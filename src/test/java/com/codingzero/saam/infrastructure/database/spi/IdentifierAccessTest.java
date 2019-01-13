@@ -2,6 +2,7 @@ package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.IdentifierVerificationCode;
+import com.codingzero.saam.infrastructure.database.IdentifierAccess;
 import com.codingzero.saam.infrastructure.database.IdentifierOS;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
@@ -633,10 +634,7 @@ public abstract class IdentifierAccessTest {
     private IdentifierOS createObjectSegment(String applicationId, String userId,
                                              IdentifierType type, String content) {
         IdentifierOS os = new IdentifierOS(
-                applicationId,
-                type,
-                content,
-                userId,
+                id, userId,
                 true,
                 null,
                 new Date(),

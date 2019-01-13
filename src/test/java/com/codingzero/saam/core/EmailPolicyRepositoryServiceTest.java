@@ -5,7 +5,7 @@ import com.codingzero.saam.core.application.EmailPolicyFactoryService;
 import com.codingzero.saam.core.application.EmailPolicyRepositoryService;
 import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.EmailPolicyAccess;
+import com.codingzero.saam.infrastructure.database.EmailPolicyAccess;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

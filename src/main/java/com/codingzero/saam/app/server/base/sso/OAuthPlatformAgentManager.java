@@ -2,7 +2,7 @@ package com.codingzero.saam.app.server.base.sso;
 
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.infrastructure.OAuthAccessToken;
-import com.codingzero.saam.infrastructure.database.spi.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.database.OAuthPlatformAgent;
 
 import java.util.Collections;
 import java.util.Map;

@@ -1,19 +1,19 @@
 package com.codingzero.saam.app.server.base.mysql;
 
-import com.codingzero.saam.infrastructure.database.spi.APIKeyAccess;
-import com.codingzero.saam.infrastructure.database.spi.ApplicationAccess;
-import com.codingzero.saam.infrastructure.database.spi.EmailPolicyAccess;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierAccess;
-import com.codingzero.saam.infrastructure.database.spi.OAuthIdentifierPolicyAccess;
-import com.codingzero.saam.infrastructure.database.spi.ResourceAccess;
-import com.codingzero.saam.infrastructure.database.spi.RoleAccess;
-import com.codingzero.saam.infrastructure.database.spi.UserAccess;
-import com.codingzero.saam.infrastructure.database.spi.UserSessionAccess;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
-import com.codingzero.saam.infrastructure.database.spi.PermissionAccess;
-import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
-import com.codingzero.saam.infrastructure.database.spi.OAuthIdentifierAccess;
-import com.codingzero.saam.infrastructure.database.spi.UsernamePolicyAccess;
+import com.codingzero.saam.infrastructure.database.APIKeyAccess;
+import com.codingzero.saam.infrastructure.database.ApplicationAccess;
+import com.codingzero.saam.infrastructure.database.EmailPolicyAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.ResourceAccess;
+import com.codingzero.saam.infrastructure.database.RoleAccess;
+import com.codingzero.saam.infrastructure.database.UserAccess;
+import com.codingzero.saam.infrastructure.database.UserSessionAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.PermissionAccess;
+import com.codingzero.saam.infrastructure.database.PrincipalAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
+import com.codingzero.saam.infrastructure.database.UsernamePolicyAccess;
 
 import javax.sql.DataSource;
 

@@ -1,9 +1,9 @@
 package com.codingzero.saam.presentation.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.codingzero.saam.app.APIKeyAddRequest;
-import com.codingzero.saam.app.APIKeyResponse;
-import com.codingzero.saam.app.APIKeyUpdateRequest;
+import com.codingzero.saam.app.requests.APIKeyAddRequest;
+import com.codingzero.saam.app.responses.APIKeyResponse;
+import com.codingzero.saam.app.requests.APIKeyUpdateRequest;
 import com.codingzero.saam.app.SAAM;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

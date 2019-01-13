@@ -2,6 +2,7 @@ package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.common.ApplicationStatus;
 import com.codingzero.saam.common.PasswordPolicy;
+import com.codingzero.saam.infrastructure.database.ApplicationAccess;
 import com.codingzero.saam.infrastructure.database.ApplicationOS;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;

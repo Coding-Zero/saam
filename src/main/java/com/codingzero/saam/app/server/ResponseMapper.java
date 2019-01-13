@@ -1,17 +1,17 @@
 package com.codingzero.saam.app.server;
 
 
-import com.codingzero.saam.app.APIKeyResponse;
-import com.codingzero.saam.app.ApplicationResponse;
-import com.codingzero.saam.app.IdentifierVerificationCodeResponse;
-import com.codingzero.saam.app.OAuthAccessTokenResponse;
-import com.codingzero.saam.app.PasswordResetCodeResponse;
-import com.codingzero.saam.app.PermissionCheckResponse;
-import com.codingzero.saam.app.PermissionResponse;
-import com.codingzero.saam.app.ResourceResponse;
-import com.codingzero.saam.app.RoleResponse;
-import com.codingzero.saam.app.UserResponse;
-import com.codingzero.saam.app.UserSessionResponse;
+import com.codingzero.saam.app.responses.APIKeyResponse;
+import com.codingzero.saam.app.responses.ApplicationResponse;
+import com.codingzero.saam.app.responses.IdentifierVerificationCodeResponse;
+import com.codingzero.saam.app.responses.OAuthAccessTokenResponse;
+import com.codingzero.saam.app.responses.PasswordResetCodeResponse;
+import com.codingzero.saam.app.responses.PermissionCheckResponse;
+import com.codingzero.saam.app.responses.PermissionResponse;
+import com.codingzero.saam.app.responses.ResourceResponse;
+import com.codingzero.saam.app.responses.RoleResponse;
+import com.codingzero.saam.app.responses.UserResponse;
+import com.codingzero.saam.app.responses.UserSessionResponse;
 import com.codingzero.saam.common.Action;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.PasswordResetCode;

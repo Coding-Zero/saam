@@ -2,6 +2,7 @@ package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.common.PasswordResetCode;
 import com.codingzero.saam.common.PrincipalType;
+import com.codingzero.saam.infrastructure.database.UserAccess;
 import com.codingzero.saam.infrastructure.database.UserOS;
 import com.codingzero.utilities.transaction.TransactionManager;
 import com.codingzero.utilities.transaction.TransactionManagerBuilder;

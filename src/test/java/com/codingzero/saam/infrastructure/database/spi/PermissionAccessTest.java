@@ -2,6 +2,7 @@ package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.common.Action;
 import com.codingzero.saam.common.PrincipalType;
+import com.codingzero.saam.infrastructure.database.PermissionAccess;
 import com.codingzero.saam.infrastructure.database.PermissionOS;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;

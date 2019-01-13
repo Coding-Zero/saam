@@ -7,7 +7,7 @@ import com.codingzero.saam.app.server.base.sso.GoogleAgent;
 import com.codingzero.saam.app.server.base.sso.OAuthPlatformAgentManager;
 import com.codingzero.saam.app.server.base.sso.SlackAgent;
 import com.codingzero.saam.common.OAuthPlatform;
-import com.codingzero.saam.infrastructure.database.spi.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.database.OAuthPlatformAgent;
 import com.codingzero.utilities.transaction.TransactionManager;
 import com.codingzero.utilities.transaction.manager.TransactionManagerImpl;
 import org.apache.http.impl.client.CloseableHttpClient;

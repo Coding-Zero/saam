@@ -1,7 +1,7 @@
 package com.codingzero.saam.app.server.base.mysql;
 
 import com.codingzero.saam.infrastructure.database.UserSessionOS;
-import com.codingzero.saam.infrastructure.database.spi.UserSessionAccess;
+import com.codingzero.saam.infrastructure.database.UserSessionAccess;
 import com.codingzero.utilities.key.HMACKey;
 import com.codingzero.utilities.key.Key;
 import com.codingzero.utilities.key.RandomKey;

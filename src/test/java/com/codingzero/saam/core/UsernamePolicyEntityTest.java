@@ -1,7 +1,7 @@
 package com.codingzero.saam.core;
 
-import com.codingzero.saam.core.application.IdentifierFactoryService;
-import com.codingzero.saam.core.application.IdentifierRepositoryService;
+import com.codingzero.saam.core.identifier.IdentifierFactoryService;
+import com.codingzero.saam.core.identifier.IdentifierRepositoryService;
 import com.codingzero.saam.core.application.UsernamePolicyEntity;
 import com.codingzero.saam.core.application.UsernamePolicyFactoryService;
 import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;

@@ -1,15 +1,19 @@
 package com.codingzero.saam.core;
 
+import com.codingzero.saam.common.OAuthPlatform;
+
 import java.util.Date;
 import java.util.Map;
 
 public interface OAuthIdentifier {
 
-    User getUser();
+    Application getApplication();
 
-    OAuthIdentifierPolicy getPolicy();
+    OAuthPlatform getPlatform();
 
     String getContent();
+
+    User getUser();
 
     Map<String, Object> getProperties();
 

@@ -2,7 +2,7 @@ package com.codingzero.saam.app.server.base.mysql;
 
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.infrastructure.database.IdentifierOS;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierAccess;
 import com.codingzero.utilities.key.HMACKey;
 import com.codingzero.utilities.key.Key;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;

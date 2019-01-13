@@ -1,10 +1,10 @@
 package com.codingzero.saam.core;
 
-import com.codingzero.saam.core.application.PermissionEntity;
-import com.codingzero.saam.core.application.PermissionFactoryService;
-import com.codingzero.saam.core.application.PermissionRepositoryService;
+import com.codingzero.saam.core.resource.PermissionEntity;
+import com.codingzero.saam.core.resource.PermissionFactoryService;
+import com.codingzero.saam.core.resource.PermissionRepositoryService;
 import com.codingzero.saam.infrastructure.database.PermissionOS;
-import com.codingzero.saam.infrastructure.database.spi.PermissionAccess;
+import com.codingzero.saam.infrastructure.database.PermissionAccess;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultPage;

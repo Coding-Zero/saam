@@ -3,7 +3,7 @@ package com.codingzero.saam.app.server.base.mysql;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.EmailPolicyAccess;
+import com.codingzero.saam.infrastructure.database.EmailPolicyAccess;
 import com.codingzero.utilities.key.Key;
 import com.fasterxml.jackson.core.JsonProcessingException;
 

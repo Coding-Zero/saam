@@ -1,17 +1,17 @@
 package com.codingzero.saam.presentation.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.codingzero.saam.app.ApplicationAddRequest;
-import com.codingzero.saam.app.ApplicationResponse;
-import com.codingzero.saam.app.ApplicationUpdateRequest;
-import com.codingzero.saam.app.EmailPolicyAddRequest;
-import com.codingzero.saam.app.EmailPolicyUpdateRequest;
-import com.codingzero.saam.app.OAuthIdentifierPolicyAddRequest;
-import com.codingzero.saam.app.OAuthIdentifierPolicyUpdateRequest;
-import com.codingzero.saam.app.PasswordPolicySetRequest;
+import com.codingzero.saam.app.requests.ApplicationAddRequest;
+import com.codingzero.saam.app.responses.ApplicationResponse;
+import com.codingzero.saam.app.requests.ApplicationUpdateRequest;
+import com.codingzero.saam.app.requests.EmailPolicyAddRequest;
+import com.codingzero.saam.app.requests.EmailPolicyUpdateRequest;
+import com.codingzero.saam.app.requests.OAuthIdentifierPolicyAddRequest;
+import com.codingzero.saam.app.requests.OAuthIdentifierPolicyUpdateRequest;
+import com.codingzero.saam.app.requests.PasswordPolicySetRequest;
 import com.codingzero.saam.app.SAAM;
-import com.codingzero.saam.app.UsernamePolicyAddRequest;
-import com.codingzero.saam.app.UsernamePolicyUpdateRequest;
+import com.codingzero.saam.app.requests.UsernamePolicyAddRequest;
+import com.codingzero.saam.app.requests.UsernamePolicyUpdateRequest;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;

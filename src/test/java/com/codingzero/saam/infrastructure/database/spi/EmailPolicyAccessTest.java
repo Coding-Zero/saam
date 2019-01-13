@@ -1,5 +1,6 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
+import com.codingzero.saam.infrastructure.database.EmailPolicyAccess;
 import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
 import com.codingzero.utilities.transaction.TransactionManager;
 import com.codingzero.utilities.transaction.TransactionManagerBuilder;

@@ -1,10 +1,11 @@
 package com.codingzero.saam.core.application;
 
-import com.codingzero.saam.core.Application;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.OAuthIdentifierPolicyAccess;
 import com.codingzero.saam.common.OAuthPlatform;
+import com.codingzero.saam.core.Application;
 import com.codingzero.saam.core.OAuthIdentifierPolicy;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +14,14 @@ public class OAuthIdentifierPolicyRepositoryService {
 
     private OAuthIdentifierPolicyAccess access;
     private OAuthIdentifierPolicyFactoryService factory;
-    private OAuthIdentifierRepositoryService oAuthIdentifierRepository;
+    private OAuthIdentifierAccess oAuthIdentifierAccess;
 
     public OAuthIdentifierPolicyRepositoryService(OAuthIdentifierPolicyAccess access,
                                                   OAuthIdentifierPolicyFactoryService factory,
-                                                  OAuthIdentifierRepositoryService oAuthIdentifierRepository) {
+                                                  OAuthIdentifierAccess oAuthIdentifierAccess) {
         this.access = access;
         this.factory = factory;
-        this.oAuthIdentifierRepository = oAuthIdentifierRepository;
+        this.oAuthIdentifierAccess = oAuthIdentifierAccess;
     }
 
     public void store(OAuthIdentifierPolicyEntity entity) {
@@ -29,22 +30,31 @@ public class OAuthIdentifierPolicyRepositoryService {
         } else if (entity.isDirty()) {
             access.update(entity.getObjectSegment());
         }
-        flushDirtyIdentifiers(entity);
+//        flushDirtyIdentifiers(entity);
     }
 
-    private void flushDirtyIdentifiers(OAuthIdentifierPolicyEntity policy) {
-        List<OAuthIdentifierEntity> entities = policy.getDirtyIdentifiers();
-        for (OAuthIdentifierEntity entity: entities) {
-            if (entity.isVoid()) {
-                oAuthIdentifierRepository.remove(entity);
-            } else {
-                oAuthIdentifierRepository.store(entity);
-            }
-        }
-    }
+//    private void flushDirtyIdentifiers(OAuthIdentifierPolicyEntity policy) {
+//        List<OAuthIdentifierEntity> entities = policy.getDirtyIdentifiers();
+//        for (OAuthIdentifierEntity entity: entities) {
+//            if (entity.isVoid()) {
+//                oAuthIdentifierRepository.remove(entity);
+//            } else {
+//                oAuthIdentifierRepository.store(entity);
+//            }
+//        }
+//    }
 
     public void remove(OAuthIdentifierPolicyEntity entity) {
+        checkForUnremoveableStatus(entity);
         access.delete(entity.getObjectSegment());
+    }
+
+    private void checkForUnremoveableStatus(OAuthIdentifierPolicyEntity entity) {
+        if (oAuthIdentifierAccess.countByPlatform(entity.getApplication().getId(), entity.getPlatform()) > 0) {
+            throw new IllegalStateException(
+                    "OAuth Identifier policy " + entity.getPlatform()
+                            + " cannot be removed before removing existing identifiers.");
+        }
     }
 
     public void removeAll(Application application) {

@@ -1,5 +1,6 @@
 package com.codingzero.saam.infrastructure.database;
 
+import com.codingzero.saam.common.PrincipalId;
 import com.codingzero.saam.common.PrincipalType;
 
 import java.util.Date;
@@ -12,9 +13,9 @@ public class APIKeyOS extends PrincipalOS {
     private String userId;
     private boolean isActive;
 
-    public APIKeyOS(String applicationId, String id, Date creationTime,
+    public APIKeyOS(PrincipalId id, Date creationTime,
                     String secretKey, String name, String userId, boolean isActive) {
-        super(applicationId, id, PrincipalType.API_KEY, creationTime);
+        super(id, PrincipalType.API_KEY, creationTime);
         this.secretKey = secretKey;
         this.name = name;
         this.userId = userId;

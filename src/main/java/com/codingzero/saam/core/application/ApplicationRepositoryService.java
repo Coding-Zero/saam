@@ -2,8 +2,16 @@ package com.codingzero.saam.core.application;
 
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.core.ApplicationRepository;
+import com.codingzero.saam.core.principal.PrincipalEntity;
+import com.codingzero.saam.core.principal.PrincipalRepositoryService;
+import com.codingzero.saam.core.resource.PermissionRepositoryService;
+import com.codingzero.saam.core.resource.ResourceEntity;
+import com.codingzero.saam.core.resource.ResourceRepositoryService;
+import com.codingzero.saam.core.usersession.UserSessionEntity;
+import com.codingzero.saam.core.usersession.UserSessionRepositoryService;
+import com.codingzero.saam.core.principal.user.UserEntity;
 import com.codingzero.saam.infrastructure.database.ApplicationOS;
-import com.codingzero.saam.infrastructure.database.spi.ApplicationAccess;
+import com.codingzero.saam.infrastructure.database.ApplicationAccess;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.PaginatedResultMapper;
 
@@ -105,7 +113,7 @@ public class ApplicationRepositoryService implements ApplicationRepository {
     private void flushRemovingUserSessions(ApplicationRoot application) {
         List<UserEntity> entities = application.getRemovingUserSessions();
         for (UserEntity entity: entities) {
-            userSessionRepository.remove(entity);
+            userSessionRepository.removeByUser(entity);
         }
     }
 
@@ -126,8 +134,8 @@ public class ApplicationRepositoryService implements ApplicationRepository {
         ApplicationRoot entity = (ApplicationRoot) application;
         identifierPolicyRepository.removeAll(entity);
         oAuthIdentifierPolicyRepository.removeAll(entity);
-        userSessionRepository.removeAll(entity);
-        resourceRepository.removeAll(entity);
+        userSessionRepository.removeByApplication(entity);
+        resourceRepository.removeByApplication(entity);
         principalRepository.removeAll(entity);
         access.delete(entity.getObjectSegment());
     }

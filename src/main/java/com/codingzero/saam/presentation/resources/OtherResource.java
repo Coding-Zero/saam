@@ -1,13 +1,13 @@
 package com.codingzero.saam.presentation.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.codingzero.saam.app.IdentifierVerificationCodeGenerateRequest;
-import com.codingzero.saam.app.IdentifierVerificationCodeResponse;
-import com.codingzero.saam.app.OAuthAccessTokenRequest;
-import com.codingzero.saam.app.OAuthAccessTokenResponse;
-import com.codingzero.saam.app.OAuthAuthorizationUrlRequest;
-import com.codingzero.saam.app.PasswordResetCodeGenerateRequest;
-import com.codingzero.saam.app.PasswordResetCodeResponse;
+import com.codingzero.saam.app.requests.IdentifierVerificationCodeGenerateRequest;
+import com.codingzero.saam.app.responses.IdentifierVerificationCodeResponse;
+import com.codingzero.saam.app.requests.OAuthAccessTokenRequest;
+import com.codingzero.saam.app.responses.OAuthAccessTokenResponse;
+import com.codingzero.saam.app.requests.OAuthAuthorizationUrlRequest;
+import com.codingzero.saam.app.requests.PasswordResetCodeGenerateRequest;
+import com.codingzero.saam.app.responses.PasswordResetCodeResponse;
 import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.fasterxml.jackson.databind.ObjectMapper;

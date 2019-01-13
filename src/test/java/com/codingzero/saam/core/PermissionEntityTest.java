@@ -1,10 +1,10 @@
 package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.Action;
-import com.codingzero.saam.core.application.PermissionEntity;
-import com.codingzero.saam.core.application.PermissionFactoryService;
-import com.codingzero.saam.core.application.PrincipalEntity;
-import com.codingzero.saam.core.application.PrincipalRepositoryService;
+import com.codingzero.saam.core.resource.PermissionEntity;
+import com.codingzero.saam.core.resource.PermissionFactoryService;
+import com.codingzero.saam.core.principal.PrincipalEntity;
+import com.codingzero.saam.core.principal.PrincipalRepositoryService;
 import com.codingzero.saam.infrastructure.database.PermissionOS;
 import org.junit.Before;
 import org.junit.Rule;

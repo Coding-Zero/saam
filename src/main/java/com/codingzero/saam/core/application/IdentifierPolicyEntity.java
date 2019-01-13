@@ -6,6 +6,9 @@ import com.codingzero.saam.core.Application;
 import com.codingzero.saam.core.Identifier;
 import com.codingzero.saam.core.IdentifierPolicy;
 import com.codingzero.saam.core.User;
+import com.codingzero.saam.core.identifier.IdentifierEntity;
+import com.codingzero.saam.core.identifier.IdentifierFactoryService;
+import com.codingzero.saam.core.identifier.IdentifierRepositoryService;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
 import com.codingzero.utilities.ddd.EntityObject;
 import com.codingzero.utilities.error.BusinessError;
@@ -37,9 +40,9 @@ public abstract class IdentifierPolicyEntity<T extends IdentifierPolicyOS>
         this.dirtyIdentifiers = new HashMap<>();
     }
 
-    public List<IdentifierEntity> getDirtyIdentifiers() {
-        return Collections.unmodifiableList(new ArrayList<>(dirtyIdentifiers.values()));
-    }
+//    public List<IdentifierEntity> getDirtyIdentifiers() {
+//        return Collections.unmodifiableList(new ArrayList<>(dirtyIdentifiers.values()));
+//    }
 
     @Override
     public Application getApplication() {
@@ -139,57 +142,57 @@ public abstract class IdentifierPolicyEntity<T extends IdentifierPolicyOS>
         }
     }
 
-    @Override
-    public Identifier addIdentifier(String content, User user) {
-        IdentifierEntity entity = identifierFactory.generate(this, content, user);
-        dirtyIdentifiers.put(getDirtyIdentifierKey(entity), entity);
-        return entity;
-    }
+//    @Override
+//    public Identifier addIdentifier(String content, User user) {
+//        IdentifierEntity entity = identifierFactory.generate(this, content, user);
+//        dirtyIdentifiers.put(getDirtyIdentifierKey(entity), entity);
+//        return entity;
+//    }
 
-    @Override
-    public void updateIdentifier(Identifier identifier) {
-        IdentifierEntity entity = (IdentifierEntity) identifier;
-        dirtyIdentifiers.put(getDirtyIdentifierKey(entity), entity);
-        markAsDirty();
-    }
+//    @Override
+//    public void updateIdentifier(Identifier identifier) {
+//        IdentifierEntity entity = (IdentifierEntity) identifier;
+//        dirtyIdentifiers.put(getDirtyIdentifierKey(entity), entity);
+//        markAsDirty();
+//    }
 
-    @Override
-    public void removeIdentifier(Identifier identifier) {
-        IdentifierEntity entity = (IdentifierEntity) identifier;
-        entity.markAsVoid();
-        dirtyIdentifiers.put(getDirtyIdentifierKey(entity), entity);
-    }
+//    @Override
+//    public void removeIdentifier(Identifier identifier) {
+//        IdentifierEntity entity = (IdentifierEntity) identifier;
+//        entity.markAsVoid();
+//        dirtyIdentifiers.put(getDirtyIdentifierKey(entity), entity);
+//    }
 
-    private String getDirtyIdentifierKey(Identifier identifier) {
-        return identifier.getContent().toLowerCase();
-    }
+//    private String getDirtyIdentifierKey(Identifier identifier) {
+//        return identifier.getContent().toLowerCase();
+//    }
 
-    @Override
-    public Identifier fetchIdentifierByContent(String content) {
-        return identifierRepository.findByContent(this, content);
-    }
+//    @Override
+//    public Identifier fetchIdentifierByContent(String content) {
+//        return identifierRepository.findByContent(this, content);
+//    }
 
-    @Override
-    public Identifier fetchIdentifierByUserAndContent(User user, String content) {
-        if (null == content) {
-            return null;
-        }
-        Identifier identifier = fetchIdentifierByContent(content);
-        if (null != identifier
-                && identifier.getUser().getId().equalsIgnoreCase(user.getId())) {
-            return identifier;
-        }
-        return null;
-    }
+//    @Override
+//    public Identifier fetchIdentifierByUserAndContent(User user, String content) {
+//        if (null == content) {
+//            return null;
+//        }
+//        Identifier identifier = fetchIdentifierByContent(content);
+//        if (null != identifier
+//                && identifier.getUser().getId().equalsIgnoreCase(user.getId())) {
+//            return identifier;
+//        }
+//        return null;
+//    }
 
-    @Override
-    public List<Identifier> fetchIdentifiersByUser(User user) {
-        return identifierRepository.findByPolicyAndUser(this, user);
-    }
+//    @Override
+//    public List<Identifier> fetchIdentifiersByUser(User user) {
+//        return identifierRepository.findByPolicyAndUser(this, user);
+//    }
 
-    @Override
-    public PaginatedResult<List<Identifier>> fetchAllIdentifiers() {
-        return identifierRepository.findByPolicy(this);
-    }
+//    @Override
+//    public PaginatedResult<List<Identifier>> fetchAllIdentifiers() {
+//        return identifierRepository.findByPolicy(this);
+//    }
 
 }

@@ -1,12 +1,12 @@
 package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.PasswordPolicy;
-import com.codingzero.saam.core.application.RoleEntity;
-import com.codingzero.saam.core.application.RoleRepositoryService;
-import com.codingzero.saam.core.application.UserEntity;
-import com.codingzero.saam.core.application.UserFactoryService;
+import com.codingzero.saam.core.principal.role.RoleEntity;
+import com.codingzero.saam.core.principal.role.RoleRepositoryService;
+import com.codingzero.saam.core.principal.user.UserEntity;
+import com.codingzero.saam.core.principal.user.UserFactoryService;
 import com.codingzero.saam.infrastructure.database.UserOS;
-import com.codingzero.saam.infrastructure.database.spi.PasswordHelper;
+import com.codingzero.saam.infrastructure.database.PasswordHelper;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;

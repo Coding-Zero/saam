@@ -1,6 +1,7 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.common.UsernameFormat;
+import com.codingzero.saam.infrastructure.database.UsernamePolicyAccess;
 import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
 import com.codingzero.utilities.transaction.TransactionManager;
 import com.codingzero.utilities.transaction.TransactionManagerBuilder;

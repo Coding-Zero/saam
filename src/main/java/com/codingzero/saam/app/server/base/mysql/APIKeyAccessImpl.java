@@ -2,7 +2,7 @@ package com.codingzero.saam.app.server.base.mysql;
 
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
 import com.codingzero.saam.infrastructure.database.PrincipalOS;
-import com.codingzero.saam.infrastructure.database.spi.APIKeyAccess;
+import com.codingzero.saam.infrastructure.database.APIKeyAccess;
 import com.codingzero.utilities.key.HMACKey;
 import com.codingzero.utilities.key.Key;
 import com.codingzero.utilities.key.RandomKey;

@@ -1,6 +1,7 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.common.OAuthPlatform;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyAccess;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
 import com.codingzero.utilities.transaction.TransactionManager;
 import com.codingzero.utilities.transaction.TransactionManagerBuilder;

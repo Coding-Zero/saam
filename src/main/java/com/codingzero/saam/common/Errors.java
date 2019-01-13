@@ -31,7 +31,10 @@ public enum Errors implements ErrorType {
     WRONG_PASSWORD("WrongPassword"),
     IDENTIFIER_UNVERIFIED("IdentifierUnverified"),
     INVALID_IDENTIFIER_POLICY("InvalidIdentifierPolicy"),
-    INVALID_STATUS("InvalidStatus")
+    INVALID_STATUS("InvalidStatus"),
+    INCONSISTENT_APPLICATION("InconsistentApplication"),
+    IDENTIFIER_UNREMOVEABLE("IdentifierUnremoveable"),
+    NO_SUCH_RESOURCE_FOUND("NoSuchResourceFound")
     ;
 
     private final String name;

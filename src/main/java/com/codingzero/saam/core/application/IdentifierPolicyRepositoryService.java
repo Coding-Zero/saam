@@ -3,8 +3,9 @@ package com.codingzero.saam.core.application;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.core.IdentifierPolicy;
+import com.codingzero.saam.infrastructure.database.IdentifierAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,16 +15,16 @@ public class IdentifierPolicyRepositoryService {
     private IdentifierPolicyAccess access;
     private EmailPolicyRepositoryService emailIdentifierPolicyRepository;
     private UsernamePolicyRepositoryService usernameIdentifierPolicyRepository;
-    private IdentifierRepositoryService identifierRepository;
+    private IdentifierAccess identifierAccess;
 
     public IdentifierPolicyRepositoryService(IdentifierPolicyAccess access,
                                              EmailPolicyRepositoryService emailIdentifierPolicyRepository,
                                              UsernamePolicyRepositoryService usernameIdentifierPolicyRepository,
-                                             IdentifierRepositoryService identifierRepository) {
+                                             IdentifierAccess identifierAccess) {
         this.access = access;
         this.emailIdentifierPolicyRepository = emailIdentifierPolicyRepository;
         this.usernameIdentifierPolicyRepository = usernameIdentifierPolicyRepository;
-        this.identifierRepository = identifierRepository;
+        this.identifierAccess = identifierAccess;
     }
 
     public void store(IdentifierPolicyEntity entity) {
@@ -34,22 +35,22 @@ public class IdentifierPolicyRepositoryService {
         } else {
             throw new IllegalArgumentException("Unknown identifier type, " + entity.getType());
         }
-        flushDirtyIdentifiers(entity);
+//        flushDirtyIdentifiers(entity);
     }
 
-    private void flushDirtyIdentifiers(IdentifierPolicyEntity policy) {
-        List<IdentifierEntity> entities = policy.getDirtyIdentifiers();
-        for (IdentifierEntity entity: entities) {
-            if (entity.isVoid()) {
-                identifierRepository.remove(entity);
-            } else {
-                identifierRepository.store(entity);
-            }
-        }
-    }
+//    private void flushDirtyIdentifiers(IdentifierPolicyEntity policy) {
+//        List<IdentifierEntity> entities = policy.getDirtyIdentifiers();
+//        for (IdentifierEntity entity: entities) {
+//            if (entity.isVoid()) {
+//                identifierRepository.remove(entity);
+//            } else {
+//                identifierRepository.store(entity);
+//            }
+//        }
+//    }
 
     public void remove(IdentifierPolicyEntity entity) {
-        identifierRepository.remove(entity);
+        checkForUnremoveableStatus(entity);
         if (entity.getType() == IdentifierType.USERNAME) {
             usernameIdentifierPolicyRepository.remove((UsernamePolicyEntity) entity);
         } else if (entity.getType() == IdentifierType.EMAIL) {
@@ -59,8 +60,14 @@ public class IdentifierPolicyRepositoryService {
         }
     }
 
+    private void checkForUnremoveableStatus(IdentifierPolicyEntity entity) {
+        if (identifierAccess.countByType(entity.getApplication().getId(), entity.getType()) > 0) {
+            throw new IllegalStateException(
+                    "Identifier policy " + entity.getType() + " cannot be removed before removing existing identifiers.");
+        }
+    }
+
     public void removeAll(Application application) {
-        identifierRepository.removeAll(application);
         usernameIdentifierPolicyRepository.removeAll(application);
         emailIdentifierPolicyRepository.removeAll(application);
     }

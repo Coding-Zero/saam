@@ -4,11 +4,18 @@ import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.core.User;
 import com.codingzero.saam.core.UserSession;
+import com.codingzero.saam.core.UserSessionFactory;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.Map;
 
 public class UserAuthenticator {
+
+    private UserSessionFactory userSessionFactory;
+
+    public UserAuthenticator(UserSessionFactory userSessionFactory) {
+        this.userSessionFactory = userSessionFactory;
+    }
 
     public UserSession login(User user, String password, Map<String, Object> details, long timeout) {
         checkNullValue(user);
@@ -39,7 +46,7 @@ public class UserAuthenticator {
 
     private UserSession getUserSession(User user, Map<String, Object> details, long timeout) {
         Application application = user.getApplication();
-        return application.createUserSession(user, details, timeout);
+        return userSessionFactory.generate(application, user, details, timeout);
     }
 
 }

@@ -1,19 +1,14 @@
 package com.codingzero.saam.presentation.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.codingzero.saam.app.CredentialLoginRequest;
-import com.codingzero.saam.app.OAuthLoginRequest;
-import com.codingzero.saam.app.RoleAddRequest;
-import com.codingzero.saam.app.RoleResponse;
-import com.codingzero.saam.app.RoleUpdateRequest;
+import com.codingzero.saam.app.requests.RoleAddRequest;
+import com.codingzero.saam.app.responses.RoleResponse;
+import com.codingzero.saam.app.requests.RoleUpdateRequest;
 import com.codingzero.saam.app.SAAM;
-import com.codingzero.saam.app.UserSessionCreateRequest;
-import com.codingzero.saam.app.UserSessionResponse;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -73,7 +68,7 @@ public class RoleResource extends AbstractResource {
 
     @GET
     @Path("/{id}")
-    @Timed(name = "get-user-session")
+    @Timed(name = "get-user-usersession")
     public Response getById(@PathParam("applicationId") String applicationId,
                              @PathParam("id") String id) {
         RoleResponse response = getApp().getRoleById(applicationId, id);

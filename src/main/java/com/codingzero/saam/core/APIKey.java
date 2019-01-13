@@ -14,4 +14,6 @@ public interface APIKey extends Principal {
 
     void setActive(boolean isActive);
 
+    boolean verify(String secretKey);
+
 }

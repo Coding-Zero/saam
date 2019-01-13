@@ -6,11 +6,13 @@ import java.util.Date;
 
 public interface Identifier {
 
-    User getUser();
+    Application getApplication();
 
     IdentifierPolicy getPolicy();
 
     String getContent();
+
+    User getUser();
 
     boolean isVerified();
 

@@ -1,12 +1,12 @@
 package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.PrincipalType;
-import com.codingzero.saam.core.application.RoleRepositoryService;
-import com.codingzero.saam.core.application.UserEntity;
-import com.codingzero.saam.core.application.UserFactoryService;
+import com.codingzero.saam.core.principal.role.RoleRepositoryService;
+import com.codingzero.saam.core.principal.user.UserEntity;
+import com.codingzero.saam.core.principal.user.UserFactoryService;
 import com.codingzero.saam.infrastructure.database.UserOS;
-import com.codingzero.saam.infrastructure.database.spi.PasswordHelper;
-import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
+import com.codingzero.saam.infrastructure.database.PasswordHelper;
+import com.codingzero.saam.infrastructure.database.PrincipalAccess;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class UserFactoryServiceTest {
         service = new UserFactoryService(
                 principalAccess,
                 roleRepository,
-                passwordHelper);
+                passwordHelper, applicationStatusVerifier);
     }
 
     @Test

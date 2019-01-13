@@ -13,21 +13,27 @@ public class ResourceOS {
     private long creationTime;
     private String parentKey; // path to root, eg: root:name1:name2
 
-    public ResourceOS(String applicationId, String key, String principalId, Date creationTime) {
+    public ResourceOS(String applicationId, String key, String parentKey, String principalId, Date creationTime) {
+        checkForIllegalParentKey(key, parentKey);
         this.applicationId = applicationId;
-        this.parentKey = readParentKey(key);
+        this.parentKey = parentKey;
         this.key = key;
         this.principalId = principalId;
         this.creationTime = creationTime.getTime();
     }
 
-    private String readParentKey(String key) {
-        String parentKey = null;
-        int lastIndexOfSeparator = key.lastIndexOf(ResourceKeySeparator.VALUE);
-        if (-1 != lastIndexOfSeparator) {
-            parentKey = key.substring(0, lastIndexOfSeparator);
+    private void checkForIllegalParentKey(String key, String parentKey) {
+        if (null == parentKey) {
+            return;
         }
-        return parentKey;
+        if (key.length() <= parentKey.length()) {
+            throw new IllegalArgumentException("Illegal parent key, " + parentKey + " for given key, " + key);
+        }
+        int parentKeyPosition = key.indexOf(parentKey) + 1;
+        int lastIndexOfSeparator = key.lastIndexOf(ResourceKeySeparator.VALUE);
+        if (parentKeyPosition != lastIndexOfSeparator) {
+            throw new IllegalArgumentException("Illegal parent key, " + parentKey + " for given key, " + key);
+        }
     }
 
     public String getApplicationId() {

@@ -1,7 +1,7 @@
 package com.codingzero.saam.infrastructure.database.mysql;
 
 import com.codingzero.saam.common.PrincipalType;
-import com.codingzero.saam.infrastructure.database.spi.UserSessionAccess;
+import com.codingzero.saam.infrastructure.database.UserSessionAccess;
 import com.codingzero.saam.infrastructure.database.spi.UserSessionAccessTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

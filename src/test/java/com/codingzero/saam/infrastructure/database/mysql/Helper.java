@@ -4,16 +4,13 @@ import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.server.SAAMBuilder;
 import com.codingzero.saam.app.server.base.mysql.MySQLAccessModule;
 import com.codingzero.saam.infrastructure.database.SAAMTestApplication;
-import com.codingzero.saam.infrastructure.database.spi.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.database.OAuthPlatformAgent;
 import com.codingzero.saam.presentation.DataSourceProvider;
-import com.codingzero.saam.presentation.HttpClientProvider;
 import com.codingzero.saam.presentation.SAAMConfiguration;
-import com.codingzero.saam.presentation.SAAMSupplier;
 import com.codingzero.utilities.transaction.TransactionManager;
 import com.codingzero.utilities.transaction.manager.TransactionManagerImpl;
 import io.dropwizard.testing.DropwizardTestSupport;
 import io.dropwizard.testing.ResourceHelpers;
-import org.apache.http.impl.client.CloseableHttpClient;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;

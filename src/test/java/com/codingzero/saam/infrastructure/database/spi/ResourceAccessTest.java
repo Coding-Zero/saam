@@ -2,6 +2,7 @@ package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.common.ResourceKeySeparator;
+import com.codingzero.saam.infrastructure.database.ResourceAccess;
 import com.codingzero.saam.infrastructure.database.ResourceOS;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;

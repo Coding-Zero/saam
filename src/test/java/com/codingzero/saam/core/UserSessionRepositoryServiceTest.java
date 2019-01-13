@@ -1,10 +1,10 @@
 package com.codingzero.saam.core;
 
-import com.codingzero.saam.core.application.UserSessionEntity;
-import com.codingzero.saam.core.application.UserSessionFactoryService;
-import com.codingzero.saam.core.application.UserSessionRepositoryService;
+import com.codingzero.saam.core.usersession.UserSessionEntity;
+import com.codingzero.saam.core.usersession.UserSessionFactoryService;
+import com.codingzero.saam.core.usersession.UserSessionRepositoryService;
 import com.codingzero.saam.infrastructure.database.UserSessionOS;
-import com.codingzero.saam.infrastructure.database.spi.UserSessionAccess;
+import com.codingzero.saam.infrastructure.database.UserSessionAccess;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultPage;
@@ -36,7 +36,7 @@ public class UserSessionRepositoryServiceTest {
         factory = mock(UserSessionFactoryService.class);
         service = new UserSessionRepositoryService(
                 access,
-                factory);
+                factory, applicationStatusVerifier);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class UserSessionRepositoryServiceTest {
         User user = mock(User.class);
         when(user.getId()).thenReturn(userId);
         when(user.getApplication()).thenReturn(application);
-        service.remove(user);
+        service.removeByUser(user);
         verify(access, times(1)).deleteByUserId(applicationId, userId);
     }
 

@@ -1,12 +1,12 @@
 package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.OAuthPlatform;
-import com.codingzero.saam.core.application.OAuthIdentifierFactoryService;
+import com.codingzero.saam.core.oauthidentifier.OAuthIdentifierFactoryService;
 import com.codingzero.saam.core.application.OAuthIdentifierPolicyEntity;
 import com.codingzero.saam.core.application.OAuthIdentifierPolicyFactoryService;
-import com.codingzero.saam.core.application.OAuthIdentifierRepositoryService;
+import com.codingzero.saam.core.oauthidentifier.OAuthIdentifierRepositoryService;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.OAuthIdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyAccess;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;

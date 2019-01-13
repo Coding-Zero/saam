@@ -236,10 +236,7 @@ public class ObjectSegmentMapper {
         IdentifierVerificationCode verificationCode = objectMapper.readValue(
                 rs.getString("verification_code"), IdentifierVerificationCode.class);
         return new IdentifierOS(
-                Key.fromBytes(rs.getBytes("application_id")).toHexString(),
-                IdentifierType.valueOf(rs.getString("identifier_type")),
-                rs.getString("content"),
-                Key.fromBytes(rs.getBytes("user_id")).toHexString(),
+                id, Key.fromBytes(rs.getBytes("user_id")).toHexString(),
                 rs.getBoolean("is_verified"),
                 verificationCode,
                 new Date(rs.getTimestamp("creation_time").getTime()),
@@ -286,10 +283,7 @@ public class ObjectSegmentMapper {
         Map<String, Object> properties = objectMapper.readValue(
                 rs.getString("properties"), new TypeReference<Map<String, Object>>() {});
         return new OAuthIdentifierOS(
-                Key.fromBytes(rs.getBytes("application_id")).toHexString(),
-                OAuthPlatform.valueOf(rs.getString("platform")),
-                rs.getString("content"),
-                Key.fromBytes(rs.getBytes("user_id")).toHexString(),
+                key, Key.fromBytes(rs.getBytes("user_id")).toHexString(),
                 properties,
                 new Date(rs.getTimestamp("creation_time").getTime()),
                 new Date(rs.getTimestamp("update_time").getTime())

@@ -1,34 +1,22 @@
 package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.PrincipalType;
-import com.codingzero.saam.core.application.APIKeyEntity;
-import com.codingzero.saam.core.application.APIKeyRepositoryService;
-import com.codingzero.saam.core.application.PermissionEntity;
-import com.codingzero.saam.core.application.PermissionFactoryService;
-import com.codingzero.saam.core.application.PermissionRepositoryService;
-import com.codingzero.saam.core.application.PrincipalEntity;
-import com.codingzero.saam.core.application.PrincipalRepositoryService;
-import com.codingzero.saam.core.application.RoleEntity;
-import com.codingzero.saam.core.application.RoleRepositoryService;
-import com.codingzero.saam.core.application.UserEntity;
-import com.codingzero.saam.core.application.UserRepositoryService;
+import com.codingzero.saam.core.principal.apikey.APIKeyEntity;
+import com.codingzero.saam.core.principal.apikey.APIKeyRepositoryService;
+import com.codingzero.saam.core.principal.PrincipalEntity;
+import com.codingzero.saam.core.principal.PrincipalRepositoryService;
+import com.codingzero.saam.core.principal.role.RoleEntity;
+import com.codingzero.saam.core.principal.role.RoleRepositoryService;
+import com.codingzero.saam.core.principal.user.UserEntity;
+import com.codingzero.saam.core.principal.user.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
-import com.codingzero.saam.infrastructure.database.PermissionOS;
-import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import com.codingzero.saam.infrastructure.database.RoleOS;
 import com.codingzero.saam.infrastructure.database.UserOS;
-import com.codingzero.saam.infrastructure.database.spi.PermissionAccess;
-import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
-import com.codingzero.utilities.pagination.OffsetBasedResultPage;
-import com.codingzero.utilities.pagination.PaginatedResult;
-import com.codingzero.utilities.pagination.ResultPage;
+import com.codingzero.saam.infrastructure.database.PrincipalAccess;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
@@ -168,8 +156,8 @@ public class PrincipalRepositoryServiceTest {
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
         service.removeAll(application);
-        verify(userRepository, times(1)).removeAll(application);
-        verify(roleRepository, times(1)).removeAll(application);
+        verify(userRepository, times(1)).removeByApplication(application);
+        verify(roleRepository, times(1)).removeByApplication(application);
         verify(apiKeyRepository, times(1)).removeAll(application);
     }
 

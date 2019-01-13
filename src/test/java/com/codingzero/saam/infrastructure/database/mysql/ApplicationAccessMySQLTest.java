@@ -1,7 +1,7 @@
 package com.codingzero.saam.infrastructure.database.mysql;
 
 import com.codingzero.saam.infrastructure.database.spi.ApplicationAccessTest;
-import com.codingzero.saam.infrastructure.database.spi.ApplicationAccess;
+import com.codingzero.saam.infrastructure.database.ApplicationAccess;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 

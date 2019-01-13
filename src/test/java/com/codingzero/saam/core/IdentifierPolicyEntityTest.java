@@ -1,9 +1,9 @@
 package com.codingzero.saam.core;
 
-import com.codingzero.saam.core.application.IdentifierEntity;
-import com.codingzero.saam.core.application.IdentifierFactoryService;
+import com.codingzero.saam.core.identifier.IdentifierEntity;
+import com.codingzero.saam.core.identifier.IdentifierFactoryService;
 import com.codingzero.saam.core.application.IdentifierPolicyEntity;
-import com.codingzero.saam.core.application.IdentifierRepositoryService;
+import com.codingzero.saam.core.identifier.IdentifierRepositoryService;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;

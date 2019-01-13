@@ -1,12 +1,12 @@
 package com.codingzero.saam.core;
 
 import com.codingzero.saam.common.IdentifierType;
-import com.codingzero.saam.core.application.IdentifierEntity;
-import com.codingzero.saam.core.application.IdentifierFactoryService;
-import com.codingzero.saam.core.application.UserRepositoryService;
+import com.codingzero.saam.core.identifier.IdentifierEntity;
+import com.codingzero.saam.core.identifier.IdentifierFactoryService;
+import com.codingzero.saam.core.principal.user.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.IdentifierOS;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierAccess;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierVerificationCodeGenerator;
+import com.codingzero.saam.infrastructure.database.IdentifierAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierVerificationCodeGenerator;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,7 +35,7 @@ public class IdentifierFactoryServiceTest {
         service = new IdentifierFactoryService(
                 access,
                 verificationCodeGenerator,
-                userRepository);
+                userRepository, application);
     }
 
     @Test

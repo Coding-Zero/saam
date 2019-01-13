@@ -1,10 +1,10 @@
 package com.codingzero.saam.presentation.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.codingzero.saam.app.PermissionCheckRequest;
-import com.codingzero.saam.app.PermissionCheckResponse;
-import com.codingzero.saam.app.PermissionResponse;
-import com.codingzero.saam.app.PermissionStoreRequest;
+import com.codingzero.saam.app.requests.PermissionCheckRequest;
+import com.codingzero.saam.app.responses.PermissionCheckResponse;
+import com.codingzero.saam.app.responses.PermissionResponse;
+import com.codingzero.saam.app.requests.PermissionStoreRequest;
 import com.codingzero.saam.app.SAAM;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;

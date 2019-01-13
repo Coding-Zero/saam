@@ -1,7 +1,7 @@
 package com.codingzero.saam.app.server.base.mysql;
 
 import com.codingzero.saam.infrastructure.database.PermissionOS;
-import com.codingzero.saam.infrastructure.database.spi.PermissionAccess;
+import com.codingzero.saam.infrastructure.database.PermissionAccess;
 import com.codingzero.utilities.key.HMACKey;
 import com.codingzero.utilities.key.Key;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;

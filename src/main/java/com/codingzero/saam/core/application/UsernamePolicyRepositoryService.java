@@ -3,7 +3,7 @@ package com.codingzero.saam.core.application;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
 import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.UsernamePolicyAccess;
+import com.codingzero.saam.infrastructure.database.UsernamePolicyAccess;
 
 public class UsernamePolicyRepositoryService {
 

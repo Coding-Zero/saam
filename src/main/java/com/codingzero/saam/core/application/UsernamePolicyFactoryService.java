@@ -3,8 +3,11 @@ package com.codingzero.saam.core.application;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.UsernameFormat;
 import com.codingzero.saam.core.Application;
+import com.codingzero.saam.core.identifier.IdentifierFactoryService;
+import com.codingzero.saam.core.identifier.IdentifierRepositoryService;
+import com.codingzero.saam.core.services.IdentifierPolicyHelper;
 import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
 
 import java.util.Date;
 

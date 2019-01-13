@@ -1,9 +1,9 @@
 package com.codingzero.saam.infrastructure.database.mysql;
 
-import com.codingzero.saam.infrastructure.database.spi.EmailPolicyAccess;
-import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.EmailPolicyAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
 import com.codingzero.saam.infrastructure.database.spi.IdentifierPolicyAccessTest;
-import com.codingzero.saam.infrastructure.database.spi.UsernamePolicyAccess;
+import com.codingzero.saam.infrastructure.database.UsernamePolicyAccess;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 

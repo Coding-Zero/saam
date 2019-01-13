@@ -1,12 +1,8 @@
 package com.codingzero.saam.infrastructure.database.mysql;
 
 import com.codingzero.saam.common.PrincipalType;
-import com.codingzero.saam.infrastructure.database.spi.PrincipalAccess;
-import com.codingzero.saam.infrastructure.database.spi.PrincipalAccessTest;
-import com.codingzero.saam.infrastructure.database.spi.ResourceAccess;
+import com.codingzero.saam.infrastructure.database.ResourceAccess;
 import com.codingzero.saam.infrastructure.database.spi.ResourceAccessTest;
-import com.codingzero.saam.infrastructure.database.spi.RoleAccess;
-import com.codingzero.saam.infrastructure.database.spi.UserAccess;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 

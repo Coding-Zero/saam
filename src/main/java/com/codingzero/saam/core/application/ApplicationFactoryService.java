@@ -4,8 +4,20 @@ import com.codingzero.saam.common.ApplicationStatus;
 import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.core.Application;
 import com.codingzero.saam.core.ApplicationFactory;
+import com.codingzero.saam.core.principal.PrincipalRepositoryService;
+import com.codingzero.saam.core.principal.apikey.APIKeyFactoryService;
+import com.codingzero.saam.core.principal.apikey.APIKeyRepositoryService;
+import com.codingzero.saam.core.principal.role.RoleFactoryService;
+import com.codingzero.saam.core.principal.role.RoleRepositoryService;
+import com.codingzero.saam.core.principal.user.UserFactoryService;
+import com.codingzero.saam.core.principal.user.UserRepositoryService;
+import com.codingzero.saam.core.resource.ResourceFactoryService;
+import com.codingzero.saam.core.resource.ResourceRepositoryService;
+import com.codingzero.saam.core.services.ApplicationStatusVerifier;
+import com.codingzero.saam.core.usersession.UserSessionFactoryService;
+import com.codingzero.saam.core.usersession.UserSessionRepositoryService;
+import com.codingzero.saam.infrastructure.database.ApplicationAccess;
 import com.codingzero.saam.infrastructure.database.ApplicationOS;
-import com.codingzero.saam.infrastructure.database.spi.ApplicationAccess;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.Date;
@@ -34,6 +46,7 @@ public class ApplicationFactoryService implements ApplicationFactory {
     private RoleRepositoryService roleRepository;
     private ResourceFactoryService resourceFactory;
     private ResourceRepositoryService resourceRepository;
+    private ApplicationStatusVerifier applicationStatusVerifier;
 
     public ApplicationFactoryService(ApplicationAccess access,
                                      UsernamePolicyFactoryService usernamePolicyFactory,
@@ -51,7 +64,8 @@ public class ApplicationFactoryService implements ApplicationFactory {
                                      RoleFactoryService roleFactory,
                                      RoleRepositoryService roleRepository,
                                      ResourceFactoryService resourceFactory,
-                                     ResourceRepositoryService resourceRepository) {
+                                     ResourceRepositoryService resourceRepository,
+                                     ApplicationStatusVerifier applicationStatusVerifier) {
         this.access = access;
         this.usernamePolicyFactory = usernamePolicyFactory;
         this.emailPolicyFactory = emailPolicyFactory;
@@ -69,6 +83,7 @@ public class ApplicationFactoryService implements ApplicationFactory {
         this.roleRepository = roleRepository;
         this.resourceFactory = resourceFactory;
         this.resourceRepository = resourceRepository;
+        this.applicationStatusVerifier = applicationStatusVerifier;
     }
 
     @Override
@@ -144,7 +159,7 @@ public class ApplicationFactoryService implements ApplicationFactory {
                 roleFactory,
                 roleRepository,
                 resourceFactory,
-                resourceRepository
-        );
+                resourceRepository,
+                applicationStatusVerifier);
     }
 }

@@ -1,7 +1,7 @@
 package com.codingzero.saam.infrastructure.database.mysql;
 
 import com.codingzero.saam.infrastructure.database.spi.UsernamePolicyAccessTest;
-import com.codingzero.saam.infrastructure.database.spi.UsernamePolicyAccess;
+import com.codingzero.saam.infrastructure.database.UsernamePolicyAccess;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 

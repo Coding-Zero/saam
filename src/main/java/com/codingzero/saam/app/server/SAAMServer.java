@@ -1,50 +1,50 @@
 package com.codingzero.saam.app.server;
 
-import com.codingzero.saam.app.APIKeyAddRequest;
-import com.codingzero.saam.app.APIKeyResponse;
-import com.codingzero.saam.app.APIKeyUpdateRequest;
-import com.codingzero.saam.app.APIKeyVerifyRequest;
-import com.codingzero.saam.app.ApplicationAddRequest;
-import com.codingzero.saam.app.ApplicationResponse;
-import com.codingzero.saam.app.ApplicationUpdateRequest;
-import com.codingzero.saam.app.CredentialLoginRequest;
-import com.codingzero.saam.app.EmailPolicyAddRequest;
-import com.codingzero.saam.app.EmailPolicyUpdateRequest;
-import com.codingzero.saam.app.IdentifierAddRequest;
-import com.codingzero.saam.app.IdentifierRemoveRequest;
-import com.codingzero.saam.app.IdentifierVerificationCodeGenerateRequest;
-import com.codingzero.saam.app.IdentifierVerificationCodeResponse;
-import com.codingzero.saam.app.IdentifierVerifyRequest;
-import com.codingzero.saam.app.OAuthAccessTokenRequest;
-import com.codingzero.saam.app.OAuthAccessTokenResponse;
-import com.codingzero.saam.app.OAuthAuthorizationUrlRequest;
-import com.codingzero.saam.app.OAuthIdentifierConnectRequest;
-import com.codingzero.saam.app.OAuthIdentifierDisconnectRequest;
-import com.codingzero.saam.app.OAuthIdentifierPolicyAddRequest;
-import com.codingzero.saam.app.OAuthIdentifierPolicyUpdateRequest;
-import com.codingzero.saam.app.OAuthLoginRequest;
-import com.codingzero.saam.app.PasswordChangeRequest;
-import com.codingzero.saam.app.PasswordPolicySetRequest;
-import com.codingzero.saam.app.PasswordResetCodeGenerateRequest;
-import com.codingzero.saam.app.PasswordResetCodeResponse;
-import com.codingzero.saam.app.PasswordResetRequest;
-import com.codingzero.saam.app.PermissionCheckRequest;
-import com.codingzero.saam.app.PermissionCheckResponse;
-import com.codingzero.saam.app.PermissionResponse;
-import com.codingzero.saam.app.PermissionStoreRequest;
-import com.codingzero.saam.app.ResourceResponse;
-import com.codingzero.saam.app.ResourceStoreRequest;
-import com.codingzero.saam.app.RoleAddRequest;
-import com.codingzero.saam.app.RoleResponse;
-import com.codingzero.saam.app.RoleUpdateRequest;
+import com.codingzero.saam.app.requests.APIKeyAddRequest;
+import com.codingzero.saam.app.responses.APIKeyResponse;
+import com.codingzero.saam.app.requests.APIKeyUpdateRequest;
+import com.codingzero.saam.app.requests.APIKeyVerifyRequest;
+import com.codingzero.saam.app.requests.ApplicationAddRequest;
+import com.codingzero.saam.app.responses.ApplicationResponse;
+import com.codingzero.saam.app.requests.ApplicationUpdateRequest;
+import com.codingzero.saam.app.requests.CredentialLoginRequest;
+import com.codingzero.saam.app.requests.EmailPolicyAddRequest;
+import com.codingzero.saam.app.requests.EmailPolicyUpdateRequest;
+import com.codingzero.saam.app.requests.IdentifierAddRequest;
+import com.codingzero.saam.app.requests.IdentifierRemoveRequest;
+import com.codingzero.saam.app.requests.IdentifierVerificationCodeGenerateRequest;
+import com.codingzero.saam.app.responses.IdentifierVerificationCodeResponse;
+import com.codingzero.saam.app.requests.IdentifierVerifyRequest;
+import com.codingzero.saam.app.requests.OAuthAccessTokenRequest;
+import com.codingzero.saam.app.responses.OAuthAccessTokenResponse;
+import com.codingzero.saam.app.requests.OAuthAuthorizationUrlRequest;
+import com.codingzero.saam.app.requests.OAuthIdentifierConnectRequest;
+import com.codingzero.saam.app.requests.OAuthIdentifierDisconnectRequest;
+import com.codingzero.saam.app.requests.OAuthIdentifierPolicyAddRequest;
+import com.codingzero.saam.app.requests.OAuthIdentifierPolicyUpdateRequest;
+import com.codingzero.saam.app.requests.OAuthLoginRequest;
+import com.codingzero.saam.app.requests.PasswordChangeRequest;
+import com.codingzero.saam.app.requests.PasswordPolicySetRequest;
+import com.codingzero.saam.app.requests.PasswordResetCodeGenerateRequest;
+import com.codingzero.saam.app.responses.PasswordResetCodeResponse;
+import com.codingzero.saam.app.requests.PasswordResetRequest;
+import com.codingzero.saam.app.requests.PermissionCheckRequest;
+import com.codingzero.saam.app.responses.PermissionCheckResponse;
+import com.codingzero.saam.app.responses.PermissionResponse;
+import com.codingzero.saam.app.requests.PermissionStoreRequest;
+import com.codingzero.saam.app.responses.ResourceResponse;
+import com.codingzero.saam.app.requests.ResourceStoreRequest;
+import com.codingzero.saam.app.requests.RoleAddRequest;
+import com.codingzero.saam.app.responses.RoleResponse;
+import com.codingzero.saam.app.requests.RoleUpdateRequest;
 import com.codingzero.saam.app.SAAM;
-import com.codingzero.saam.app.UserRegisterRequest;
-import com.codingzero.saam.app.UserResponse;
-import com.codingzero.saam.app.UserRoleUpdateRequest;
-import com.codingzero.saam.app.UserSessionCreateRequest;
-import com.codingzero.saam.app.UserSessionResponse;
-import com.codingzero.saam.app.UsernamePolicyAddRequest;
-import com.codingzero.saam.app.UsernamePolicyUpdateRequest;
+import com.codingzero.saam.app.requests.UserRegisterRequest;
+import com.codingzero.saam.app.responses.UserResponse;
+import com.codingzero.saam.app.requests.UserRoleUpdateRequest;
+import com.codingzero.saam.app.requests.UserSessionCreateRequest;
+import com.codingzero.saam.app.responses.UserSessionResponse;
+import com.codingzero.saam.app.requests.UsernamePolicyAddRequest;
+import com.codingzero.saam.app.requests.UsernamePolicyUpdateRequest;
 import com.codingzero.saam.common.ApplicationStatus;
 import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.common.IdentifierType;
@@ -70,7 +70,7 @@ import com.codingzero.saam.core.UserSession;
 import com.codingzero.saam.core.UsernamePolicy;
 import com.codingzero.saam.core.services.UserAuthenticator;
 import com.codingzero.saam.infrastructure.OAuthAccessToken;
-import com.codingzero.saam.infrastructure.database.spi.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.database.OAuthPlatformAgent;
 import com.codingzero.utilities.error.BusinessError;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.PaginatedResultMapper;
@@ -681,7 +681,7 @@ public class SAAMServer implements SAAM {
         UserSession session = application.fetchUserSessionByKey(key);
         if (null == session) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
-                    .message("No such user session found.")
+                    .message("No such user usersession found.")
                     .details("entity", UserSession.class.getSimpleName())
                     .details("applicationId", application.getId())
                     .details("key", key)
@@ -924,10 +924,10 @@ public class SAAMServer implements SAAM {
         Resource resource = application.fetchResourceByKey(request.getResourceKey());
         Permission permission = resource.fetchPermissionById(principal);
         if (null == permission) {
-            permission = resource.addPermission(principal, request.getActions());
+            permission = resource.assignPermission(principal, request.getActions());
         } else {
             permission.setActions(request.getActions());
-            resource.updatePermission(permission);
+            resource.changePermission(permission);
         }
         application.updateResource(resource);
         storeApplication(application);
@@ -996,7 +996,7 @@ public class SAAMServer implements SAAM {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         Principal principal = getEnsuredPrincipal(application, request.getPrincipalId());
         Resource resource = getEnsuredResource(application, request.getResourceKey());
-        PermissionType result = resource.checkPermission(principal, request.getActionCode());
+        PermissionType result = resource.verifyPermission(principal, request.getActionCode());
         return responseMapper.toResponse(principal, resource, request.getActionCode(), result);
     }
 }

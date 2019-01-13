@@ -25,9 +25,9 @@ public interface Resource {
 
     /**Permission**/
 
-    Permission addPermission(Principal principal, List<Action> actions);
+    Permission assignPermission(Principal principal, List<Action> actions);
 
-    void updatePermission(Permission permission);
+    void changePermission(Permission permission);
 
     void removePermission(Permission permission);
 
@@ -35,6 +35,6 @@ public interface Resource {
 
     PaginatedResult<List<Permission>> fetchAllPermissions();
 
-    PermissionType checkPermission(Principal principal, String actionCode);
+    PermissionType verifyPermission(Principal principal, String actionCode);
 
 }

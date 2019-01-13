@@ -2,7 +2,7 @@ package com.codingzero.saam.infrastructure.database.mysql;
 
 import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.infrastructure.database.spi.APIKeyAccessTest;
-import com.codingzero.saam.infrastructure.database.spi.APIKeyAccess;
+import com.codingzero.saam.infrastructure.database.APIKeyAccess;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
