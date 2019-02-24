@@ -55,7 +55,7 @@ public abstract class IdentifierAccessTest {
         IdentifierOS os = createObjectSegment();
         access.insert(os);
         boolean isDuplicate = access.isDuplicateContent(
-                os.getApplicationId(), os.getIdentifierType(), getIdentifierContent());
+                os.getApplicationId(), getIdentifierContent());
         assertFalse(isDuplicate);
     }
 
@@ -64,7 +64,7 @@ public abstract class IdentifierAccessTest {
         IdentifierOS os = createObjectSegment();
         access.insert(os);
         boolean isDuplicate = access.isDuplicateContent(
-                os.getApplicationId(), os.getIdentifierType(), os.getContent());
+                os.getApplicationId(), os.getContent());
         assertTrue(isDuplicate);
     }
 
@@ -72,8 +72,8 @@ public abstract class IdentifierAccessTest {
     public void testInsert() {
         IdentifierOS os = createObjectSegment();
         access.insert(os);
-        IdentifierOS actualOS = access.selectByTypeAndContent(
-                os.getApplicationId(), os.getIdentifierType(), os.getContent());
+        IdentifierOS actualOS = access.selectByKey(
+                os.getApplicationId());
         assertOS(os, actualOS);
     }
 
@@ -95,8 +95,8 @@ public abstract class IdentifierAccessTest {
         access.insert(os);
         manager.commit();
 
-        IdentifierOS actualOS = access.selectByTypeAndContent(
-                os.getApplicationId(), os.getIdentifierType(), os.getContent());
+        IdentifierOS actualOS = access.selectByKey(
+                os.getApplicationId());
         assertOS(os, actualOS);
     }
 
@@ -110,8 +110,8 @@ public abstract class IdentifierAccessTest {
         access.insert(os);
         manager.rollback();
 
-        IdentifierOS actualOS = access.selectByTypeAndContent(
-                os.getApplicationId(), os.getIdentifierType(), os.getContent());
+        IdentifierOS actualOS = access.selectByKey(
+                os.getApplicationId());
         assertEquals(null, actualOS);
     }
 
@@ -127,8 +127,8 @@ public abstract class IdentifierAccessTest {
         os.setVerified(true);
         access.update(os);
 
-        IdentifierOS actualOS = access.selectByTypeAndContent(
-                os.getApplicationId(), os.getIdentifierType(), os.getContent());
+        IdentifierOS actualOS = access.selectByKey(
+                os.getApplicationId());
         assertOS(os, actualOS);
     }
 
@@ -150,8 +150,8 @@ public abstract class IdentifierAccessTest {
         access.update(os);
         manager.commit();
 
-        IdentifierOS actualOS = access.selectByTypeAndContent(
-                os.getApplicationId(), os.getIdentifierType(), os.getContent());
+        IdentifierOS actualOS = access.selectByKey(
+                os.getApplicationId());
         assertOS(os, actualOS);
     }
 
@@ -163,8 +163,8 @@ public abstract class IdentifierAccessTest {
         IdentifierOS os = createObjectSegment();
         access.insert(os);
 
-        IdentifierOS originalOS = access.selectByTypeAndContent(
-                os.getApplicationId(), os.getIdentifierType(), os.getContent());
+        IdentifierOS originalOS = access.selectByKey(
+                os.getApplicationId());
 
         os.setVerificationCode(
                 new IdentifierVerificationCode(
@@ -176,8 +176,8 @@ public abstract class IdentifierAccessTest {
         access.update(os);
         manager.rollback();
 
-        IdentifierOS actualOS = access.selectByTypeAndContent(
-                os.getApplicationId(), os.getIdentifierType(), os.getContent());
+        IdentifierOS actualOS = access.selectByKey(
+                os.getApplicationId());
         assertOS(originalOS, actualOS);
     }
 
@@ -186,8 +186,8 @@ public abstract class IdentifierAccessTest {
         IdentifierOS os = createObjectSegment();
         access.insert(os);
         access.delete(os);
-        IdentifierOS actualOS = access.selectByTypeAndContent(
-                os.getApplicationId(), os.getIdentifierType(), os.getContent());
+        IdentifierOS actualOS = access.selectByKey(
+                os.getApplicationId());
         assertNull(actualOS);
     }
 
@@ -203,8 +203,8 @@ public abstract class IdentifierAccessTest {
         access.delete(os);
         manager.commit();
 
-        IdentifierOS actualOS = access.selectByTypeAndContent(
-                os.getApplicationId(), os.getIdentifierType(), os.getContent());
+        IdentifierOS actualOS = access.selectByKey(
+                os.getApplicationId());
         assertNull(actualOS);
     }
 
@@ -220,8 +220,8 @@ public abstract class IdentifierAccessTest {
         access.delete(os);
         manager.rollback();
 
-        IdentifierOS actualOS = access.selectByTypeAndContent(
-                os.getApplicationId(), os.getIdentifierType(), os.getContent());
+        IdentifierOS actualOS = access.selectByKey(
+                os.getApplicationId());
         assertOS(os, actualOS);
     }
 
@@ -241,14 +241,14 @@ public abstract class IdentifierAccessTest {
         access.deleteByType(applicationId, IdentifierType.USERNAME);
 
         for (IdentifierOS os: userNames) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertNull(actualOS);
         }
 
         for (IdentifierOS os: emails) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertOS(os, actualOS);
         }
     }
@@ -274,14 +274,14 @@ public abstract class IdentifierAccessTest {
         manager.commit();
 
         for (IdentifierOS os: userNames) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertNull(actualOS);
         }
 
         for (IdentifierOS os: emails) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertOS(os, actualOS);
         }
     }
@@ -307,14 +307,14 @@ public abstract class IdentifierAccessTest {
         manager.rollback();
 
         for (IdentifierOS os: userNames) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertOS(os, actualOS);
         }
 
         for (IdentifierOS os: emails) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertOS(os, actualOS);
         }
     }
@@ -337,14 +337,14 @@ public abstract class IdentifierAccessTest {
         access.deleteByTypeAndUserId(applicationId, IdentifierType.USERNAME, userId1);
 
         for (IdentifierOS os: userNames1) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertNull(actualOS);
         }
 
         for (IdentifierOS os: userNames2) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertOS(os, actualOS);
         }
     }
@@ -372,14 +372,14 @@ public abstract class IdentifierAccessTest {
         manager.commit();
 
         for (IdentifierOS os: userNames1) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertNull(actualOS);
         }
 
         for (IdentifierOS os: userNames2) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertOS(os, actualOS);
         }
     }
@@ -407,14 +407,14 @@ public abstract class IdentifierAccessTest {
         manager.rollback();
 
         for (IdentifierOS os: userNames1) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertOS(os, actualOS);
         }
 
         for (IdentifierOS os: userNames2) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertOS(os, actualOS);
         }
     }
@@ -437,14 +437,14 @@ public abstract class IdentifierAccessTest {
         access.deleteByApplicationId(applicationId);
 
         for (IdentifierOS os: userNames) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertNull(actualOS);
         }
 
         for (IdentifierOS os: emails) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertNull(actualOS);
         }
     }
@@ -472,14 +472,14 @@ public abstract class IdentifierAccessTest {
         manager.commit();
 
         for (IdentifierOS os: userNames) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertNull(actualOS);
         }
 
         for (IdentifierOS os: emails) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertNull(actualOS);
         }
     }
@@ -507,14 +507,14 @@ public abstract class IdentifierAccessTest {
         manager.rollback();
 
         for (IdentifierOS os: userNames) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertOS(os, actualOS);
         }
 
         for (IdentifierOS os: emails) {
-            IdentifierOS actualOS = access.selectByTypeAndContent(
-                    os.getApplicationId(), os.getIdentifierType(), os.getContent());
+            IdentifierOS actualOS = access.selectByKey(
+                    os.getApplicationId());
             assertOS(os, actualOS);
         }
     }
@@ -634,7 +634,7 @@ public abstract class IdentifierAccessTest {
     private IdentifierOS createObjectSegment(String applicationId, String userId,
                                              IdentifierType type, String content) {
         IdentifierOS os = new IdentifierOS(
-                id, userId,
+                id, type, userId,
                 true,
                 null,
                 new Date(),

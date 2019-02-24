@@ -256,9 +256,9 @@ public class PermissionAccessImpl extends AbstractAccess implements PermissionAc
             StringBuilder sql = new StringBuilder();
             sql.append(String.format("SELECT * FROM %s WHERE application_id=? AND principal_id=? ",
                     TABLE));
-            sql.append(MySQLHelper.buildSortingQuery(request.getSorting()));
+            sql.append(MySQLQueryHelper.buildSortingQuery(request.getSorting()));
             sql.append(" ");
-            sql.append(MySQLHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
+            sql.append(MySQLQueryHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
             stmt = conn.prepareCall(sql.toString());
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
             stmt.setBytes(2, Key.fromHexString(principalId).getKey());
@@ -285,9 +285,9 @@ public class PermissionAccessImpl extends AbstractAccess implements PermissionAc
             StringBuilder sql = new StringBuilder();
             sql.append(String.format("SELECT * FROM %s WHERE application_id=? AND resource_key_hash=? ",
                     TABLE));
-            sql.append(MySQLHelper.buildSortingQuery(request.getSorting()));
+            sql.append(MySQLQueryHelper.buildSortingQuery(request.getSorting()));
             sql.append(" ");
-            sql.append(MySQLHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
+            sql.append(MySQLQueryHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
             stmt = conn.prepareCall(sql.toString());
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
             stmt.setBytes(2, Key.fromHexString(resourceKeyHash).getKey());

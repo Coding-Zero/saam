@@ -4,7 +4,6 @@ import com.codingzero.saam.common.IdentifierType;
 
 import java.util.Date;
 
-
 public class IdentifierPolicyOS {
 
     private String applicationId;

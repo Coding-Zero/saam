@@ -1,5 +1,6 @@
 package com.codingzero.saam.domain.identifier;
 
+import com.codingzero.saam.common.IdentifierKey;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.Identifier;
@@ -56,8 +57,8 @@ public class IdentifierRepositoryService implements IdentifierRepository {
     }
 
     @Override
-    public Identifier findById(Application application, IdentifierType type, String content) {
-        IdentifierOS os = access.selectByTypeAndContent(application.getId(), type, content);
+    public Identifier findByKey(Application application, String content) {
+        IdentifierOS os = access.selectByKey(new IdentifierKey(application.getId(), content));
         return factory.reconstitute(os, null, null);
     }
 

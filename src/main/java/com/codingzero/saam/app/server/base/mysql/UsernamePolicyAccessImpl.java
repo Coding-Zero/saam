@@ -26,17 +26,6 @@ public class UsernamePolicyAccessImpl extends AbstractAccess implements Username
     @Override
     public void insert(UsernamePolicyOS os) {
         Connection conn = getConnection();
-        try {
-            insertUsernamePolicyOS(os, conn);
-            IdentifierPolicyOSHelper.insert(os, conn);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            closeConnection(conn);
-        }
-    }
-
-    private void insertUsernamePolicyOS(UsernamePolicyOS os, Connection conn) throws SQLException {
         PreparedStatement stmt = null;
         try {
             String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
@@ -47,21 +36,16 @@ public class UsernamePolicyAccessImpl extends AbstractAccess implements Username
             stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
             stmt.setString(2, os.getFormat().name());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         } finally {
             closePreparedStatement(stmt);
+            closeConnection(conn);
         }
     }
 
     @Override
     public void update(UsernamePolicyOS os) {
-        Connection conn = getConnection();
-        try {
-            IdentifierPolicyOSHelper.update(os, conn);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            closeConnection(conn);
-        }
     }
 
     @Override
@@ -74,17 +58,10 @@ public class UsernamePolicyAccessImpl extends AbstractAccess implements Username
         Connection conn = getConnection();
         PreparedStatement stmt=null;
         try {
-            String sql = String.format("DELETE up, ip FROM %S up"
-                            + " LEFT JOIN %S ip"
-                            + " ON ip.application_id = up.application_id AND ip.type = ?"
-                            + " WHERE up.application_id=?;",
-                    TABLE,
-                    IdentifierPolicyAccessImpl.TABLE);
-//            String sql = String.format("DELETE FROM %s WHERE application_id=?;",
-//                    TABLE);
+            String sql = String.format("DELETE FROM %s WHERE application_id=?;",
+                    TABLE);
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, IdentifierType.USERNAME.name());
-            stmt.setBytes(2, Key.fromHexString(id).getKey());
+            stmt.setBytes(1, Key.fromHexString(id).getKey());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

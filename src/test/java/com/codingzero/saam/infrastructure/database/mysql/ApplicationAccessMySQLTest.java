@@ -19,6 +19,6 @@ public class ApplicationAccessMySQLTest extends ApplicationAccessTest {
 
     @Override
     protected ApplicationAccess getAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getApplicationAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getApplicationAccess();
     }
 }

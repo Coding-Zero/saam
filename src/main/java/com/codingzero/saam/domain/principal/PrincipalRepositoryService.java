@@ -32,6 +32,11 @@ public class PrincipalRepositoryService implements PrincipalRepository {
 
     public void store(Principal principal) {
         PrincipalEntity entity = (PrincipalEntity) principal;
+        if (entity.isNew()) {
+            access.insert((PrincipalOS) entity.getObjectSegment());
+        } else if (entity.isDirty()) {
+            access.update((PrincipalOS) entity.getObjectSegment());
+        }
         if (entity.getType() == PrincipalType.USER) {
             userRepository.store((UserEntity) entity);
         } else if (entity.getType() == PrincipalType.ROLE) {
@@ -44,6 +49,7 @@ public class PrincipalRepositoryService implements PrincipalRepository {
     }
 
     public void remove(PrincipalEntity entity) {
+        access.delete((PrincipalOS) entity.getObjectSegment());
         if (entity.getType() == PrincipalType.USER) {
             userRepository.remove((UserEntity) entity);
         } else if (entity.getType() == PrincipalType.ROLE) {

@@ -128,7 +128,7 @@ public interface SAAM {
 
     APIKeyResponse updateAPIKey(APIKeyUpdateRequest request);
 
-    void verifyAPIKey(APIKeyVerifyRequest request);
+    APIKeyResponse verifyAPIKey(APIKeyVerifyRequest request);
 
     void removeAPIKeyById(String applicationId, String id);
 

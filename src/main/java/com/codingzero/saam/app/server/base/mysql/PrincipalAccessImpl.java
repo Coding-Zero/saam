@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,76 @@ public class PrincipalAccessImpl extends AbstractAccess implements PrincipalAcce
     @Override
     public String generateId(String applicationId, PrincipalType type) {
         return RandomKey.nextTimeBasedUUIDKey().toHexString();
+    }
+
+    @Override
+    public void insert(PrincipalOS os) {
+        Connection conn = getConnection();
+        PreparedStatement stmt = null;
+        try {
+            String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
+                    PrincipalAccessImpl.TABLE,
+                    "application_id, id, type, creation_time",
+                    "?, ?, ?, ?");
+            stmt = conn.prepareStatement(sql);
+            stmt.setBytes(1, Key.fromHexString(os.getId().getApplicationId()).getKey());
+            stmt.setBytes(2, Key.fromHexString(os.getId().getId()).getKey());
+            stmt.setString(3, os.getType().name());
+            stmt.setTimestamp(4, new Timestamp(os.getCreationTime().getTime()));
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closePreparedStatement(stmt);
+            closeConnection(conn);
+        }
+    }
+
+    @Override
+    public void update(PrincipalOS os) {
+
+    }
+
+    @Override
+    public void delete(PrincipalOS os) {
+        Connection conn = getConnection();
+        PreparedStatement stmt=null;
+        try {
+            String sql = String.format("DELETE FROM %s WHERE application_id=? AND id=? LIMIT 1;",
+                    TABLE);
+            stmt = conn.prepareStatement(sql);
+            stmt.setBytes(1, Key.fromHexString(os.getId().getApplicationId()).getKey());
+            stmt.setBytes(2, Key.fromHexString(os.getId().getId()).getKey());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closePreparedStatement(stmt);
+            closeConnection(conn);
+        }
+    }
+
+    @Override
+    public void deleteByApplicationId(String id) {
+        Connection conn = getConnection();
+        PreparedStatement stmt=null;
+        try {
+            String sql = String.format("DELETE FROM %s"
+                            + " WHERE application_id=? LIMIT 1000;",
+                    TABLE,
+                    PrincipalAccessImpl.TABLE);
+            stmt = conn.prepareStatement(sql);
+            stmt.setBytes(1, Key.fromHexString(id).getKey());
+            int deletedRows = stmt.executeUpdate();
+            while (deletedRows > 0) {
+                deletedRows = stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closePreparedStatement(stmt);
+            closeConnection(conn);
+        }
     }
 
     @Override
@@ -83,9 +154,9 @@ public class PrincipalAccessImpl extends AbstractAccess implements PrincipalAcce
             sql.append(String.format("SELECT * FROM %s WHERE "
                             + " application_id=? AND type=? ",
                     TABLE));
-            sql.append(MySQLHelper.buildSortingQuery(request.getSorting()));
+            sql.append(MySQLQueryHelper.buildSortingQuery(request.getSorting()));
             sql.append(" ");
-            sql.append(MySQLHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
+            sql.append(MySQLQueryHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
             stmt = conn.prepareCall(sql.toString());
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
             stmt.setString(2, type.name());
@@ -110,9 +181,9 @@ public class PrincipalAccessImpl extends AbstractAccess implements PrincipalAcce
                             + " application_id=? ",
                     TABLE);
             StringBuilder sql = new StringBuilder(baseSQL);
-            sql.append(MySQLHelper.buildSortingQuery(request.getSorting()));
+            sql.append(MySQLQueryHelper.buildSortingQuery(request.getSorting()));
             sql.append(" ");
-            sql.append(MySQLHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
+            sql.append(MySQLQueryHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
             sql.append(";");
             stmt = conn.prepareCall(sql.toString());
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());

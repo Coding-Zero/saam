@@ -49,12 +49,11 @@ public class APIKeyFactoryServiceTest {
         User user = mock(User.class);
         when(principalAccess.generateId(applicationId, PrincipalType.API_KEY)).thenReturn(principalId);
         when(access.generateSecretKey()).thenReturn(key);
-        APIKeyEntity entity = service.generate(application, user, name);
+        APIKey entity = service.generate(application, user, name);
         assertEquals(application, entity.getApplication());
         assertEquals(principalId, entity.getId());
         assertEquals(key, entity.getSecretKey());
         assertEquals(user, entity.getOwner());
-        assertEquals(true, entity.isNew());
     }
 
     @Test

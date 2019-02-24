@@ -19,12 +19,12 @@ public class OAuthIdentifierPolicyAccessMySQLTest extends OAuthIdentifierPolicyA
 
     @Override
     protected OAuthIdentifierPolicyAccess getAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getOAuthIdentifierPolicyAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getOAuthIdentifierPolicyAccess();
     }
 
     @Override
     protected String getApplicationId() {
-        return Helper.sharedInstance().getMySQLAccessModule().getApplicationAccess().generateId();
+        return Helper.sharedInstance().getMySQLAccessHelper().getApplicationAccess().generateId();
     }
 
 }

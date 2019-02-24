@@ -37,7 +37,7 @@ public class UserRepositoryServiceTest {
         service = new UserRepositoryService(
                 access,
                 principalAccess,
-                identifierAccess, oAuthIdentifierAccess, userSessionAccess, factory, applicationStatusVerifier);
+                identifierAccess, oAuthIdentifierAccess, factory, applicationStatusVerifier);
     }
 
     @Test

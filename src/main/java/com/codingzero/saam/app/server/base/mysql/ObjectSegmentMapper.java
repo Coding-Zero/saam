@@ -2,11 +2,14 @@ package com.codingzero.saam.app.server.base.mysql;
 
 import com.codingzero.saam.common.Action;
 import com.codingzero.saam.common.ApplicationStatus;
+import com.codingzero.saam.common.IdentifierKey;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.IdentifierVerificationCode;
+import com.codingzero.saam.common.OAuthIdentifierKey;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.common.PasswordPolicy;
 import com.codingzero.saam.common.PasswordResetCode;
+import com.codingzero.saam.common.PrincipalId;
 import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.common.UsernameFormat;
 import com.codingzero.saam.common.mixin.ActionModel;
@@ -77,8 +80,9 @@ public class ObjectSegmentMapper {
 
     public PrincipalOS toPrincipalOS(ResultSet rs) throws SQLException, IOException {
         return new PrincipalOS (
-                Key.fromBytes(rs.getBytes("application_id")).toHexString(),
-                Key.fromBytes(rs.getBytes("id")).toHexString(),
+                new PrincipalId(
+                        Key.fromBytes(rs.getBytes("application_id")).toHexString(),
+                        Key.fromBytes(rs.getBytes("id")).toHexString()),
                 PrincipalType.valueOf(rs.getString("type")),
                 new Date(rs.getTimestamp("creation_time").getTime())
         );
@@ -90,8 +94,9 @@ public class ObjectSegmentMapper {
         List<String> roleIds = objectMapper.readValue(
                 rs.getString("role_ids"), new TypeReference<List<String>>() {});
         return new UserOS(
-                Key.fromBytes(rs.getBytes("application_id")).toHexString(),
-                Key.fromBytes(rs.getBytes("id")).toHexString(),
+                new PrincipalId(
+                        Key.fromBytes(rs.getBytes("application_id")).toHexString(),
+                        Key.fromBytes(rs.getBytes("id")).toHexString()),
                 new Date(rs.getTimestamp("creation_time").getTime()),
                 rs.getString("password"),
                 passwordResetCode,
@@ -105,7 +110,6 @@ public class ObjectSegmentMapper {
         List<String> roleIds = objectMapper.readValue(
                 rs.getString("role_ids"), new TypeReference<List<String>>() {});
         return new UserOS(
-                principalOS.getApplicationId(),
                 principalOS.getId(),
                 principalOS.getCreationTime(),
                 rs.getString("password"),
@@ -116,8 +120,9 @@ public class ObjectSegmentMapper {
 
     public RoleOS toRoleOS(ResultSet rs) throws SQLException, IOException {
         return new RoleOS(
-                Key.fromBytes(rs.getBytes("application_id")).toHexString(),
-                Key.fromBytes(rs.getBytes("id")).toHexString(),
+                new PrincipalId(
+                        Key.fromBytes(rs.getBytes("application_id")).toHexString(),
+                        Key.fromBytes(rs.getBytes("id")).toHexString()),
                 new Date(rs.getTimestamp("creation_time").getTime()),
                 rs.getString("name")
         );
@@ -125,7 +130,6 @@ public class ObjectSegmentMapper {
 
     public RoleOS toRoleOS(PrincipalOS principalOS, ResultSet rs) throws SQLException, IOException {
         return new RoleOS(
-                principalOS.getApplicationId(),
                 principalOS.getId(),
                 principalOS.getCreationTime(),
                 rs.getString("name")
@@ -134,8 +138,9 @@ public class ObjectSegmentMapper {
 
     public APIKeyOS toAPIKeyOS(ResultSet rs) throws SQLException, IOException {
         return new APIKeyOS(
-                Key.fromBytes(rs.getBytes("application_id")).toHexString(),
-                Key.fromBytes(rs.getBytes("id")).toHexString(),
+                new PrincipalId(
+                        Key.fromBytes(rs.getBytes("application_id")).toHexString(),
+                        Key.fromBytes(rs.getBytes("id")).toHexString()),
                 new Date(rs.getTimestamp("creation_time").getTime()),
                 rs.getString("secret_key"),
                 rs.getString("name"),
@@ -146,7 +151,6 @@ public class ObjectSegmentMapper {
 
     public APIKeyOS toAPIKeyOS(PrincipalOS principalOS, ResultSet rs) throws SQLException, IOException {
         return new APIKeyOS(
-                principalOS.getApplicationId(),
                 principalOS.getId(),
                 principalOS.getCreationTime(),
                 rs.getString("secret_key"),
@@ -160,6 +164,7 @@ public class ObjectSegmentMapper {
         return new ResourceOS(
                 Key.fromBytes(rs.getBytes("application_id")).toHexString(),
                 rs.getString("key"),
+                rs.getString(Key.fromBytes(rs.getBytes("parent_key_hash")).toHexString()),
                 Key.fromBytes(rs.getBytes("principal_id")).toHexString(),
                 new Date(rs.getTimestamp("creation_time").getTime())
         );
@@ -236,7 +241,12 @@ public class ObjectSegmentMapper {
         IdentifierVerificationCode verificationCode = objectMapper.readValue(
                 rs.getString("verification_code"), IdentifierVerificationCode.class);
         return new IdentifierOS(
-                id, Key.fromBytes(rs.getBytes("user_id")).toHexString(),
+                new IdentifierKey(
+                        Key.fromBytes(rs.getBytes("application_id")).toHexString(),
+                        rs.getString("content")
+                ),
+                IdentifierType.valueOf(rs.getString("identifier_type")),
+                Key.fromBytes(rs.getBytes("user_id")).toHexString(),
                 rs.getBoolean("is_verified"),
                 verificationCode,
                 new Date(rs.getTimestamp("creation_time").getTime()),
@@ -283,7 +293,12 @@ public class ObjectSegmentMapper {
         Map<String, Object> properties = objectMapper.readValue(
                 rs.getString("properties"), new TypeReference<Map<String, Object>>() {});
         return new OAuthIdentifierOS(
-                key, Key.fromBytes(rs.getBytes("user_id")).toHexString(),
+                new OAuthIdentifierKey(
+                        Key.fromBytes(rs.getBytes("application_id")).toHexString(),
+                        OAuthPlatform.valueOf(rs.getString("platform")),
+                        rs.getString("content")
+                ),
+                Key.fromBytes(rs.getBytes("user_id")).toHexString(),
                 properties,
                 new Date(rs.getTimestamp("creation_time").getTime()),
                 new Date(rs.getTimestamp("update_time").getTime())

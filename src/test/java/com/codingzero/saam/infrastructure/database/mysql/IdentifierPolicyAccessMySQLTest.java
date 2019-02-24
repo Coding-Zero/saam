@@ -21,22 +21,22 @@ public class IdentifierPolicyAccessMySQLTest extends IdentifierPolicyAccessTest 
 
     @Override
     protected IdentifierPolicyAccess getAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getIdentifierPolicyAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getIdentifierPolicyAccess();
     }
 
     @Override
     protected UsernamePolicyAccess getUsernamePolicyAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getUsernamePolicyAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getUsernamePolicyAccess();
     }
 
     @Override
     protected EmailPolicyAccess getEmailPolicyAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getEmailPolicyAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getEmailPolicyAccess();
     }
 
     @Override
     protected String getApplicationId() {
-        return Helper.sharedInstance().getMySQLAccessModule().getApplicationAccess().generateId();
+        return Helper.sharedInstance().getMySQLAccessHelper().getApplicationAccess().generateId();
     }
 
 }

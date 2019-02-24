@@ -27,7 +27,8 @@ public class UserFactoryService implements UserFactory {
 
     public UserFactoryService(PrincipalAccess principalAccess,
                               RoleRepositoryService roleRepository,
-                              PasswordHelper passwordHelper, ApplicationStatusVerifier applicationStatusVerifier) {
+                              PasswordHelper passwordHelper,
+                              ApplicationStatusVerifier applicationStatusVerifier) {
         this.principalAccess = principalAccess;
         this.roleRepository = roleRepository;
         this.passwordHelper = passwordHelper;

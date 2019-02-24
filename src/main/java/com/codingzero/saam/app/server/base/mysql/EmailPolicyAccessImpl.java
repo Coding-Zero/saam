@@ -55,17 +55,6 @@ public class EmailPolicyAccessImpl extends AbstractAccess implements EmailPolicy
     @Override
     public void update(EmailPolicyOS os) {
         Connection conn = getConnection();
-        try {
-            updateEmailPolicyOS(os, conn);
-            IdentifierPolicyOSHelper.update(os, conn);
-        } catch (SQLException | JsonProcessingException e) {
-            throw new RuntimeException(e);
-        } finally {
-            closeConnection(conn);
-        }
-    }
-
-    private void updateEmailPolicyOS(EmailPolicyOS os, Connection conn) throws SQLException, JsonProcessingException {
         PreparedStatement stmt = null;
         try {
             String sql = String.format("UPDATE %s SET domains=? "
@@ -75,8 +64,11 @@ public class EmailPolicyAccessImpl extends AbstractAccess implements EmailPolicy
             stmt.setString(1, getObjectSegmentMapper().toJson(os.getDomains()));
             stmt.setBytes(2, Key.fromHexString(os.getApplicationId()).getKey());
             stmt.executeUpdate();
+        } catch (SQLException | JsonProcessingException e) {
+            throw new RuntimeException(e);
         } finally {
             closePreparedStatement(stmt);
+            closeConnection(conn);
         }
     }
 
@@ -90,15 +82,10 @@ public class EmailPolicyAccessImpl extends AbstractAccess implements EmailPolicy
         Connection conn = getConnection();
         PreparedStatement stmt=null;
         try {
-            String sql = String.format("DELETE ep, ip FROM %S ep"
-                            + " LEFT JOIN %S ip"
-                            + " ON ip.application_id = ep.application_id AND ip.type = ?"
-                            + " WHERE ep.application_id=?;",
-                    TABLE,
-                    IdentifierPolicyAccessImpl.TABLE);
+            String sql = String.format("DELETE FROM %s WHERE application_id=?;",
+                    TABLE);
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, IdentifierType.EMAIL.name());
-            stmt.setBytes(2, Key.fromHexString(id).getKey());
+            stmt.setBytes(1, Key.fromHexString(id).getKey());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

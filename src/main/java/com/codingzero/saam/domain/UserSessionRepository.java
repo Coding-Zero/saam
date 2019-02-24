@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UserSessionRepository {
 
-    void store(UserSession session);
+    UserSession store(UserSession session);
 
     void remove(UserSession entity);
 

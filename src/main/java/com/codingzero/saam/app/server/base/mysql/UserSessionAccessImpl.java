@@ -1,7 +1,7 @@
 package com.codingzero.saam.app.server.base.mysql;
 
-import com.codingzero.saam.infrastructure.database.UserSessionOS;
 import com.codingzero.saam.infrastructure.database.UserSessionAccess;
+import com.codingzero.saam.infrastructure.database.UserSessionOS;
 import com.codingzero.utilities.key.HMACKey;
 import com.codingzero.utilities.key.Key;
 import com.codingzero.utilities.key.RandomKey;
@@ -35,6 +35,32 @@ public class UserSessionAccessImpl extends AbstractAccess implements UserSession
         return RandomKey.nextUUIDKey()
                 .toRandomHMACKey(HMACKey.Algorithm.SHA256)
                 .toBase64String(true);
+    }
+
+    @Override
+    public int countByUserId(String applicationId, String userId) {
+        Connection conn = getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            String sql = String.format(
+                    "SELECT COUNT(*) FROM %s WHERE "
+                            + "application_id=? AND user_id=? LIMIT 1;",
+                    TABLE);
+            stmt = conn.prepareCall(sql);
+
+            stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
+            stmt.setBytes(2, Key.fromHexString(userId).getKey());
+            rs = stmt.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closeResultSet(rs);
+            closePreparedStatement(stmt);
+            closeConnection(conn);
+        }
     }
 
     @Override
@@ -170,9 +196,9 @@ public class UserSessionAccessImpl extends AbstractAccess implements UserSession
             StringBuilder sql = new StringBuilder();
             sql.append(String.format("SELECT * FROM %s WHERE application_id=? AND user_id=? ",
                     TABLE));
-            sql.append(MySQLHelper.buildSortingQuery(request.getSorting()));
+            sql.append(MySQLQueryHelper.buildSortingQuery(request.getSorting()));
             sql.append(" ");
-            sql.append(MySQLHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
+            sql.append(MySQLQueryHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
             stmt = conn.prepareCall(sql.toString());
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
             stmt.setBytes(2, Key.fromHexString(userId).getKey());

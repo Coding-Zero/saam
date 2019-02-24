@@ -1,5 +1,6 @@
 package com.codingzero.saam.app.server.base.mysql;
 
+import com.codingzero.saam.common.IdentifierKey;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.infrastructure.database.IdentifierOS;
 import com.codingzero.saam.infrastructure.database.IdentifierAccess;
@@ -31,7 +32,7 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
 
 
     @Override
-    public boolean isDuplicateContent(String applicationId, IdentifierType type, String content) {
+    public boolean isDuplicateContent(String applicationId, String content) {
         String contentHash = hash(content);
         Connection conn = getConnection();
         PreparedStatement stmt = null;
@@ -39,12 +40,11 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
         try {
             String sql = String.format(
                     "SELECT COUNT(*) FROM %s WHERE "
-                            + "application_id=? AND identifier_type=? AND content_hash=? LIMIT 1;",
+                            + "application_id=? AND content_hash=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareCall(sql);
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, type.name());
-            stmt.setBytes(3, Key.fromHexString(contentHash).getKey());
+            stmt.setBytes(2, Key.fromHexString(contentHash).getKey());
             rs = stmt.executeQuery();
             rs.next();
             return rs.getInt(1) > 0;
@@ -57,6 +57,16 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
         }
     }
 
+    @Override
+    public int countByUserId(String applicationId, String userId) {
+        return 0;
+    }
+
+    @Override
+    public int countByType(String applicationId, IdentifierType type) {
+        return 0;
+    }
+
     private String hash(String key) {
         return Key.fromString(key.toLowerCase())
                 .toHMACKey(HMACKey.Algorithm.SHA256)
@@ -65,7 +75,7 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
 
     @Override
     public void insert(IdentifierOS os) {
-        String contentHash = hash(os.getContent());
+        String contentHash = hash(os.getKey().getContent());
         Connection conn = getConnection();
         PreparedStatement stmt = null;
         try {
@@ -75,10 +85,10 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
                             + " is_verified, verification_code, creation_time, update_time ",
                     "?, ?, ?, ?, ?, ?, ?, ?, ?");
             stmt = conn.prepareStatement(sql);
-            stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(2, os.getIdentifierType().name());
+            stmt.setBytes(1, Key.fromHexString(os.getKey().getApplicationId()).getKey());
+            stmt.setString(2, os.getType().name());
             stmt.setBytes(3, Key.fromHexString(contentHash).getKey());
-            stmt.setString(4, os.getContent());
+            stmt.setString(4, os.getKey().getContent());
             stmt.setBytes(5, Key.fromHexString(os.getUserId()).getKey());
             stmt.setBoolean(6, os.isVerified());
             stmt.setString(7, getObjectSegmentMapper().toJson(os.getVerificationCode()));
@@ -95,7 +105,7 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
 
     @Override
     public void update(IdentifierOS os) {
-        String contentHash = hash(os.getContent());
+        String contentHash = hash(os.getKey().getContent());
         Connection conn = getConnection();
         PreparedStatement stmt = null;
         try {
@@ -106,8 +116,8 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
             stmt.setBoolean(1, os.isVerified());
             stmt.setString(2, getObjectSegmentMapper().toJson(os.getVerificationCode()));
             stmt.setTimestamp(3, new Timestamp(os.getUpdateTime().getTime()));
-            stmt.setBytes(4, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(5, os.getIdentifierType().name());
+            stmt.setBytes(4, Key.fromHexString(os.getKey().getApplicationId()).getKey());
+            stmt.setString(5, os.getType().name());
             stmt.setBytes(6, Key.fromHexString(contentHash).getKey());
             stmt.executeUpdate();
         } catch (SQLException | JsonProcessingException e) {
@@ -120,7 +130,7 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
 
     @Override
     public void delete(IdentifierOS os) {
-        String contentHash = hash(os.getContent());
+        String contentHash = hash(os.getKey().getContent());
         Connection conn = getConnection();
         PreparedStatement stmt=null;
         try {
@@ -128,8 +138,8 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
                             + "application_id=? AND identifier_type=? AND content_hash=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareStatement(sql);
-            stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setString(2, os.getIdentifierType().name());
+            stmt.setBytes(1, Key.fromHexString(os.getKey().getApplicationId()).getKey());
+            stmt.setString(2, os.getType().name());
             stmt.setBytes(3, Key.fromHexString(contentHash).getKey());
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -150,6 +160,29 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
             stmt.setString(2, type.name());
+
+            int deletedRows = stmt.executeUpdate();
+            while (deletedRows > 0) {
+                deletedRows = stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closePreparedStatement(stmt);
+            closeConnection(conn);
+        }
+    }
+
+    @Override
+    public void deleteByUserId(String applicationId, String userId) {
+        Connection conn = getConnection();
+        PreparedStatement stmt=null;
+        try {
+            String sql = String.format("DELETE FROM %s WHERE application_id=? AND user_id=? LIMIT 10000;",
+                    TABLE);
+            stmt = conn.prepareStatement(sql);
+            stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
+            stmt.setBytes(2, Key.fromHexString(userId).getKey());
 
             int deletedRows = stmt.executeUpdate();
             while (deletedRows > 0) {
@@ -206,18 +239,17 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
     }
 
     @Override
-    public IdentifierOS selectByTypeAndContent(String applicationId, IdentifierType type, String content) {
-        String contentHash = hash(content);
+    public IdentifierOS selectByKey(IdentifierKey key) {
+        String contentHash = hash(key.getContent());
         Connection conn = getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             String sql = String.format("SELECT * FROM %s WHERE"
-                            + " application_id=? AND identifier_type=? AND content_hash=? LIMIT 1;",
+                            + " application_id=? AND content_hash=? LIMIT 1;",
                     TABLE);
             stmt = conn.prepareCall(sql);
-            stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, type.name());
+            stmt.setBytes(1, Key.fromHexString(key.getApplicationId()).getKey());
             stmt.setBytes(3, Key.fromHexString(contentHash).getKey());
             rs = stmt.executeQuery();
             if (!rs.next()) {
@@ -235,18 +267,17 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
     }
 
     @Override
-    public List<IdentifierOS> selectByTypeAndUserId(String applicationId, IdentifierType type, String userId) {
+    public List<IdentifierOS> selectByUserId(String applicationId, String userId) {
         Connection conn = getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             String sql = String.format("SELECT * FROM %s WHERE "
-                            + " application_id=? AND identifier_type=? AND user_id=? ",
+                            + " application_id=? AND user_id=? ",
                     TABLE);
-            stmt = conn.prepareCall(sql.toString());
+            stmt = conn.prepareCall(sql);
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
-            stmt.setString(2, type.name());
-            stmt.setBytes(3, Key.fromHexString(userId).getKey());
+            stmt.setBytes(2, Key.fromHexString(userId).getKey());
             rs = stmt.executeQuery();
             return toOSList(rs, 5);
         } catch (SQLException | IOException e) {
@@ -260,10 +291,15 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
 
     @Override
     public PaginatedResult<List<IdentifierOS>> selectByType(String applicationId, IdentifierType type) {
-        return new PaginatedResult<>(request -> _selectByPolicyCode(request), applicationId, type);
+        return new PaginatedResult<>(request -> _selectByType(request), applicationId, type);
     }
 
-    private List<IdentifierOS> _selectByPolicyCode(ResultFetchRequest request) {
+    @Override
+    public PaginatedResult<List<IdentifierOS>> selectByApplicationId(String applicationId) {
+        return new PaginatedResult<>(request -> _selectByApplicationId(request), applicationId);
+    }
+
+    private List<IdentifierOS> _selectByType(ResultFetchRequest request) {
         String applicationId = (String) request.getArguments()[0];
         IdentifierType type = (IdentifierType) request.getArguments()[1];
         Connection conn = getConnection();
@@ -274,12 +310,38 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
             sql.append(String.format("SELECT * FROM %s WHERE "
                     + " application_id=? AND identifier_type=?",
                     TABLE));
-            sql.append(MySQLHelper.buildSortingQuery(request.getSorting()));
+            sql.append(MySQLQueryHelper.buildSortingQuery(request.getSorting()));
             sql.append(" ");
-            sql.append(MySQLHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
+            sql.append(MySQLQueryHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
             stmt = conn.prepareCall(sql.toString());
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
             stmt.setString(2, type.name());
+            rs = stmt.executeQuery();
+            return toOSList(rs, request.getPage().getSize());
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closeResultSet(rs);
+            closePreparedStatement(stmt);
+            closeConnection(conn);
+        }
+    }
+
+    private List<IdentifierOS> _selectByApplicationId(ResultFetchRequest request) {
+        String applicationId = (String) request.getArguments()[0];
+        Connection conn = getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append(String.format("SELECT * FROM %s WHERE "
+                            + " application_id=? ",
+                    TABLE));
+            sql.append(MySQLQueryHelper.buildSortingQuery(request.getSorting()));
+            sql.append(" ");
+            sql.append(MySQLQueryHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
+            stmt = conn.prepareCall(sql.toString());
+            stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
             rs = stmt.executeQuery();
             return toOSList(rs, request.getPage().getSize());
         } catch (SQLException | IOException e) {

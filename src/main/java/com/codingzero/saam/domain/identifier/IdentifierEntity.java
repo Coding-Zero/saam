@@ -40,7 +40,7 @@ public class IdentifierEntity extends EntityObject<IdentifierOS> implements Iden
     @Override
     public Application getApplication() {
         if (null == application) {
-            application = applicationRepository.findById(getObjectSegment().getId().getApplicationId());
+            application = applicationRepository.findById(getObjectSegment().getKey().getApplicationId());
         }
         return application;
     }
@@ -55,7 +55,7 @@ public class IdentifierEntity extends EntityObject<IdentifierOS> implements Iden
 
     @Override
     public String getContent() {
-        return getObjectSegment().getId().getContent();
+        return getObjectSegment().getKey().getContent();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class IdentifierEntity extends EntityObject<IdentifierOS> implements Iden
     @Override
     public IdentifierVerificationCode generateVerificationCode(long timeout) {
         checkForVerificationIsNotRequired();
-        String code = verificationCodeGenerator.generate(getObjectSegment().getId().getType());
+        String code = verificationCodeGenerator.generate(getObjectSegment().getType());
         Date expirationTime = new Date(System.currentTimeMillis() + timeout);
         getObjectSegment().setVerificationCode(
                 new IdentifierVerificationCode(code, expirationTime));
@@ -78,7 +78,7 @@ public class IdentifierEntity extends EntityObject<IdentifierOS> implements Iden
 
     @Override
     public IdentifierPolicy getPolicy() {
-        return getApplication().fetchIdentifierPolicy(getObjectSegment().getId().getType());
+        return getApplication().fetchIdentifierPolicy(getObjectSegment().getType());
     }
 
     private void checkForVerificationIsNotRequired() {

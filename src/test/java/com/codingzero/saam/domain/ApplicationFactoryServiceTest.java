@@ -15,6 +15,7 @@ import com.codingzero.saam.domain.principal.role.RoleFactoryService;
 import com.codingzero.saam.domain.principal.role.RoleRepositoryService;
 import com.codingzero.saam.domain.principal.user.UserFactoryService;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
+import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
 import com.codingzero.saam.domain.usersession.UserSessionFactoryService;
 import com.codingzero.saam.domain.usersession.UserSessionRepositoryService;
 import com.codingzero.saam.domain.application.UsernamePolicyFactoryService;
@@ -52,6 +53,7 @@ public class ApplicationFactoryServiceTest {
     private RoleRepositoryService roleRepository;
     private ResourceFactoryService resourceFactory;
     private ResourceRepositoryService resourceRepository;
+    private ApplicationStatusVerifier applicationStatusVerifier;
     private ApplicationFactoryService service;
 
     @Before
@@ -73,6 +75,7 @@ public class ApplicationFactoryServiceTest {
         roleRepository = mock(RoleRepositoryService.class);
         resourceFactory = mock(ResourceFactoryService.class);
         resourceRepository = mock(ResourceRepositoryService.class);
+        applicationStatusVerifier = mock(ApplicationStatusVerifier.class);
         service = new ApplicationFactoryService(
                 access,
                 usernamePolicyFactory,
@@ -90,7 +93,8 @@ public class ApplicationFactoryServiceTest {
                 roleFactory,
                 roleRepository,
                 resourceFactory,
-                resourceRepository, applicationStatusVerifier);
+                resourceRepository,
+                applicationStatusVerifier);
     }
 
     @Test

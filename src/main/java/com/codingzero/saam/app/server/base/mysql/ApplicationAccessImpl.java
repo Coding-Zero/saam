@@ -66,7 +66,7 @@ public class ApplicationAccessImpl extends AbstractAccess implements Application
                     TABLE,
                     "id, name, description, creation_time, password_policy, status",
                     "?, ?, ?, ?, ?, ?");
-            stmt=conn.prepareStatement(sql);
+            stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(os.getId()).getKey());
             stmt.setString(2, os.getName());
             stmt.setString(3, os.getDescription());
@@ -160,9 +160,9 @@ public class ApplicationAccessImpl extends AbstractAccess implements Application
         try {
             StringBuilder sql = new StringBuilder();
             sql.append(String.format("SELECT * FROM %s ", TABLE));
-            sql.append(MySQLHelper.buildSortingQuery(request.getSorting()));
+            sql.append(MySQLQueryHelper.buildSortingQuery(request.getSorting()));
             sql.append(" ");
-            sql.append(MySQLHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
+            sql.append(MySQLQueryHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
             stmt = conn.prepareCall(sql.toString());
             rs = stmt.executeQuery();
             return toOSList(rs, request.getPage());

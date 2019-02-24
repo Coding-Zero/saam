@@ -1,7 +1,5 @@
 package com.codingzero.saam.infrastructure.database;
 
-import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
 import com.codingzero.utilities.transaction.TransactionalService;
 
 public interface EmailPolicyAccess extends TransactionalService {

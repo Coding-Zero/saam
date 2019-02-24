@@ -22,26 +22,26 @@ public class PrincipalAccessMySQLTest extends PrincipalAccessTest {
 
     @Override
     protected PrincipalAccess getAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getPrincipalAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getPrincipalAccess();
     }
 
     @Override
     protected UserAccess getUserAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getUserAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getUserAccess();
     }
 
     @Override
     protected RoleAccess getRoleAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getRoleAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getRoleAccess();
     }
 
     @Override
     protected String getApplicationId() {
-        return Helper.sharedInstance().getMySQLAccessModule().getApplicationAccess().generateId();
+        return Helper.sharedInstance().getMySQLAccessHelper().getApplicationAccess().generateId();
     }
 
     @Override
     protected String getPrincipalId(String applicationId, PrincipalType type) {
-        return Helper.sharedInstance().getMySQLAccessModule().getPrincipalAccess().generateId(applicationId, type);
+        return Helper.sharedInstance().getMySQLAccessHelper().getPrincipalAccess().generateId(applicationId, type);
     }
 }

@@ -84,7 +84,7 @@ public class IdentifierRepositoryServiceTest {
         when(policy.getApplication()).thenReturn(application);
         when(policy.getType()).thenReturn(type);
         IdentifierOS os = mock(IdentifierOS.class);
-        when(access.selectByTypeAndContent(applicationId, type, content)).thenReturn(os);
+        when(access.selectByKey(applicationId)).thenReturn(os);
         service.findByContent(policy, content);
         verify(factory, times(1)).reconstitute(os, policy, null);
     }

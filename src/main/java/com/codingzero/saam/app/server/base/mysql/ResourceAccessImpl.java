@@ -144,7 +144,7 @@ public class ResourceAccessImpl extends AbstractAccess implements ResourceAccess
             String sql = "DELETE r FROM " + TABLE + " r INNER JOIN ("
                     + "     SELECT r1.* FROM " + TABLE + " r1 "
                     + "     LEFT JOIN "+ TABLE + " r2 ON r1.parent_key_hash=r2.key_hash "
-                    + "     WHERE r2.application_id IS NULL AND r1.parent_key_hash IS NOT NULL "
+                    + "     WHERE r2.application_id IS NULL AND r1.parent_key_hash IS NOT NULL"
                     + "     LIMIT 1000"
                     + "  ) AS rr ON r.key_hash = rr.key_hash;";
             stmt = conn.prepareStatement(sql);
@@ -245,9 +245,9 @@ public class ResourceAccessImpl extends AbstractAccess implements ResourceAccess
             StringBuilder sql = new StringBuilder();
             sql.append(String.format("SELECT * FROM %s WHERE principal_id=? AND %s ",
                     TABLE, getParentKeyHashQuery(parentKeyHash)));
-            sql.append(MySQLHelper.buildSortingQuery(request.getSorting()));
+            sql.append(MySQLQueryHelper.buildSortingQuery(request.getSorting()));
             sql.append(" ");
-            sql.append(MySQLHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
+            sql.append(MySQLQueryHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
             stmt = conn.prepareCall(sql.toString());
             stmt.setBytes(1, Key.fromHexString(principalId).getKey());
             if (null != parentKeyHash) {
@@ -275,9 +275,9 @@ public class ResourceAccessImpl extends AbstractAccess implements ResourceAccess
             StringBuilder sql = new StringBuilder();
             sql.append(String.format("SELECT * FROM %s WHERE application_id=? AND %s ",
                     TABLE, getParentKeyHashQuery(parentKeyHash)));
-            sql.append(MySQLHelper.buildSortingQuery(request.getSorting()));
+            sql.append(MySQLQueryHelper.buildSortingQuery(request.getSorting()));
             sql.append(" ");
-            sql.append(MySQLHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
+            sql.append(MySQLQueryHelper.buildPagingQuery((OffsetBasedResultPage) request.getPage()));
             stmt = conn.prepareCall(sql.toString());
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
             if (null != parentKeyHash) {

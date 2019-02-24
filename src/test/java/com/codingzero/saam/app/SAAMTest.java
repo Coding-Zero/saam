@@ -179,7 +179,7 @@ public abstract class SAAMTest {
         long timestamp = System.currentTimeMillis();
         IdentifierVerificationCodeResponse response = saam.generateVerificationCode(
                 new IdentifierVerificationCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.EMAIL, email, 1000));
+                        app.getId(), email, 1000));
 
         assertNotNull(response);
         assertEquals(app.getId(), response.getApplicationId());
@@ -201,7 +201,7 @@ public abstract class SAAMTest {
         thrown.expect(BusinessError.class);
         saam.generateVerificationCode(
                 new IdentifierVerificationCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.EMAIL, email, 1000));
+                        app.getId(), email, 1000));
     }
 
     @Test
@@ -214,7 +214,7 @@ public abstract class SAAMTest {
         thrown.expect(BusinessError.class);
         saam.generateVerificationCode(
                 new IdentifierVerificationCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.EMAIL, "foo@foo.com", 1000));
+                        app.getId(), "foo@foo.com", 1000));
     }
 
     @Test
@@ -227,7 +227,7 @@ public abstract class SAAMTest {
         thrown.expect(BusinessError.class);
         saam.generateVerificationCode(
                 new IdentifierVerificationCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.EMAIL, "foo@foo.com", 1000));
+                        app.getId(), "foo@foo.com", 1000));
     }
 
     @Test
@@ -240,7 +240,7 @@ public abstract class SAAMTest {
         thrown.expect(BusinessError.class);
         saam.generateVerificationCode(
                 new IdentifierVerificationCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.USERNAME, username, 1000));
+                        app.getId(), username, 1000));
     }
 
     @Test
@@ -1140,7 +1140,7 @@ public abstract class SAAMTest {
         UserResponse.Identifier email = getIdentifier(user, IdentifierType.EMAIL);
         IdentifierVerificationCodeResponse code = saam.generateVerificationCode(
                 new IdentifierVerificationCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), 1000));
+                        app.getId(), email.getContent(), 1000));
         UserResponse actualUser = saam.verifyIdentifier(
                 new IdentifierVerifyRequest(
                         app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), code.getCode()));
@@ -1158,7 +1158,7 @@ public abstract class SAAMTest {
         UserResponse.Identifier email = getIdentifier(user, IdentifierType.EMAIL);
         IdentifierVerificationCodeResponse code = saam.generateVerificationCode(
                 new IdentifierVerificationCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), 1000));
+                        app.getId(), email.getContent(), 1000));
         updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
 
         thrown.expect(BusinessError.class);
@@ -1174,14 +1174,14 @@ public abstract class SAAMTest {
         UserResponse.Identifier email = getIdentifier(user, IdentifierType.EMAIL);
         IdentifierVerificationCodeResponse code = saam.generateVerificationCode(
                 new IdentifierVerificationCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), 1000));
+                        app.getId(), email.getContent(), 1000));
         saam.verifyIdentifier(
                 new IdentifierVerifyRequest(
                         app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), code.getCode()));
 
         code = saam.generateVerificationCode(
                 new IdentifierVerificationCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), 1000));
+                        app.getId(), email.getContent(), 1000));
         UserResponse actualUser = saam.verifyIdentifier(
                 new IdentifierVerifyRequest(
                         app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), code.getCode()));
@@ -1199,10 +1199,10 @@ public abstract class SAAMTest {
         UserResponse.Identifier email = getIdentifier(user, IdentifierType.EMAIL);
         IdentifierVerificationCodeResponse code = saam.generateVerificationCode(
                 new IdentifierVerificationCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), 1000));
+                        app.getId(), email.getContent(), 1000));
         saam.generateVerificationCode(
                 new IdentifierVerificationCodeGenerateRequest(
-                        app.getId(), user.getId(), IdentifierType.EMAIL, email.getContent(), 1000));
+                        app.getId(), email.getContent(), 1000));
 
         thrown.expect(BusinessError.class);
         saam.verifyIdentifier(

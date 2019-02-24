@@ -20,18 +20,18 @@ public class IdentifierAccessMySQLTest extends IdentifierAccessTest {
 
     @Override
     protected IdentifierAccess getAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getIdentifierAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getIdentifierAccess();
     }
 
     @Override
     protected String getApplicationId() {
-        return Helper.sharedInstance().getMySQLAccessModule().getApplicationAccess().generateId();
+        return Helper.sharedInstance().getMySQLAccessHelper().getApplicationAccess().generateId();
     }
 
     @Override
     protected String getUserId(String applicationId) {
         return Helper.sharedInstance()
-                .getMySQLAccessModule()
+                .getMySQLAccessHelper()
                 .getPrincipalAccess()
                 .generateId(applicationId, PrincipalType.USER);
     }

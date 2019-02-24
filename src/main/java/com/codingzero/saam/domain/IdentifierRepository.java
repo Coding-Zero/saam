@@ -17,7 +17,7 @@ public interface IdentifierRepository {
 
     void removeByApplication(Application application);
 
-    Identifier findById(Application application, IdentifierType type, String content);
+    Identifier findByKey(Application application, String content);
 
     List<Identifier> findByUser(Application application, User user);
 

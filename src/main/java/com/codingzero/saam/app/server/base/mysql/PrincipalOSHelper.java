@@ -18,8 +18,8 @@ public class PrincipalOSHelper {
                     "application_id, id, type, creation_time",
                     "?, ?, ?, ?");
             stmt = conn.prepareStatement(sql);
-            stmt.setBytes(1, Key.fromHexString(os.getApplicationId()).getKey());
-            stmt.setBytes(2, Key.fromHexString(os.getId()).getKey());
+            stmt.setBytes(1, Key.fromHexString(os.getId().getApplicationId()).getKey());
+            stmt.setBytes(2, Key.fromHexString(os.getId().getId()).getKey());
             stmt.setString(3, os.getType().name());
             stmt.setTimestamp(4, new Timestamp(os.getCreationTime().getTime()));
             stmt.executeUpdate();

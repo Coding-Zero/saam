@@ -11,7 +11,6 @@ import com.codingzero.saam.infrastructure.database.PrincipalAccess;
 import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import com.codingzero.saam.infrastructure.database.UserAccess;
 import com.codingzero.saam.infrastructure.database.UserOS;
-import com.codingzero.saam.infrastructure.database.UserSessionAccess;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultFetchRequest;
 
@@ -25,7 +24,6 @@ public class UserRepositoryService implements UserRepository {
     private PrincipalAccess principalAccess;
     private IdentifierAccess identifierAccess;
     private OAuthIdentifierAccess oAuthIdentifierAccess;
-    private UserSessionAccess userSessionAccess;
     private UserFactoryService factory;
     private ApplicationStatusVerifier applicationStatusVerifier;
 
@@ -33,20 +31,18 @@ public class UserRepositoryService implements UserRepository {
                                  PrincipalAccess principalAccess,
                                  IdentifierAccess identifierAccess,
                                  OAuthIdentifierAccess oAuthIdentifierAccess,
-                                 UserSessionAccess userSessionAccess,
                                  UserFactoryService factory,
                                  ApplicationStatusVerifier applicationStatusVerifier) {
         this.access = access;
         this.principalAccess = principalAccess;
         this.identifierAccess = identifierAccess;
         this.oAuthIdentifierAccess = oAuthIdentifierAccess;
-        this.userSessionAccess = userSessionAccess;
         this.factory = factory;
         this.applicationStatusVerifier = applicationStatusVerifier;
     }
 
     @Override
-    public void store(User user) {
+    public User store(User user) {
         applicationStatusVerifier.checkForDeactiveStatus(user.getApplication());
         UserEntity entity = (UserEntity) user;
         if (entity.isNew()) {
@@ -54,6 +50,7 @@ public class UserRepositoryService implements UserRepository {
         } else if (entity.isDirty()) {
             access.update(entity.getObjectSegment());
         }
+        return factory.reconstitute(entity.getObjectSegment(), user.getApplication());
     }
 
     @Override

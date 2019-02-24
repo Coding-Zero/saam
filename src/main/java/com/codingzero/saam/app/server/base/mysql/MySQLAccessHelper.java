@@ -18,16 +18,16 @@ import com.codingzero.saam.infrastructure.database.UsernamePolicyAccess;
 import javax.sql.DataSource;
 
 
-public class MySQLAccessModule {
+public class MySQLAccessHelper {
 
     private DataSource dataSource;
     private ObjectSegmentMapper objectSegmentMapper;
 
-    public MySQLAccessModule(DataSource dataSource) {
+    public MySQLAccessHelper(DataSource dataSource) {
         this(dataSource, new ObjectSegmentMapper());
     }
 
-    public MySQLAccessModule(DataSource dataSource,
+    public MySQLAccessHelper(DataSource dataSource,
                              ObjectSegmentMapper objectSegmentMapper) {
         this.dataSource = dataSource;
         this.objectSegmentMapper = objectSegmentMapper;

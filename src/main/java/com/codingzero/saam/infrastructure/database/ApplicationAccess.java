@@ -1,6 +1,5 @@
 package com.codingzero.saam.infrastructure.database;
 
-import com.codingzero.saam.infrastructure.database.ApplicationOS;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.transaction.TransactionalService;
 

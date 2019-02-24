@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-
 public class EmailPolicyOS extends IdentifierPolicyOS {
 
     private List<String> domains;

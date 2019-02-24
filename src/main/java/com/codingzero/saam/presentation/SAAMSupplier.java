@@ -2,7 +2,7 @@ package com.codingzero.saam.presentation;
 
 import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.server.SAAMBuilder;
-import com.codingzero.saam.app.server.base.mysql.MySQLAccessModule;
+import com.codingzero.saam.app.server.base.mysql.MySQLAccessHelper;
 import com.codingzero.saam.app.server.base.sso.GoogleAgent;
 import com.codingzero.saam.app.server.base.sso.OAuthPlatformAgentManager;
 import com.codingzero.saam.app.server.base.sso.SlackAgent;
@@ -34,7 +34,7 @@ public class SAAMSupplier implements Supplier<SAAM> {
 
     private SAAMBuilder getSAAMBuilder() {
         TransactionManager transactionManager = new TransactionManagerImpl();
-        MySQLAccessModule accessModule = new MySQLAccessModule(dataSource);
+        MySQLAccessHelper accessModule = new MySQLAccessHelper(dataSource);
         return new SAAMBuilder()
                 .setTransactionManager(transactionManager)
                 .setIdentifierPolicyAccess(accessModule.getIdentifierPolicyAccess())

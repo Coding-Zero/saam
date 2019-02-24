@@ -20,17 +20,17 @@ public class APIKeyAccessMySQLTest extends APIKeyAccessTest {
 
     @Override
     protected APIKeyAccess getAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getAPIKeyAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getAPIKeyAccess();
     }
 
     @Override
     protected String getApplicationId() {
-        return Helper.sharedInstance().getMySQLAccessModule().getApplicationAccess().generateId();
+        return Helper.sharedInstance().getMySQLAccessHelper().getApplicationAccess().generateId();
     }
 
     @Override
     protected String getPrincipalId(String applicationId) {
-        return Helper.sharedInstance().getMySQLAccessModule().getPrincipalAccess().generateId(applicationId, PrincipalType.API_KEY);
+        return Helper.sharedInstance().getMySQLAccessHelper().getPrincipalAccess().generateId(applicationId, PrincipalType.API_KEY);
     }
 
     @Override

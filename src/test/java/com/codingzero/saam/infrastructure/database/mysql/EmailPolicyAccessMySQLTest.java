@@ -19,12 +19,12 @@ public class EmailPolicyAccessMySQLTest extends EmailPolicyAccessTest {
 
     @Override
     protected EmailPolicyAccess getAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getEmailPolicyAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getEmailPolicyAccess();
     }
 
     @Override
     protected String getApplicationId() {
-        return Helper.sharedInstance().getMySQLAccessModule().getApplicationAccess().generateId();
+        return Helper.sharedInstance().getMySQLAccessHelper().getApplicationAccess().generateId();
     }
 
 }

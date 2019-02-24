@@ -2,7 +2,7 @@ package com.codingzero.saam.infrastructure.database.mysql;
 
 import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.server.SAAMBuilder;
-import com.codingzero.saam.app.server.base.mysql.MySQLAccessModule;
+import com.codingzero.saam.app.server.base.mysql.MySQLAccessHelper;
 import com.codingzero.saam.infrastructure.database.SAAMTestApplication;
 import com.codingzero.saam.infrastructure.database.OAuthPlatformAgent;
 import com.codingzero.saam.presentation.DataSourceProvider;
@@ -33,7 +33,7 @@ public class Helper {
 
     private static Helper instance;
 
-    private MySQLAccessModule mySQLAccessModule;
+    private MySQLAccessHelper mySQLAccessHelper;
     private String schemaName;
 
     private Helper() {
@@ -81,12 +81,12 @@ public class Helper {
         }
     }
 
-    public MySQLAccessModule getMySQLAccessModule() {
-        if (null == mySQLAccessModule) {
+    public MySQLAccessHelper getMySQLAccessHelper() {
+        if (null == mySQLAccessHelper) {
             DataSourceProvider provider = new DataSourceProvider(SUPPORT.getConfiguration());
-            mySQLAccessModule = new MySQLAccessModule(provider.get());
+            mySQLAccessHelper = new MySQLAccessHelper(provider.get());
         }
-        return mySQLAccessModule;
+        return mySQLAccessHelper;
     }
 
     public SAAM getSAAM(OAuthPlatformAgent oAuthPlatformAgent) {
@@ -97,7 +97,7 @@ public class Helper {
 
     private SAAMBuilder getSAAMBuilder(OAuthPlatformAgent oAuthPlatformAgent, DataSource dataSource) {
         TransactionManager transactionManager = new TransactionManagerImpl();
-        MySQLAccessModule accessModule = new MySQLAccessModule(dataSource);
+        MySQLAccessHelper accessModule = new MySQLAccessHelper(dataSource);
         return new SAAMBuilder()
                 .setTransactionManager(transactionManager)
                 .setIdentifierPolicyAccess(accessModule.getIdentifierPolicyAccess())

@@ -100,7 +100,9 @@ public class ResponseMapper {
         );
     }
 
-    public UserResponse toResponse(User source) {
+    public UserResponse toResponse(User source,
+                                   List<Identifier> identifiers,
+                                   List<OAuthIdentifier> oAuthIdentifiers) {
         if (null == source) {
             return null;
         }
@@ -109,8 +111,8 @@ public class ResponseMapper {
                 source.getId(),
                 source.getCreationTime(),
                 toUserRoles(source),
-                toUserIdentifiers(source),
-                toUserSSOIdentifiers(source),
+                toUserIdentifiers(source, identifiers),
+                toUserSSOIdentifiers(source, oAuthIdentifiers),
                 source.isPasswordSet());
     }
 
@@ -123,41 +125,33 @@ public class ResponseMapper {
         return responses;
     }
 
-    private List<UserResponse.Identifier> toUserIdentifiers(User source) {
+    private List<UserResponse.Identifier> toUserIdentifiers(User source, List<Identifier> identifiers) {
         Application application = source.getApplication();
         List<IdentifierPolicy> policies = application.fetchAllIdentifierPolicies();
         List<UserResponse.Identifier> responses = new ArrayList<>(policies.size());
-        for (IdentifierPolicy policy: policies) {
-            List<Identifier> identifiers = policy.fetchIdentifiersByUser(source);
-            for (Identifier identifier: identifiers) {
-                responses.add(
-                        new UserResponse.Identifier(
-                                identifier.getPolicy().getType(),
-                                identifier.getContent(),
-                                identifier.isVerified(),
-                                identifier.getCreationTime()
-                        ));
-            }
-
+        for (Identifier identifier: identifiers) {
+            responses.add(
+                    new UserResponse.Identifier(
+                            identifier.getPolicy().getType(),
+                            identifier.getContent(),
+                            identifier.isVerified(),
+                            identifier.getCreationTime()
+                    ));
         }
         return responses;
     }
 
-    private List<UserResponse.OAuthIdentifier> toUserSSOIdentifiers(User source) {
+    private List<UserResponse.OAuthIdentifier> toUserSSOIdentifiers(User source, List<OAuthIdentifier> identifiers) {
         Application application = source.getApplication();
         List<OAuthIdentifierPolicy> policies = application.fetchAllOAuthIdentifierPolicies();
         List<UserResponse.OAuthIdentifier> responses = new ArrayList<>(policies.size());
-        for (OAuthIdentifierPolicy policy: policies) {
-            List<OAuthIdentifier> identifiers = policy.fetchIdentifiersByUser(source);
-            for (OAuthIdentifier identifier: identifiers) {
-                responses.add(
-                        new UserResponse.OAuthIdentifier(
-                                identifier.getPolicy().getPlatform(),
-                                identifier.getContent(),
-                                identifier.getProperties(),
-                                identifier.getCreationTime()));
-            }
-
+        for (OAuthIdentifier identifier: identifiers) {
+            responses.add(
+                    new UserResponse.OAuthIdentifier(
+                            identifier.getPlatform(),
+                            identifier.getContent(),
+                            identifier.getProperties(),
+                            identifier.getCreationTime()));
         }
         return responses;
     }

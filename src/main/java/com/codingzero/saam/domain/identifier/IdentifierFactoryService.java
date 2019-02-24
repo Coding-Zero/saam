@@ -46,7 +46,8 @@ public class IdentifierFactoryService implements IdentifierFactory {
         }
         Date currentDateTime = new Date(System.currentTimeMillis());
         IdentifierOS os = new IdentifierOS(
-                new IdentifierKey(application.getId(), type, content),
+                new IdentifierKey(application.getId(), content),
+                type,
                 user.getId(),
                 isVerified,
                 null,
@@ -72,7 +73,7 @@ public class IdentifierFactoryService implements IdentifierFactory {
     }
 
     private void checkForDuplicateIdentifierContent(IdentifierPolicy policy, String content) {
-        if (access.isDuplicateContent(policy.getApplication().getId(), policy.getType(), content)) {
+        if (access.isDuplicateContent(policy.getApplication().getId(), content)) {
             throw BusinessError.raise(Errors.DUPLICATE_IDENTIFIER)
                     .message("Identifier, " + content + " has already been taken")
                     .details("applicationId", policy.getApplication().getId())

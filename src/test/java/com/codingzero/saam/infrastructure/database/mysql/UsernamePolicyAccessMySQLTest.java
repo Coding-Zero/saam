@@ -19,12 +19,12 @@ public class UsernamePolicyAccessMySQLTest extends UsernamePolicyAccessTest {
 
     @Override
     protected UsernamePolicyAccess getAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getUsernamePolicyAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getUsernamePolicyAccess();
     }
 
     @Override
     protected String getApplicationId() {
-        return Helper.sharedInstance().getMySQLAccessModule().getApplicationAccess().generateId();
+        return Helper.sharedInstance().getMySQLAccessHelper().getApplicationAccess().generateId();
     }
 
 }

@@ -20,21 +20,21 @@ public class UserSessionAccessMySQLTest extends UserSessionAccessTest {
 
     @Override
     protected UserSessionAccess getAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getUserSessionAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getUserSessionAccess();
     }
 
     @Override
     protected String getApplicationId() {
-        return Helper.sharedInstance().getMySQLAccessModule().getApplicationAccess().generateId();
+        return Helper.sharedInstance().getMySQLAccessHelper().getApplicationAccess().generateId();
     }
 
     @Override
     protected String getKey(String applicationId) {
-        return Helper.sharedInstance().getMySQLAccessModule().getUserSessionAccess().generateKey(applicationId);
+        return Helper.sharedInstance().getMySQLAccessHelper().getUserSessionAccess().generateKey(applicationId);
     }
 
     @Override
     protected String getPrincipalId(String applicationId, PrincipalType type) {
-        return Helper.sharedInstance().getMySQLAccessModule().getPrincipalAccess().generateId(applicationId, type);
+        return Helper.sharedInstance().getMySQLAccessHelper().getPrincipalAccess().generateId(applicationId, type);
     }
 }

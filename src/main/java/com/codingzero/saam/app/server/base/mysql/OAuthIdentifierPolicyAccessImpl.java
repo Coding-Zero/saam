@@ -172,7 +172,7 @@ public class OAuthIdentifierPolicyAccessImpl extends AbstractAccess implements O
         try {
             String sql = String.format("SELECT * FROM %s WHERE application_id=? ",
                     TABLE);
-            stmt = conn.prepareCall(sql.toString());
+            stmt = conn.prepareCall(sql);
             stmt.setBytes(1, Key.fromHexString(applicationId).getKey());
             rs = stmt.executeQuery();
             return toOSList(rs);

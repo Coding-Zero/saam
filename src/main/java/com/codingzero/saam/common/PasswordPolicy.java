@@ -16,6 +16,9 @@ public class PasswordPolicy {
     private boolean isNeedCapital;
     private boolean isNeedSpecialChar;
 
+    //maximum of attempts
+    //expiryTime
+
     public PasswordPolicy(int minLength, int maxLength, boolean isNeedCapital, boolean isNeedSpecialChar) {
         checkForLength(minLength, maxLength);
         this.minLength = minLength;

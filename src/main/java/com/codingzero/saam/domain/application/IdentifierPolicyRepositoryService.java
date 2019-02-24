@@ -28,6 +28,11 @@ public class IdentifierPolicyRepositoryService {
     }
 
     public void store(IdentifierPolicyEntity entity) {
+        if (entity.isNew()) {
+            access.insert((IdentifierPolicyOS) entity.getObjectSegment());
+        } else if (entity.isDirty()) {
+            access.update((IdentifierPolicyOS) entity.getObjectSegment());
+        }
         if (entity.getType() == IdentifierType.USERNAME) {
             usernameIdentifierPolicyRepository.store((UsernamePolicyEntity) entity);
         } else if (entity.getType() == IdentifierType.EMAIL) {
@@ -50,7 +55,8 @@ public class IdentifierPolicyRepositoryService {
 //    }
 
     public void remove(IdentifierPolicyEntity entity) {
-        checkForUnremoveableStatus(entity);
+        checkForUnremovableStatus(entity);
+        access.delete((IdentifierPolicyOS) entity.getObjectSegment());
         if (entity.getType() == IdentifierType.USERNAME) {
             usernameIdentifierPolicyRepository.remove((UsernamePolicyEntity) entity);
         } else if (entity.getType() == IdentifierType.EMAIL) {
@@ -60,7 +66,7 @@ public class IdentifierPolicyRepositoryService {
         }
     }
 
-    private void checkForUnremoveableStatus(IdentifierPolicyEntity entity) {
+    private void checkForUnremovableStatus(IdentifierPolicyEntity entity) {
         if (identifierAccess.countByType(entity.getApplication().getId(), entity.getType()) > 0) {
             throw new IllegalStateException(
                     "Identifier policy " + entity.getType() + " cannot be removed before removing existing identifiers.");
@@ -68,6 +74,7 @@ public class IdentifierPolicyRepositoryService {
     }
 
     public void removeAll(Application application) {
+        access.deleteByApplicationId(application.getId());
         usernameIdentifierPolicyRepository.removeAll(application);
         emailIdentifierPolicyRepository.removeAll(application);
     }

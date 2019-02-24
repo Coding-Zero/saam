@@ -4,8 +4,8 @@ import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.domain.identifier.IdentifierEntity;
 import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
-import com.codingzero.saam.infrastructure.database.IdentifierOS;
 import com.codingzero.saam.infrastructure.database.IdentifierAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierOS;
 import com.codingzero.saam.infrastructure.database.IdentifierVerificationCodeGenerator;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
@@ -25,6 +25,7 @@ public class IdentifierFactoryServiceTest {
     private IdentifierAccess access;
     private IdentifierVerificationCodeGenerator verificationCodeGenerator;
     private UserRepositoryService userRepository;
+    private ApplicationRepository applicationRepository;
     private IdentifierFactoryService service;
 
     @Before
@@ -32,10 +33,12 @@ public class IdentifierFactoryServiceTest {
         access = mock(IdentifierAccess.class);
         verificationCodeGenerator = mock(IdentifierVerificationCodeGenerator.class);
         userRepository = mock(UserRepositoryService.class);
+        applicationRepository = mock(ApplicationRepository.class);
         service = new IdentifierFactoryService(
                 access,
                 verificationCodeGenerator,
-                userRepository, application);
+                userRepository,
+                applicationRepository);
     }
 
     @Test
@@ -49,17 +52,16 @@ public class IdentifierFactoryServiceTest {
         when(policy.isActive()).thenReturn(true);
         when(policy.getApplication()).thenReturn(application);
         when(policy.getType()).thenReturn(IdentifierType.USERNAME);
-        when(access.isDuplicateContent(applicationId, IdentifierType.USERNAME, content)).thenReturn(false);
+        when(access.isDuplicateContent(applicationId, content)).thenReturn(false);
         User user = mock(User.class);
         when(user.getApplication()).thenReturn(application);
-        IdentifierEntity identifier = service.generate(policy, content, user);
+        Identifier identifier = service.generate(policy, content, user);
         assertEquals(user, identifier.getUser());
         assertEquals(policy, identifier.getPolicy());
         assertEquals(content, identifier.getContent());
         assertEquals(false, identifier.isVerified());
         assertEquals(null, identifier.getVerificationCode());
         assertEquals(identifier.getCreationTime(), identifier.getUpdateTime());
-        assertEquals(true, identifier.isNew());
     }
 
     @Test
@@ -73,17 +75,16 @@ public class IdentifierFactoryServiceTest {
         when(policy.isActive()).thenReturn(true);
         when(policy.getApplication()).thenReturn(application);
         when(policy.getType()).thenReturn(IdentifierType.USERNAME);
-        when(access.isDuplicateContent(applicationId, IdentifierType.USERNAME, content)).thenReturn(false);
+        when(access.isDuplicateContent(applicationId, content)).thenReturn(false);
         User user = mock(User.class);
         when(user.getApplication()).thenReturn(application);
-        IdentifierEntity identifier = service.generate(policy, content, user);
+        Identifier identifier = service.generate(policy, content, user);
         assertEquals(user, identifier.getUser());
         assertEquals(policy, identifier.getPolicy());
         assertEquals(content, identifier.getContent());
         assertEquals(true, identifier.isVerified());
         assertEquals(null, identifier.getVerificationCode());
         assertEquals(identifier.getCreationTime(), identifier.getUpdateTime());
-        assertEquals(true, identifier.isNew());
     }
 
     @Test
@@ -117,7 +118,7 @@ public class IdentifierFactoryServiceTest {
         when(policy.isActive()).thenReturn(true);
         when(policy.getApplication()).thenReturn(application);
         when(policy.getType()).thenReturn(IdentifierType.USERNAME);
-        when(access.isDuplicateContent(applicationId, IdentifierType.USERNAME, content)).thenReturn(true);
+        when(access.isDuplicateContent(applicationId, content)).thenReturn(true);
         User user = mock(User.class);
         when(user.getApplication()).thenReturn(application);
         thrown.expect(BusinessError.class);
@@ -129,7 +130,8 @@ public class IdentifierFactoryServiceTest {
         IdentifierPolicy policy = mock(IdentifierPolicy.class);
         User user = mock(User.class);
         IdentifierOS os = mock(IdentifierOS.class);
-        IdentifierEntity entity = service.reconstitute(os, policy, user);
+        Application application = mock(Application.class);
+        IdentifierEntity entity = service.reconstitute(os, application, user);
         assertEquals(policy, entity.getPolicy());
         assertEquals(user, entity.getUser());
         assertEquals(os, entity.getObjectSegment());
@@ -137,9 +139,9 @@ public class IdentifierFactoryServiceTest {
 
     @Test
     public void testReconstitute_NullValue() {
-        IdentifierPolicy policy = mock(IdentifierPolicy.class);
         User user = mock(User.class);
-        IdentifierEntity entity = service.reconstitute(null, policy, user);
+        Application application = mock(Application.class);
+        IdentifierEntity entity = service.reconstitute(null, application, user);
         assertEquals(null, entity);
     }
 

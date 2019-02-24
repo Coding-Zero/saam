@@ -1,11 +1,10 @@
 package com.codingzero.saam.app.server;
 
+import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.requests.APIKeyAddRequest;
-import com.codingzero.saam.app.responses.APIKeyResponse;
 import com.codingzero.saam.app.requests.APIKeyUpdateRequest;
 import com.codingzero.saam.app.requests.APIKeyVerifyRequest;
 import com.codingzero.saam.app.requests.ApplicationAddRequest;
-import com.codingzero.saam.app.responses.ApplicationResponse;
 import com.codingzero.saam.app.requests.ApplicationUpdateRequest;
 import com.codingzero.saam.app.requests.CredentialLoginRequest;
 import com.codingzero.saam.app.requests.EmailPolicyAddRequest;
@@ -13,10 +12,8 @@ import com.codingzero.saam.app.requests.EmailPolicyUpdateRequest;
 import com.codingzero.saam.app.requests.IdentifierAddRequest;
 import com.codingzero.saam.app.requests.IdentifierRemoveRequest;
 import com.codingzero.saam.app.requests.IdentifierVerificationCodeGenerateRequest;
-import com.codingzero.saam.app.responses.IdentifierVerificationCodeResponse;
 import com.codingzero.saam.app.requests.IdentifierVerifyRequest;
 import com.codingzero.saam.app.requests.OAuthAccessTokenRequest;
-import com.codingzero.saam.app.responses.OAuthAccessTokenResponse;
 import com.codingzero.saam.app.requests.OAuthAuthorizationUrlRequest;
 import com.codingzero.saam.app.requests.OAuthIdentifierConnectRequest;
 import com.codingzero.saam.app.requests.OAuthIdentifierDisconnectRequest;
@@ -26,25 +23,28 @@ import com.codingzero.saam.app.requests.OAuthLoginRequest;
 import com.codingzero.saam.app.requests.PasswordChangeRequest;
 import com.codingzero.saam.app.requests.PasswordPolicySetRequest;
 import com.codingzero.saam.app.requests.PasswordResetCodeGenerateRequest;
-import com.codingzero.saam.app.responses.PasswordResetCodeResponse;
 import com.codingzero.saam.app.requests.PasswordResetRequest;
 import com.codingzero.saam.app.requests.PermissionCheckRequest;
-import com.codingzero.saam.app.responses.PermissionCheckResponse;
-import com.codingzero.saam.app.responses.PermissionResponse;
 import com.codingzero.saam.app.requests.PermissionStoreRequest;
-import com.codingzero.saam.app.responses.ResourceResponse;
 import com.codingzero.saam.app.requests.ResourceStoreRequest;
 import com.codingzero.saam.app.requests.RoleAddRequest;
-import com.codingzero.saam.app.responses.RoleResponse;
 import com.codingzero.saam.app.requests.RoleUpdateRequest;
-import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.requests.UserRegisterRequest;
-import com.codingzero.saam.app.responses.UserResponse;
 import com.codingzero.saam.app.requests.UserRoleUpdateRequest;
 import com.codingzero.saam.app.requests.UserSessionCreateRequest;
-import com.codingzero.saam.app.responses.UserSessionResponse;
 import com.codingzero.saam.app.requests.UsernamePolicyAddRequest;
 import com.codingzero.saam.app.requests.UsernamePolicyUpdateRequest;
+import com.codingzero.saam.app.responses.APIKeyResponse;
+import com.codingzero.saam.app.responses.ApplicationResponse;
+import com.codingzero.saam.app.responses.IdentifierVerificationCodeResponse;
+import com.codingzero.saam.app.responses.OAuthAccessTokenResponse;
+import com.codingzero.saam.app.responses.PasswordResetCodeResponse;
+import com.codingzero.saam.app.responses.PermissionCheckResponse;
+import com.codingzero.saam.app.responses.PermissionResponse;
+import com.codingzero.saam.app.responses.ResourceResponse;
+import com.codingzero.saam.app.responses.RoleResponse;
+import com.codingzero.saam.app.responses.UserResponse;
+import com.codingzero.saam.app.responses.UserSessionResponse;
 import com.codingzero.saam.common.ApplicationStatus;
 import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.common.IdentifierType;
@@ -53,20 +53,35 @@ import com.codingzero.saam.common.PasswordResetCode;
 import com.codingzero.saam.common.PermissionType;
 import com.codingzero.saam.common.ResourceKeySeparator;
 import com.codingzero.saam.domain.APIKey;
+import com.codingzero.saam.domain.APIKeyFactory;
+import com.codingzero.saam.domain.APIKeyRepository;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.ApplicationFactory;
 import com.codingzero.saam.domain.ApplicationRepository;
 import com.codingzero.saam.domain.EmailPolicy;
 import com.codingzero.saam.domain.Identifier;
+import com.codingzero.saam.domain.IdentifierFactory;
 import com.codingzero.saam.domain.IdentifierPolicy;
+import com.codingzero.saam.domain.IdentifierRepository;
 import com.codingzero.saam.domain.OAuthIdentifier;
+import com.codingzero.saam.domain.OAuthIdentifierFactory;
 import com.codingzero.saam.domain.OAuthIdentifierPolicy;
+import com.codingzero.saam.domain.OAuthIdentifierRepository;
 import com.codingzero.saam.domain.Permission;
 import com.codingzero.saam.domain.Principal;
+import com.codingzero.saam.domain.PrincipalRepository;
 import com.codingzero.saam.domain.Resource;
+import com.codingzero.saam.domain.ResourceFactory;
+import com.codingzero.saam.domain.ResourceRepository;
 import com.codingzero.saam.domain.Role;
+import com.codingzero.saam.domain.RoleFactory;
+import com.codingzero.saam.domain.RoleRepository;
 import com.codingzero.saam.domain.User;
+import com.codingzero.saam.domain.UserFactory;
+import com.codingzero.saam.domain.UserRepository;
 import com.codingzero.saam.domain.UserSession;
+import com.codingzero.saam.domain.UserSessionFactory;
+import com.codingzero.saam.domain.UserSessionRepository;
 import com.codingzero.saam.domain.UsernamePolicy;
 import com.codingzero.saam.domain.services.UserAuthenticator;
 import com.codingzero.saam.infrastructure.OAuthAccessToken;
@@ -87,6 +102,21 @@ public class SAAMServer implements SAAM {
     private OAuthPlatformAgent oAuthPlatformAgent;
     private ApplicationFactory applicationFactory;
     private ApplicationRepository applicationRepository;
+    private IdentifierFactory identifierFactory;
+    private IdentifierRepository identifierRepository;
+    private OAuthIdentifierFactory oAuthIdentifierFactory;
+    private OAuthIdentifierRepository oAuthIdentifierRepository;
+    private RoleFactory roleFactory;
+    private RoleRepository roleRepository;
+    private UserFactory userFactory;
+    private UserRepository userRepository;
+    private APIKeyFactory apiKeyFactory;
+    private APIKeyRepository apiKeyRepository;
+    private UserSessionFactory userSessionFactory;
+    private UserSessionRepository userSessionRepository;
+    private ResourceFactory resourceFactory;
+    private ResourceRepository resourceRepository;
+    private PrincipalRepository principalRepository;
     private ResponseMapper responseMapper;
     private UserAuthenticator userAuthenticator;
 
@@ -95,6 +125,21 @@ public class SAAMServer implements SAAM {
         this.oAuthPlatformAgent = builder.getOAuthPlatformAgent();
         this.applicationFactory = builder.getApplicationFactory();
         this.applicationRepository = builder.getApplicationRepository();
+        this.userFactory = builder.getUserFactory();
+        this.userRepository = builder.getUserRepository();
+        this.identifierFactory = builder.getIdentifierFactory();
+        this.identifierRepository = builder.getIdentifierRepository();
+        this.oAuthIdentifierFactory = builder.getoAuthIdentifierFactory();
+        this.oAuthIdentifierRepository = builder.getOAuthIdentifierRepository();
+        this.roleFactory = builder.getRoleFactory();
+        this.roleRepository = builder.getRoleRepository();
+        this.apiKeyFactory = builder.getApiKeyFactory();
+        this.apiKeyRepository = builder.getApiKeyRepository();
+        this.userSessionFactory = builder.getUserSessionFactory();
+        this.userSessionRepository = builder.getUserSessionRepository();
+        this.resourceFactory = builder.getResourceFactory();
+        this.resourceRepository = builder.getResourceRepository();
+        this.principalRepository = builder.getPrincipalRepository();
         this.responseMapper = builder.getResponseMapper();
         this.userAuthenticator = builder.getUserAuthenticator();
     }
@@ -312,6 +357,18 @@ public class SAAMServer implements SAAM {
         return policy;
     }
 
+    private OAuthIdentifier getEnsuredOAuthIdentifier(OAuthIdentifierPolicy policy, String content) {
+        OAuthIdentifier identifier = oAuthIdentifierRepository.findByKey(policy, content);
+        if (null == identifier) {
+            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
+                    .message("No such oauth identifier found.")
+                    .details("platform", policy.getPlatform())
+                    .details("entity", "OAuthIdentifier")
+                    .build();
+        }
+        return identifier;
+    }
+
     @Override
     public ApplicationResponse removeOAuthIdentifierPolicy(String applicationId, OAuthPlatform platform) {
         Application application = getEnsuredApplicationById(applicationId);
@@ -323,22 +380,32 @@ public class SAAMServer implements SAAM {
 
     @Override
     public UserResponse register(UserRegisterRequest request) {
-        Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = application.createUser();
-        setIdentifiers(user, request.getIdentifiers());
-        setOAuthIdentifiers(user, request.getOAuthIdentifiers());
-        user.changePassword(request.getPassword(), request.getPassword());
-        user.setPlayingRoles(getRoles(application, request.getRoleIds()));
-        storeApplication(application);
-        return responseMapper.toResponse(user);
+        transactionManager.start();
+        User user = null;
+        Application application = null;
+        try {
+            application = getEnsuredApplicationById(request.getApplicationId());
+            user = userFactory.generate(application);
+            user.changePassword(request.getPassword(), request.getPassword());
+            user.setPlayingRoles(getRoles(application, request.getRoleIds()));
+            user = userRepository.store(user);
+            setIdentifiers(user, request.getIdentifiers());
+            setOAuthIdentifiers(user, request.getOAuthIdentifiers());
+            transactionManager.commit();
+        } catch (RuntimeException e) {
+            transactionManager.rollback();
+        }
+        List<Identifier> identifiers = identifierRepository.findByUser(application, user);
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
     }
 
     private void setIdentifiers(User user, Map<IdentifierType, String> identifiers) {
         Application application = user.getApplication();
         for (Map.Entry<IdentifierType, String> entry: identifiers.entrySet()) {
             IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, entry.getKey());
-            policy.addIdentifier(entry.getValue(), user);
-            application.updateIdentifierPolicy(policy);
+            Identifier identifier = identifierFactory.generate(policy, entry.getValue(), user);
+            identifierRepository.store(identifier);
         }
     }
 
@@ -346,15 +413,19 @@ public class SAAMServer implements SAAM {
         Application application = user.getApplication();
         for (Map.Entry<OAuthPlatform, UserRegisterRequest.OAuthIdentifier> entry: identifiers.entrySet()) {
             OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, entry.getKey());
-            policy.addIdentifier(entry.getValue().getIdentifier(), entry.getValue().getProperties(), user);
-            application.updateOAuthIdentifierPolicy(policy);
+            OAuthIdentifier identifier = oAuthIdentifierFactory.generate(
+                    policy,
+                    entry.getValue().getIdentifier(),
+                    entry.getValue().getProperties(),
+                    user);
+            oAuthIdentifierRepository.store(identifier);
         }
     }
 
     private List<Role> getRoles(Application application, List<String> roleIds) {
         List<Role> roles = new ArrayList<>(roleIds.size());
         for (String id: roleIds) {
-            Role role = application.fetchRoleById(id);
+            Role role = roleRepository.findById(application, id);
             if (null == role) {
                 throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
                         .message("No such role found, " + id)
@@ -371,12 +442,11 @@ public class SAAMServer implements SAAM {
     public void removeUser(String applicationId, String id) {
         Application application = getEnsuredApplicationById(applicationId);
         User user = getEnsuredUser(application, id);
-        application.removeUser(user);
-        storeApplication(application);
+        userRepository.remove(user);
     }
 
     private User getEnsuredUser(Application application, String id) {
-        User user = application.fetchUserById(id);
+        User user = userRepository.findById(application, id);
         if (null == user) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
                     .message("No user found, " + id)
@@ -390,28 +460,43 @@ public class SAAMServer implements SAAM {
     @Override
     public UserResponse getUserById(String applicationId, String id) {
         Application application = getEnsuredApplicationById(applicationId);
-        User user = application.fetchUserById(id);
-        return responseMapper.toResponse(user);
+        User user = getEnsuredUser(application, id);
+        List<Identifier> identifiers = identifierRepository.findByUser(application, user);
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
     }
 
     @Override
     public UserResponse getUserByIdentifier(String applicationId, String identifier) {
         Application application = getEnsuredApplicationById(applicationId);
-        User user = application.fetchUserByIdentifier(identifier);
-        return responseMapper.toResponse(user);
+        Identifier id = getEnsuredIdentifier(application, identifier);
+        User user = id.getUser();
+        if (null == user) {
+            return null;
+        }
+        List<Identifier> identifiers = identifierRepository.findByUser(application, user);
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
     }
 
     @Override
     public UserResponse getUserByOAuthIdentifier(String applicationId, OAuthPlatform platform, String identifier) {
         Application application = getEnsuredApplicationById(applicationId);
-        User user = application.fetchUserByOAuthIdentifier(platform, identifier);
-        return responseMapper.toResponse(user);
+        OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, platform);
+        OAuthIdentifier id = getEnsuredOAuthIdentifier(policy, identifier);
+        User user = id.getUser();
+        if (null == user) {
+            return null;
+        }
+        List<Identifier> identifiers = identifierRepository.findByUser(application, user);
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
     }
 
     @Override
     public PaginatedResult<List<UserResponse>> listUsersByApplicationId(String applicationId) {
         Application application = getEnsuredApplicationById(applicationId);
-        PaginatedResult<List<User>> result = application.fetchAllUsers();
+        PaginatedResult<List<User>> result = userRepository.findByApplication(application);
         return new PaginatedResult<>(new PaginatedResultMapper<List<UserResponse>, List<User>>() {
             @Override
             protected List<UserResponse> toResult(List<User> source, Object[] arguments) {
@@ -422,8 +507,10 @@ public class SAAMServer implements SAAM {
 
     private List<UserResponse> toUserResponses(List<User> source) {
         List<UserResponse> responses = new ArrayList<>(source.size());
-        for (User entity: source) {
-            responses.add(responseMapper.toResponse(entity));
+        for (User user: source) {
+            List<Identifier> identifiers = identifierRepository.findByUser(user.getApplication(), user);
+            List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(user.getApplication(), user);
+            responses.add(responseMapper.toResponse(user, identifiers, oAuthIdentifiers));
         }
         return responses;
     }
@@ -431,58 +518,53 @@ public class SAAMServer implements SAAM {
     @Override
     public UserResponse updateRoles(UserRoleUpdateRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = application.fetchUserById(request.getUserId());
+        User user = userRepository.findById(application, request.getUserId());
         user.setPlayingRoles(getRoles(application, request.getRoleIds()));
-        application.updateUser(user);
-        storeApplication(application);
-        return responseMapper.toResponse(user);
+        user = userRepository.store(user);
+        List<Identifier> identifiers = identifierRepository.findByUser(user.getApplication(), user);
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
     }
 
     @Override
     public UserResponse addIdentifier(IdentifierAddRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = application.fetchUserById(request.getUserId());
+        User user = userRepository.findById(application, request.getUserId());
         IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getType());
-        policy.addIdentifier(request.getIdentifier(), user);
-        application.updateIdentifierPolicy(policy);
-        storeApplication(application);
-        return responseMapper.toResponse(user);
+        Identifier identifier = identifierFactory.generate(policy, request.getIdentifier(), user);
+        identifierRepository.store(identifier);
+        List<Identifier> identifiers = identifierRepository.findByUser(application, user);
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
     }
 
     @Override
     public UserResponse removeIdentifier(IdentifierRemoveRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = application.fetchUserById(request.getUserId());
-        IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getType());
-        Identifier identifier = getEnsuredIdentifier(policy, user, request.getIdentifier());
-        policy.removeIdentifier(identifier);
-        application.updateIdentifierPolicy(policy);
-        storeApplication(application);
-        return responseMapper.toResponse(user);
+        Identifier identifier = getEnsuredIdentifier(application, request.getIdentifier());
+        identifierRepository.remove(identifier);
+        User user = getEnsuredUser(application, request.getUserId());
+        List<Identifier> identifiers = identifierRepository.findByUser(application, user);
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
     }
 
     @Override
     public IdentifierVerificationCodeResponse generateVerificationCode(
             IdentifierVerificationCodeGenerateRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = getEnsuredUser(application, request.getUserId());
-        IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getIdentifierType());
-        Identifier identifier = getEnsuredIdentifier(policy, user, request.getIdentifier());
+        Identifier identifier = getEnsuredIdentifier(application, request.getIdentifier());
         identifier.generateVerificationCode(request.getTimeout());
-        policy.updateIdentifier(identifier);
-        application.updateIdentifierPolicy(policy);
-        storeApplication(application);
+        identifierRepository.store(identifier);
         return responseMapper.toResponse(identifier);
     }
 
-    private Identifier getEnsuredIdentifier(IdentifierPolicy policy, User user, String content) {
-        Identifier identifier = policy.fetchIdentifierByUserAndContent(user, content);
+    private Identifier getEnsuredIdentifier(Application application, String content) {
+        Identifier identifier = identifierRepository.findByKey(application, content);
         if (null == identifier) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
-                    .message("No such identifier found, " + content + " for user, " + user.getId())
-                    .details("applicationId", policy.getApplication().getId())
-                    .details("identifierType", policy.getType())
-                    .details("userId", user.getId())
+                    .message("No such identifier found, " + content)
+                    .details("applicationId", application.getId())
                     .details("identifier", content)
                     .details("type", "Identifier")
                     .build();
@@ -493,92 +575,82 @@ public class SAAMServer implements SAAM {
     @Override
     public UserResponse verifyIdentifier(IdentifierVerifyRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = application.fetchUserById(request.getUserId());
-        IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getIdentifierType());
-        Identifier identifier = getEnsuredIdentifier(policy, user, request.getIdentifier());
+        Identifier identifier = getEnsuredIdentifier(application, request.getIdentifier());
         identifier.verify(request.getVerificationCode());
-        policy.updateIdentifier(identifier);
-        application.updateIdentifierPolicy(policy);
-        storeApplication(application);
-        return responseMapper.toResponse(user);
+        User user = identifier.getUser();
+        List<Identifier> identifiers = identifierRepository.findByUser(application, user);
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
     }
 
     @Override
     public UserResponse connectOAuthIdentifier(OAuthIdentifierConnectRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = application.fetchUserById(request.getUserId());
+        User user = getEnsuredUser(application, request.getUserId());
         OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
-        OAuthIdentifier identifier = policy.fetchIdentifierByUserAndId(user, request.getIdentifier());
+        OAuthIdentifier identifier = oAuthIdentifierRepository.findByKey(policy, request.getIdentifier());
         if (null == identifier) {
-            policy.addIdentifier(request.getIdentifier(), request.getProperties(), user);
+            identifier = oAuthIdentifierFactory.generate(
+                    policy, request.getIdentifier(), request.getProperties(), user);
         } else {
             identifier.setProperties(request.getProperties());
-            policy.updateIdentifier(identifier);
         }
-        application.updateOAuthIdentifierPolicy(policy);
-        storeApplication(application);
-        return responseMapper.toResponse(user);
+        oAuthIdentifierRepository.store(identifier);
+        List<Identifier> identifiers = identifierRepository.findByUser(application, user);
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
     }
 
     @Override
     public UserResponse disconnectOAuthIdentifier(OAuthIdentifierDisconnectRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = application.fetchUserById(request.getUserId());
+        User user = getEnsuredUser(application, request.getUserId());
         OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
-        OAuthIdentifier identifier = policy.fetchIdentifierByUserAndId(user, request.getIdentifier());
-        if (null == identifier) {
-            throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
-                    .message("No such oauth identifier found, " + request.getIdentifier() + " for user, " + user.getId())
-                    .details("type", "OAuthIdentifier")
-                    .details("userId", user.getId())
-                    .details("platform", request.getPlatform())
-                    .details("identifier", request.getIdentifier())
-                    .build();
-        }
-        policy.removeIdentifier(identifier);
-        application.updateOAuthIdentifierPolicy(policy);
-        storeApplication(application);
-        return responseMapper.toResponse(user);
+        OAuthIdentifier identifier = getEnsuredOAuthIdentifier(policy, request.getIdentifier());
+        oAuthIdentifierRepository.remove(identifier);
+        List<Identifier> identifiers = identifierRepository.findByUser(application, user);
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
     }
 
     @Override
     public UserResponse changePassword(PasswordChangeRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = application.fetchUserById(request.getUserId());
+        User user = getEnsuredUser(application, request.getUserId());
         user.changePassword(request.getOldPassword(), request.getNewPassword());
-        application.updateUser(user);
-        storeApplication(application);
-        return responseMapper.toResponse(user);
+        user = userRepository.store(user);
+        List<Identifier> identifiers = identifierRepository.findByUser(application, user);
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
     }
 
     @Override
     public PasswordResetCodeResponse generateResetCode(PasswordResetCodeGenerateRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        IdentifierPolicy policy = getEnsuredIdentifierPolicy(application, request.getIdentifierType());
-        User user = application.fetchUserById(request.getUserId());
-        Identifier identifier = getEnsuredIdentifier(policy, user, request.getIdentifier());
+        User user = getEnsuredUser(application, request.getUserId());
+        Identifier identifier = getEnsuredIdentifier(application, request.getIdentifier());
         PasswordResetCode resetCode = user.generatePasswordResetCode(identifier, request.getTimeout());
-        application.updateUser(user);
-        storeApplication(application);
+        user = userRepository.store(user);
         return responseMapper.toResponse(user, identifier, resetCode);
     }
 
     @Override
     public UserResponse resetPassword(PasswordResetRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = application.fetchUserById(request.getUserId());
+        User user = getEnsuredUser(application, request.getUserId());
         user.resetPassword(request.getResetCode(), request.getNewPassword());
-        application.updateUser(user);
-        storeApplication(application);
-        return responseMapper.toResponse(user);
+        user = userRepository.store(user);
+        List<Identifier> identifiers = identifierRepository.findByUser(application, user);
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
     }
 
     @Override
     public APIKeyResponse addAPIKey(APIKeyAddRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = getEnsuredUser(application, request.getUserId());
-        APIKey apiKey = application.createAPIKey(user, request.getName());
-        storeApplication(application);
+        APIKey apiKey = apiKeyFactory.generate(application, user, request.getName());
+        apiKeyRepository.store(apiKey);
         return responseMapper.toResponse(apiKey);
     }
 
@@ -588,19 +660,21 @@ public class SAAMServer implements SAAM {
         APIKey apiKey = getEnsuredAPIKey(application, request.getId());
         apiKey.setName(request.getName());
         apiKey.setActive(request.isActive());
-        application.updateAPIKey(apiKey);
-        storeApplication(application);
+        apiKey = apiKeyRepository.store(apiKey);
         return responseMapper.toResponse(apiKey);
     }
 
     @Override
-    public void verifyAPIKey(APIKeyVerifyRequest request) {
+    public APIKeyResponse verifyAPIKey(APIKeyVerifyRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        application.verifyAPIKey(request.getId(), request.getSecretKey());
+        APIKey apiKey = getEnsuredAPIKey(application, request.getId());
+        apiKey.verify(request.getSecretKey());
+        apiKey = apiKeyRepository.store(apiKey);
+        return responseMapper.toResponse(apiKey);
     }
 
     private APIKey getEnsuredAPIKey(Application application, String id) {
-        APIKey apiKey = application.fetchAPIKeyById(id);
+        APIKey apiKey = apiKeyRepository.findById(application, id);
         if (null == apiKey) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
                     .message("No such API key found.")
@@ -616,14 +690,13 @@ public class SAAMServer implements SAAM {
     public void removeAPIKeyById(String applicationId, String id) {
         Application application = getEnsuredApplicationById(applicationId);
         APIKey apiKey = getEnsuredAPIKey(application, id);
-        application.removeAPIKey(apiKey);
-        storeApplication(application);
+        apiKeyRepository.remove(apiKey);
     }
 
     @Override
     public APIKeyResponse getAPIKeyById(String applicationId, String id) {
         Application application = getEnsuredApplicationById(applicationId);
-        APIKey apiKey = application.fetchAPIKeyById(id);
+        APIKey apiKey = apiKeyRepository.findById(application, id);
         return responseMapper.toResponse(apiKey);
     }
 
@@ -631,7 +704,7 @@ public class SAAMServer implements SAAM {
     public List<APIKeyResponse> listAPIKeysByApplicationIdAndUserId(String applicationId, String userId) {
         Application application = getEnsuredApplicationById(applicationId);
         User user = getEnsuredUser(application, userId);
-        List<APIKey> apiKeys = application.fetchAPIKeysByOwner(user);
+        List<APIKey> apiKeys = apiKeyRepository.findByOwner(user);
         List<APIKeyResponse> responses = new ArrayList<>();
         for (APIKey apiKey: apiKeys) {
             responses.add(responseMapper.toResponse(apiKey));
@@ -642,20 +715,38 @@ public class SAAMServer implements SAAM {
     @Override
     public UserSessionResponse login(CredentialLoginRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = application.fetchUserByIdentifier(request.getIdentifier());
-        UserSession session = userAuthenticator.login(
-                user, request.getPassword(), request.getSessionDetails(), request.getSessionTimeout());
-        storeApplication(application);
+        Identifier identifier = identifierRepository.findByKey(application, request.getIdentifier());
+        if (null == identifier) {
+            throw BusinessError.raise(Errors.AUTHENTICATION_FAILED)
+                    .message("Failed to login.")
+                    .build();
+        }
+        User user = identifier.getUser();
+        if (user.verifyPassword(request.getPassword())) {
+            throw BusinessError.raise(Errors.AUTHENTICATION_FAILED)
+                    .message("Failed to login.")
+                    .build();
+        }
+        UserSession session = userSessionFactory.generate(
+                application, user, request.getSessionDetails(), request.getSessionTimeout());
+        session = userSessionRepository.store(session);
         return responseMapper.toResponse(session);
     }
 
     @Override
     public UserSessionResponse login(OAuthLoginRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        User user = application.fetchUserByOAuthIdentifier(request.getPlatform(), request.getIdentifier());
-        UserSession session = userAuthenticator.login(
-                user, request.getSessionDetails(), request.getSessionTimeout());
-        storeApplication(application);
+        OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
+        OAuthIdentifier identifier = oAuthIdentifierRepository.findByKey(policy, request.getIdentifier());
+        if (null == identifier) {
+            throw BusinessError.raise(Errors.AUTHENTICATION_FAILED)
+                    .message("Failed to login.")
+                    .build();
+        }
+        User user = identifier.getUser();
+        UserSession session = userSessionFactory.generate(
+                application, user, request.getSessionDetails(), request.getSessionTimeout());
+        session = userSessionRepository.store(session);
         return responseMapper.toResponse(session);
     }
 
@@ -663,9 +754,9 @@ public class SAAMServer implements SAAM {
     public UserSessionResponse createUserSession(UserSessionCreateRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         User user = getEnsuredUser(application, request.getUserId());
-        UserSession session = application.createUserSession(
-                user, request.getDetails(), request.getSessionTimeout());
-        storeApplication(application);
+        UserSession session = userSessionFactory.generate(
+                application, user, request.getDetails(), request.getSessionTimeout());
+        session = userSessionRepository.store(session);
         return responseMapper.toResponse(session);
     }
 
@@ -673,12 +764,11 @@ public class SAAMServer implements SAAM {
     public void removeUserSessionByKey(String applicationId, String sessionKey) {
         Application application = getEnsuredApplicationById(applicationId);
         UserSession session = getEnsuredUserSession(application, sessionKey);
-        application.removeUserSession(session);
-        storeApplication(application);
+        userSessionRepository.remove(session);
     }
 
     private UserSession getEnsuredUserSession(Application application, String key) {
-        UserSession session = application.fetchUserSessionByKey(key);
+        UserSession session = userSessionRepository.findByKey(application, key);
         if (null == session) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
                     .message("No such user usersession found.")
@@ -693,23 +783,22 @@ public class SAAMServer implements SAAM {
     @Override
     public void removeUserSessionsByUserId(String applicationId, String userId) {
         Application application = getEnsuredApplicationById(applicationId);
-        User user = application.fetchUserById(userId);
-        application.removeAllUserSession(user);
-        storeApplication(application);
+        User user = getEnsuredUser(application, userId);
+        userSessionRepository.removeByUser(user);
     }
 
     @Override
     public UserSessionResponse getUserSessionByKey(String applicationId, String key) {
         Application application = getEnsuredApplicationById(applicationId);
-        UserSession session = application.fetchUserSessionByKey(key);
+        UserSession session = userSessionRepository.findByKey(application, key);
         return responseMapper.toResponse(session);
     }
 
     @Override
     public PaginatedResult<List<UserSessionResponse>> listUserSessionsByUserId(String applicationId, String userId) {
         Application application = getEnsuredApplicationById(applicationId);
-        User user = application.fetchUserById(userId);
-        PaginatedResult<List<UserSession>> result = application.fetchUserSessionsByUser(user);
+        User user = getEnsuredUser(application, userId);
+        PaginatedResult<List<UserSession>> result = userSessionRepository.findByOwner(user);
         return new PaginatedResult<>(new PaginatedResultMapper<List<UserSessionResponse>, List<UserSession>>() {
             @Override
             protected List<UserSessionResponse> toResult(List<UserSession> source, Object[] arguments) {
@@ -729,8 +818,8 @@ public class SAAMServer implements SAAM {
     @Override
     public RoleResponse addRole(RoleAddRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
-        Role role = application.addRole(request.getName());
-        storeApplication(application);
+        Role role = roleFactory.generate(application, request.getName());
+        role = roleRepository.store(role);
         return responseMapper.toResponse(role);
     }
 
@@ -739,13 +828,12 @@ public class SAAMServer implements SAAM {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         Role role = getEnsuredRole(application, request.getId());
         role.setName(request.getName());
-        application.updateRole(role);
-        storeApplication(application);
+        role = roleRepository.store(role);
         return responseMapper.toResponse(role);
     }
 
     private Role getEnsuredRole(Application application, String id) {
-        Role role = application.fetchRoleById(id);
+        Role role = roleRepository.findById(application, id);
         if (null == role) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
                     .message("No such role found.")
@@ -761,21 +849,20 @@ public class SAAMServer implements SAAM {
     public void removeRole(String applicationId, String roleId) {
         Application application = getEnsuredApplicationById(applicationId);
         Role role = getEnsuredRole(application, roleId);
-        application.removeRole(role);
-        storeApplication(application);
+        roleRepository.remove(role);
     }
 
     @Override
     public RoleResponse getRoleById(String applicationId, String id) {
         Application application = getEnsuredApplicationById(applicationId);
-        Role role = application.fetchRoleById(id);
+        Role role = roleRepository.findById(application, id);
         return responseMapper.toResponse(role);
     }
 
     @Override
     public PaginatedResult<List<RoleResponse>> listRoles(String applicationId) {
         Application application = getEnsuredApplicationById(applicationId);
-        PaginatedResult<List<Role>> result = application.fetchAllRoles();
+        PaginatedResult<List<Role>> result = roleRepository.findAll(application);
         return new PaginatedResult<>(new PaginatedResultMapper<List<RoleResponse>, List<Role>>() {
             @Override
             protected List<RoleResponse> toResult(List<Role> source, Object[] arguments) {
@@ -796,19 +883,18 @@ public class SAAMServer implements SAAM {
     public ResourceResponse storeResource(ResourceStoreRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         Principal owner = getEnsuredPrincipal(application, request.getOwnerId());
-        Resource resource = application.fetchResourceByKey(request.getKey());
+        Resource resource = resourceRepository.findByKey(application, request.getKey());
         if (null == resource) {
-            resource = application.createResource(request.getKey(), owner);
+            resource = resourceFactory.generate(application, request.getKey(), owner);
         } else {
             resource.setOwner(owner);
-            application.updateResource(resource);
         }
-        storeApplication(application);
+        resourceRepository.store(resource);
         return responseMapper.toResponse(resource);
     }
 
     private Principal getEnsuredPrincipal(Application application, String id) {
-        Principal principal = application.fetchPrincipalById(id);
+        Principal principal = principalRepository.findById(application, id);
         if (null == principal) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
                     .message("No such principal found, " + id)
@@ -831,7 +917,7 @@ public class SAAMServer implements SAAM {
     }
 
     private Resource getEnsuredResource(Application application, String key) {
-        Resource resource = application.fetchResourceByKey(key);
+        Resource resource = resourceRepository.findByKey(application, key);
         if (null == resource) {
             throw BusinessError.raise(BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND)
                     .message("No such parent resource found, " + key)
@@ -847,14 +933,13 @@ public class SAAMServer implements SAAM {
     public void removeResource(String applicationId, String key) {
         Application application = getEnsuredApplicationById(applicationId);
         Resource resource = getEnsuredResource(application, key);
-        application.removeResource(resource);
-        storeApplication(application);
+        resourceRepository.remove(resource);
     }
 
     @Override
     public ResourceResponse getResourceByKey(String applicationId, String key) {
         Application application = getEnsuredApplicationById(applicationId);
-        Resource resource = application.fetchResourceByKey(key);
+        Resource resource = resourceRepository.findByKey(application, key);
         return responseMapper.toResponse(resource);
     }
 
@@ -867,7 +952,7 @@ public class SAAMServer implements SAAM {
         if (null != parentKey && parentKey.trim().length() > 0) {
             parent = getEnsuredResource(application, parentKey);
         }
-        PaginatedResult<List<Resource>> result = application.fetchResourcesByOwner(owner, parent);
+        PaginatedResult<List<Resource>> result = resourceRepository.findByOwner(application, owner, parent);
         return new PaginatedResult<>(new PaginatedResultMapper<List<ResourceResponse>, List<Resource>>() {
             @Override
             protected List<ResourceResponse> toResult(List<Resource> source, Object[] arguments) {
@@ -892,7 +977,8 @@ public class SAAMServer implements SAAM {
             String applicationId, String principalId) {
         Application application = getEnsuredApplicationById(applicationId);
         Principal principal = getEnsuredPrincipal(application, principalId);
-        PaginatedResult<List<Resource>> result = application.fetchPermissionAssignedResources(principal);
+        PaginatedResult<List<Resource>> result =
+                resourceRepository.findPermissionAssignedResources(application, principal);
         return new PaginatedResult<>(new PaginatedResultMapper<List<ResourceResponse>, List<Resource>>() {
             @Override
             protected List<ResourceResponse> toResult(List<Resource> source, Object[] arguments) {
@@ -908,7 +994,7 @@ public class SAAMServer implements SAAM {
         if (null != parentKey && parentKey.trim().length() > 0) {
             parent = getEnsuredResource(application, parentKey);
         }
-        PaginatedResult<List<Resource>> result = application.fetchAllResources(parent);
+        PaginatedResult<List<Resource>> result = resourceRepository.findByApplication(application, parent);
         return new PaginatedResult<>(new PaginatedResultMapper<List<ResourceResponse>, List<Resource>>() {
             @Override
             protected List<ResourceResponse> toResult(List<Resource> source, Object[] arguments) {
@@ -921,7 +1007,7 @@ public class SAAMServer implements SAAM {
     public PermissionResponse storePermission(PermissionStoreRequest request) {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         Principal principal = getEnsuredPrincipal(application, request.getPrincipalId());
-        Resource resource = application.fetchResourceByKey(request.getResourceKey());
+        Resource resource = getEnsuredResource(application, request.getResourceKey());
         Permission permission = resource.fetchPermissionById(principal);
         if (null == permission) {
             permission = resource.assignPermission(principal, request.getActions());
@@ -929,8 +1015,7 @@ public class SAAMServer implements SAAM {
             permission.setActions(request.getActions());
             resource.changePermission(permission);
         }
-        application.updateResource(resource);
-        storeApplication(application);
+        resourceRepository.store(resource);
         return responseMapper.toResponse(permission);
     }
 
@@ -941,8 +1026,7 @@ public class SAAMServer implements SAAM {
         Resource resource = getEnsuredResource(application, resourceKey);
         Permission permission = getEnsuredPermission(resource, principal);
         resource.removePermission(permission);
-        application.updateResource(resource);
-        storeApplication(application);
+        resourceRepository.store(resource);
     }
 
     private Permission getEnsuredPermission(Resource resource, Principal principal) {
@@ -963,8 +1047,8 @@ public class SAAMServer implements SAAM {
     public PermissionResponse getPermissionByPrincipalId(
             String applicationId, String resourceKey, String principalId) {
         Application application = getEnsuredApplicationById(applicationId);
-        Principal principal = application.fetchPrincipalById(principalId);
-        Resource resource = application.fetchResourceByKey(resourceKey);
+        Principal principal = getEnsuredPrincipal(application, principalId);
+        Resource resource = getEnsuredResource(application, resourceKey);
         Permission permission = resource.fetchPermissionById(principal);
         return responseMapper.toResponse(permission);
     }
@@ -973,7 +1057,7 @@ public class SAAMServer implements SAAM {
     public PaginatedResult<List<PermissionResponse>> listPermissions(
             String applicationId, String resourceKey) {
         Application application = getEnsuredApplicationById(applicationId);
-        Resource resource = application.fetchResourceByKey(resourceKey);
+        Resource resource = getEnsuredResource(application, resourceKey);
         PaginatedResult<List<Permission>> result = resource.fetchAllPermissions();
         return new PaginatedResult<>(new PaginatedResultMapper<List<PermissionResponse>, List<Permission>>() {
             @Override

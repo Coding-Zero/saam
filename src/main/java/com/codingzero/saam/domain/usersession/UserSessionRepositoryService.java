@@ -27,11 +27,12 @@ public class UserSessionRepositoryService implements UserSessionRepository {
     }
 
     @Override
-    public void store(UserSession session) {
+    public UserSession store(UserSession session) {
         UserSessionEntity entity = (UserSessionEntity) session;
         if (entity.isNew()) {
             access.insert(entity.getObjectSegment());
         }
+        return factory.reconstitute(entity.getObjectSegment(), session.getApplication(), session.getUser());
     }
 
     @Override

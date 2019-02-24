@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public final class MySQLHelper {
+public final class MySQLQueryHelper {
 
     private static final Map<String, String> sortingMap = new HashMap<>();
     {

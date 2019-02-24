@@ -20,18 +20,18 @@ public class OAuthIdentifierAccessMySQLTest extends OAuthIdentifierAccessTest {
 
     @Override
     protected OAuthIdentifierAccess getAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getOAuthIdentifierAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getOAuthIdentifierAccess();
     }
 
     @Override
     protected String getApplicationId() {
-        return Helper.sharedInstance().getMySQLAccessModule().getApplicationAccess().generateId();
+        return Helper.sharedInstance().getMySQLAccessHelper().getApplicationAccess().generateId();
     }
 
     @Override
     protected String getUserId(String applicationId) {
         return Helper.sharedInstance()
-                .getMySQLAccessModule()
+                .getMySQLAccessHelper()
                 .getPrincipalAccess()
                 .generateId(applicationId, PrincipalType.USER);
     }

@@ -20,16 +20,16 @@ public class PermissionAccessMySQLTest extends PermissionAccessTest {
 
     @Override
     protected PermissionAccess getAccess() {
-        return Helper.sharedInstance().getMySQLAccessModule().getPermissionAccess();
+        return Helper.sharedInstance().getMySQLAccessHelper().getPermissionAccess();
     }
 
     @Override
     protected String getApplicationId() {
-        return Helper.sharedInstance().getMySQLAccessModule().getApplicationAccess().generateId();
+        return Helper.sharedInstance().getMySQLAccessHelper().getApplicationAccess().generateId();
     }
 
     @Override
     protected String getPrincipalId(String applicationId, PrincipalType type) {
-        return Helper.sharedInstance().getMySQLAccessModule().getPrincipalAccess().generateId(applicationId, type);
+        return Helper.sharedInstance().getMySQLAccessHelper().getPrincipalAccess().generateId(applicationId, type);
     }
 }

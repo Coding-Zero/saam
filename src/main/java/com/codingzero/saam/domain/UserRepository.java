@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UserRepository {
 
-    void store(User user);
+    User store(User user);
 
     void remove(User user);
 

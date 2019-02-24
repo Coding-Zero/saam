@@ -1,7 +1,7 @@
 package com.codingzero.saam.infrastructure.database;
 
+import com.codingzero.saam.common.IdentifierKey;
 import com.codingzero.saam.common.IdentifierType;
-import com.codingzero.saam.infrastructure.database.IdentifierOS;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.transaction.TransactionalService;
 
@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IdentifierAccess  extends TransactionalService {
 
-    boolean isDuplicateContent(String applicationId, IdentifierType type, String content);
+    boolean isDuplicateContent(String applicationId, String content);
 
     int countByUserId(String applicationId, String userId);
 
@@ -29,7 +29,7 @@ public interface IdentifierAccess  extends TransactionalService {
 
     void deleteByApplicationId(String id);
 
-    IdentifierOS selectByTypeAndContent(String applicationId, IdentifierType type, String content);
+    IdentifierOS selectByKey(IdentifierKey key);
 
     List<IdentifierOS> selectByUserId(String applicationId, String userId);
 
