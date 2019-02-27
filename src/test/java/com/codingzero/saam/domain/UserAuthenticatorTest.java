@@ -19,10 +19,12 @@ public class UserAuthenticatorTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
+    private UserSessionFactory userSessionFactory;
     private UserAuthenticator service;
 
     @Before
     public void setUp() {
+        userSessionFactory = mock(UserSessionFactory.class);
         service = new UserAuthenticator(userSessionFactory);
     }
 
@@ -33,7 +35,7 @@ public class UserAuthenticatorTest {
         UserSession userSession = mock(UserSession.class);
         User user = mock(User.class);
         Application application = mock(Application.class);
-        when(application.createUserSession(user, details, timeout)).thenReturn(userSession);
+        when(userSessionFactory.generate(application, user, details, timeout)).thenReturn(userSession);
         when(user.getApplication()).thenReturn(application);
         UserSession actualSession = service.login(user, details, timeout);
         assertEquals(userSession, actualSession);
@@ -48,7 +50,7 @@ public class UserAuthenticatorTest {
         User user = mock(User.class);
         when(user.verifyPassword(password)).thenReturn(true);
         Application application = mock(Application.class);
-        when(application.createUserSession(user, details, timeout)).thenReturn(userSession);
+        when(userSessionFactory.generate(application, user, details, timeout)).thenReturn(userSession);
         when(user.getApplication()).thenReturn(application);
         UserSession actualSession = service.login(user, password, details, timeout);
         assertEquals(userSession, actualSession);

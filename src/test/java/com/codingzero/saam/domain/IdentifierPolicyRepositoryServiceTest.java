@@ -9,6 +9,7 @@ import com.codingzero.saam.domain.identifier.IdentifierRepositoryService;
 import com.codingzero.saam.domain.application.UsernamePolicyEntity;
 import com.codingzero.saam.domain.application.UsernamePolicyRepositoryService;
 import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
+import com.codingzero.saam.infrastructure.database.IdentifierAccess;
 import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
 import org.junit.Before;
@@ -30,7 +31,7 @@ public class IdentifierPolicyRepositoryServiceTest {
     private IdentifierPolicyAccess access;
     private EmailPolicyRepositoryService emailIdentifierPolicyRepository;
     private UsernamePolicyRepositoryService usernameIdentifierPolicyRepository;
-    private IdentifierRepositoryService identifierRepository;
+    private IdentifierAccess identifierAccess;
     private IdentifierPolicyRepositoryService service;
 
     @Before
@@ -38,12 +39,12 @@ public class IdentifierPolicyRepositoryServiceTest {
         access = mock(IdentifierPolicyAccess.class);
         emailIdentifierPolicyRepository = mock(EmailPolicyRepositoryService.class);
         usernameIdentifierPolicyRepository = mock(UsernamePolicyRepositoryService.class);
-        identifierRepository = mock(IdentifierRepositoryService.class);
+        identifierAccess = mock(IdentifierAccess.class);
         service = new IdentifierPolicyRepositoryService(
                 access,
                 emailIdentifierPolicyRepository,
                 usernameIdentifierPolicyRepository,
-                identifierRepository);
+                identifierAccess);
     }
 
     @Test
@@ -56,7 +57,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
         verify(usernameIdentifierPolicyRepository, times(1)).store(entity);
-        verify(entity, times(1)).getDirtyIdentifiers();
     }
 
     @Test
@@ -69,7 +69,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
         verify(usernameIdentifierPolicyRepository, times(1)).store(entity);
-        verify(entity, times(1)).getDirtyIdentifiers();
     }
 
     @Test
@@ -82,7 +81,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
         verify(emailIdentifierPolicyRepository, times(1)).store(entity);
-        verify(entity, times(1)).getDirtyIdentifiers();
     }
 
     @Test
@@ -95,7 +93,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         when(entity.getObjectSegment()).thenReturn(os);
         service.store(entity);
         verify(emailIdentifierPolicyRepository, times(1)).store(entity);
-        verify(entity, times(1)).getDirtyIdentifiers();
     }
 
     @Test
@@ -105,7 +102,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         UsernamePolicyOS os = mock(UsernamePolicyOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.remove(entity);
-        verify(identifierRepository, times(1)).remove(entity);
         verify(usernameIdentifierPolicyRepository, times(1)).remove(entity);
     }
 
@@ -116,7 +112,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         EmailPolicyOS os = mock(EmailPolicyOS.class);
         when(entity.getObjectSegment()).thenReturn(os);
         service.remove(entity);
-        verify(identifierRepository, times(1)).remove(entity);
         verify(emailIdentifierPolicyRepository, times(1)).remove(entity);
     }
 
@@ -126,7 +121,6 @@ public class IdentifierPolicyRepositoryServiceTest {
         Application entity = mock(Application.class);
         when(entity.getId()).thenReturn(applicationId);
         service.removeAll(entity);
-        verify(identifierRepository, times(1)).removeAll(entity);
         verify(usernameIdentifierPolicyRepository, times(1)).removeAll(entity);
         verify(emailIdentifierPolicyRepository, times(1)).removeAll(entity);
     }

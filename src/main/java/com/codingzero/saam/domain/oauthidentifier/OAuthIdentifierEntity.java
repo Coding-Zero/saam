@@ -1,8 +1,8 @@
 package com.codingzero.saam.domain.oauthidentifier;
 
-import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.OAuthIdentifier;
+import com.codingzero.saam.domain.OAuthIdentifierPolicy;
 import com.codingzero.saam.domain.User;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierOS;
@@ -40,8 +40,8 @@ public class OAuthIdentifierEntity extends EntityObject<OAuthIdentifierOS> imple
     }
 
     @Override
-    public OAuthPlatform getPlatform() {
-        return getObjectSegment().getKey().getPlatform();
+    public OAuthIdentifierPolicy getPolicy() {
+        return getApplication().fetchOAuthIdentifierPolicy(getObjectSegment().getKey().getPlatform());
     }
 
     @Override

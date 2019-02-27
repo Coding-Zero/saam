@@ -29,6 +29,7 @@ public class OAuthIdentifierEntityTest {
     private OAuthIdentifierOS objectSegment;
     private OAuthIdentifierPolicy policy;
     private User user;
+    private Application application;
     private UserRepositoryService userRepository;
     private OAuthIdentifierEntity entity;
 
@@ -37,10 +38,12 @@ public class OAuthIdentifierEntityTest {
         objectSegment = mock(OAuthIdentifierOS.class);
         policy = mock(OAuthIdentifierPolicy.class);
         user = mock(User.class);
+        application = mock(Application.class);
         userRepository = mock(UserRepositoryService.class);
         entity = new OAuthIdentifierEntity(
                 objectSegment,
-                application, user,
+                application,
+                user,
                 userRepository);
     }
 
@@ -77,7 +80,7 @@ public class OAuthIdentifierEntityTest {
     public void testGetPolicy() {
         OAuthIdentifierPolicy policy = mock(OAuthIdentifierPolicy.class);
         Application application = mock(Application.class);
-        when(objectSegment.getPlatform()).thenReturn(OAuthPlatform.GOOGLE);
+        when(objectSegment.getKey().getPlatform()).thenReturn(OAuthPlatform.GOOGLE);
         when(user.getApplication()).thenReturn(application);
         when(application.fetchOAuthIdentifierPolicy(OAuthPlatform.GOOGLE)).thenReturn(policy);
         entity = new OAuthIdentifierEntity(

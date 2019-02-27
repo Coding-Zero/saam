@@ -1,5 +1,6 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
+import com.codingzero.saam.common.PrincipalId;
 import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.infrastructure.database.PrincipalAccess;
 import com.codingzero.saam.infrastructure.database.PrincipalOS;
@@ -84,10 +85,10 @@ public abstract class PrincipalAccessTest {
         userAccess.insert(userOS);
         roleAccess.insert(roleOS);
 
-        PrincipalOS actualUserOS = access.selectById(userOS.getApplicationId(), userOS.getId());
+        PrincipalOS actualUserOS = access.selectById(userOS.getId().getApplicationId(), userOS.getId().getId());
         assertOS(userOS, actualUserOS);
 
-        PrincipalOS actualRoleOS = access.selectById(roleOS.getApplicationId(), roleOS.getId());
+        PrincipalOS actualRoleOS = access.selectById(roleOS.getId().getApplicationId(), roleOS.getId().getId());
         assertOS(roleOS, actualRoleOS);
     }
 
@@ -110,7 +111,7 @@ public abstract class PrincipalAccessTest {
         assertEquals(3, actualUsers.size());
         for (PrincipalOS os: users) {
             for (PrincipalOS actualOS: actualUsers) {
-                if (os.getId().equalsIgnoreCase(actualOS.getId())) {
+                if (os.getId().getId().equalsIgnoreCase(actualOS.getId().getId())) {
                     assertOS(os, actualOS);
                 }
             }
@@ -123,7 +124,7 @@ public abstract class PrincipalAccessTest {
         assertEquals(2, actualRoles.size());
         for (PrincipalOS os: roles) {
             for (PrincipalOS actualOS: actualRoles) {
-                if (os.getId().equalsIgnoreCase(actualOS.getId())) {
+                if (os.getId().getId().equalsIgnoreCase(actualOS.getId().getId())) {
                     assertOS(os, actualOS);
                 }
             }
@@ -148,7 +149,7 @@ public abstract class PrincipalAccessTest {
         assertEquals(5, actualPrincipals.size());
         for (PrincipalOS os: users) {
             for (PrincipalOS actualOS: actualPrincipals) {
-                if (os.getId().equalsIgnoreCase(actualOS.getId())) {
+                if (os.getId().getId().equalsIgnoreCase(actualOS.getId().getId())) {
                     assertOS(os, actualOS);
                 }
             }
@@ -156,7 +157,7 @@ public abstract class PrincipalAccessTest {
     }
 
     private void assertOS(PrincipalOS expectedOS, PrincipalOS actualOS) {
-        assertEquals(expectedOS.getApplicationId(), actualOS.getApplicationId());
+        assertEquals(expectedOS.getId().getApplicationId(), actualOS.getId().getApplicationId());
         assertEquals(expectedOS.getId(), actualOS.getId());
         assertEquals(expectedOS.getCreationTime(), actualOS.getCreationTime());
         assertEquals(expectedOS.getType(), actualOS.getType());
@@ -175,8 +176,7 @@ public abstract class PrincipalAccessTest {
         String principalId = getPrincipalId(applicationId, PrincipalType.ROLE);
         String name = generateRoleName();
         RoleOS os = new RoleOS(
-                applicationId,
-                principalId,
+                new PrincipalId(applicationId, principalId),
                 new Date(),
                 name);
         generatedObjectSegments.add(os);
@@ -187,8 +187,7 @@ public abstract class PrincipalAccessTest {
         String principalId = getPrincipalId(applicationId, PrincipalType.ROLE);
         String name = generateRoleName();
         RoleOS os = new RoleOS(
-                applicationId,
-                principalId,
+                new PrincipalId(applicationId, principalId),
                 new Date(),
                 name);
         generatedObjectSegments.add(os);
@@ -208,8 +207,7 @@ public abstract class PrincipalAccessTest {
         String applicationId = getApplicationId();
         String principalId = getPrincipalId(applicationId, PrincipalType.USER);
         UserOS os = new UserOS(
-                applicationId,
-                principalId,
+                new PrincipalId(applicationId, principalId),
                 new Date(),
                 null,
                 null,
@@ -220,8 +218,7 @@ public abstract class PrincipalAccessTest {
 
     private UserOS createUserOS(String applicationId, String principalId) {
         UserOS os = new UserOS(
-                applicationId,
-                principalId,
+                new PrincipalId(applicationId, principalId),
                 new Date(),
                 null,
                 null,

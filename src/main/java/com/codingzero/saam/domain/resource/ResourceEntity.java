@@ -64,7 +64,7 @@ public class ResourceEntity extends EntityObject<ResourceOS> implements Resource
     @Override
     public Resource getParent() {
         if (null == parent) {
-            parent = factory.loadParent(getApplication(), getKey(), getOwner());
+            parent = factory.loadParent(getApplication(), getKey());
         }
         return parent;
     }

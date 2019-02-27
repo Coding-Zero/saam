@@ -1,5 +1,6 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
+import com.codingzero.saam.common.PrincipalId;
 import com.codingzero.saam.infrastructure.database.APIKeyAccess;
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
@@ -363,7 +364,7 @@ public abstract class APIKeyAccessTest {
     }
 
     private void assertOS(APIKeyOS expectedOS, APIKeyOS actualOS) {
-        assertEquals(expectedOS.getApplicationId(), actualOS.getApplicationId());
+        assertEquals(expectedOS.getId().getApplicationId(), actualOS.getId().getApplicationId());
         assertEquals(expectedOS.getId(), actualOS.getId());
         assertEquals(expectedOS.getCreationTime(), actualOS.getCreationTime());
         assertEquals(expectedOS.getSecretKey(), actualOS.getSecretKey());
@@ -380,8 +381,7 @@ public abstract class APIKeyAccessTest {
 
     private APIKeyOS createObjectSegment(String applicationId, String userId) {
         APIKeyOS os = new APIKeyOS(
-                applicationId,
-                getPrincipalId(applicationId),
+                new PrincipalId(applicationId, getPrincipalId(applicationId)),
                 new Date(),
                 access.generateSecretKey(),
                 generateName(),

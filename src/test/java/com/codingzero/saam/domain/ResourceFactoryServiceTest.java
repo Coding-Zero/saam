@@ -6,8 +6,9 @@ import com.codingzero.saam.domain.resource.PermissionFactoryService;
 import com.codingzero.saam.domain.resource.PermissionRepositoryService;
 import com.codingzero.saam.domain.resource.ResourceEntity;
 import com.codingzero.saam.domain.resource.ResourceFactoryService;
-import com.codingzero.saam.infrastructure.database.ResourceOS;
+import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
 import com.codingzero.saam.infrastructure.database.ResourceAccess;
+import com.codingzero.saam.infrastructure.database.ResourceOS;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +27,8 @@ public class ResourceFactoryServiceTest {
     private ResourceAccess access;
     private PermissionFactoryService permissionFactory;
     private PermissionRepositoryService permissionRepository;
+    private PrincipalRepository principalRepository;
+    private ApplicationStatusVerifier applicationStatusVerifier;
     private ResourceFactoryService service;
 
     @Before
@@ -33,10 +36,14 @@ public class ResourceFactoryServiceTest {
         access = mock(ResourceAccess.class);
         permissionFactory = mock(PermissionFactoryService.class);
         permissionRepository = mock(PermissionRepositoryService.class);
+        principalRepository = mock(PrincipalRepository.class);
+        applicationStatusVerifier = mock(ApplicationStatusVerifier.class);
         service = new ResourceFactoryService(
                 access,
                 permissionFactory,
-                permissionRepository, principalRepository, applicationStatusVerifier);
+                permissionRepository,
+                principalRepository,
+                applicationStatusVerifier);
     }
 
     @Test
@@ -44,17 +51,15 @@ public class ResourceFactoryServiceTest {
         String applicationId = "applicationId";
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
-        String name = "resource";
+        String key = "resource";
         Principal owner = mock(Principal.class);
         when(owner.getType()).thenReturn(PrincipalType.USER);
-        Resource parent = null;
-        when(access.isDuplicateKey(applicationId, name)).thenReturn(false);
-        ResourceEntity entity = service.generate(application, name, owner, parent);
+        when(access.isDuplicateKey(applicationId, key)).thenReturn(false);
+        Resource entity = service.generate(application, key, owner);
         assertEquals(application, entity.getApplication());
-        assertEquals(name, entity.getKey());
+        assertEquals(key, entity.getKey());
         assertEquals(null, entity.getParent());
         assertEquals(owner, entity.getOwner());
-        assertEquals(true, entity.isNew());
     }
 
     @Test
@@ -62,20 +67,16 @@ public class ResourceFactoryServiceTest {
         String applicationId = "applicationId";
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
-        String name = "resource";
+        String key = "parent" + ResourceKeySeparator.VALUE + "resource";
         Principal owner = mock(Principal.class);
         when(owner.getType()).thenReturn(PrincipalType.USER);
         Resource parent = mock(Resource.class);
-        String parentName = "parent";
-        when(parent.getKey()).thenReturn(parentName);
-        String key = parentName + ResourceKeySeparator.VALUE + name;
         when(access.isDuplicateKey(applicationId, key)).thenReturn(false);
-        ResourceEntity entity = service.generate(application, name, owner, parent);
+        Resource entity = service.generate(application, key, owner);
         assertEquals(application, entity.getApplication());
         assertEquals(key, entity.getKey());
         assertEquals(parent, entity.getParent());
         assertEquals(owner, entity.getOwner());
-        assertEquals(true, entity.isNew());
     }
 
     @Test
@@ -83,13 +84,12 @@ public class ResourceFactoryServiceTest {
         String applicationId = "applicationId";
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
-        String name = "resource";
+        String key = "resource";
         Principal owner = mock(Principal.class);
         when(owner.getType()).thenReturn(PrincipalType.USER);
-        Resource parent = null;
-        when(access.isDuplicateKey(applicationId, name)).thenReturn(true);
+        when(access.isDuplicateKey(applicationId, key)).thenReturn(true);
         thrown.expect(BusinessError.class);
-        service.generate(application, name, owner, parent);
+        service.generate(application, key, owner);
     }
 
     @Test

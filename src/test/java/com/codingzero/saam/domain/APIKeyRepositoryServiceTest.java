@@ -3,10 +3,10 @@ package com.codingzero.saam.domain;
 import com.codingzero.saam.domain.principal.apikey.APIKeyEntity;
 import com.codingzero.saam.domain.principal.apikey.APIKeyFactoryService;
 import com.codingzero.saam.domain.principal.apikey.APIKeyRepositoryService;
-import com.codingzero.saam.infrastructure.database.APIKeyOS;
-import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import com.codingzero.saam.infrastructure.database.APIKeyAccess;
+import com.codingzero.saam.infrastructure.database.APIKeyOS;
 import com.codingzero.saam.infrastructure.database.PrincipalAccess;
+import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,7 +79,7 @@ public class APIKeyRepositoryServiceTest {
         String applicationId = "application-id";
         Application entity = mock(Application.class);
         when(entity.getId()).thenReturn(applicationId);
-        service.removeAll(entity);
+        service.removeByApplication(entity);
         verify(access, times(1)).deleteByApplicationId(applicationId);
     }
 
@@ -108,7 +108,7 @@ public class APIKeyRepositoryServiceTest {
         APIKeyOS os = mock(APIKeyOS.class);
         List<APIKeyOS> osList = Arrays.asList(os);
         when(access.selectByUserId(applicationId, userId)).thenReturn(osList);
-        service.findByOwner(application, user);
+        service.findByOwner(user);
         verify(factory, times(osList.size())).reconstitute(os, application, user);
     }
 

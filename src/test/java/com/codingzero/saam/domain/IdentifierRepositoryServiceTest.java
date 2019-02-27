@@ -1,11 +1,12 @@
 package com.codingzero.saam.domain;
 
+import com.codingzero.saam.common.IdentifierKey;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.domain.identifier.IdentifierEntity;
 import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
 import com.codingzero.saam.domain.identifier.IdentifierRepositoryService;
-import com.codingzero.saam.infrastructure.database.IdentifierOS;
 import com.codingzero.saam.infrastructure.database.IdentifierAccess;
+import com.codingzero.saam.infrastructure.database.IdentifierOS;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultPage;
@@ -78,15 +79,16 @@ public class IdentifierRepositoryServiceTest {
         IdentifierType type = IdentifierType.USERNAME;
         String content = "content";
         String applicationId = "application-id";
+        IdentifierKey key = new IdentifierKey(applicationId, content);
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
         IdentifierPolicy policy = mock(IdentifierPolicy.class);
         when(policy.getApplication()).thenReturn(application);
         when(policy.getType()).thenReturn(type);
         IdentifierOS os = mock(IdentifierOS.class);
-        when(access.selectByKey(applicationId)).thenReturn(os);
-        service.findByContent(policy, content);
-        verify(factory, times(1)).reconstitute(os, policy, null);
+        when(access.selectByKey(key)).thenReturn(os);
+        service.findByKey(application, content);
+        verify(factory, times(1)).reconstitute(os, application, null);
     }
 
     @Test
@@ -103,9 +105,9 @@ public class IdentifierRepositoryServiceTest {
         when(user.getId()).thenReturn(userId);
         IdentifierOS os = mock(IdentifierOS.class);
         List<IdentifierOS> osList = Arrays.asList(os);
-        when(access.selectByTypeAndUserId(applicationId, type, userId)).thenReturn(osList);
-        service.findByPolicyAndUser(policy, user);
-        verify(factory, times(osList.size())).reconstitute(os, policy, user);
+        when(access.selectByUserId(applicationId, userId)).thenReturn(osList);
+        service.findByUser(application, user);
+        verify(factory, times(osList.size())).reconstitute(os, application, user);
     }
 
     @Test
@@ -126,9 +128,9 @@ public class IdentifierRepositoryServiceTest {
         when(osResult.start(page, null)).thenReturn(osResult);
         when(access.selectByType(applicationId, type)).thenReturn(osResult);
 
-        PaginatedResult<List<Identifier>> result = service.findByPolicy(policy);
+        PaginatedResult<List<Identifier>> result = service.findByIdentifierType(application, type);
         result.start(page).getResult();
-        verify(factory, times(osList.size())).reconstitute(os, policy, null);
+        verify(factory, times(osList.size())).reconstitute(os, application, null);
     }
 
 }

@@ -34,6 +34,7 @@ public class ResourceEntityTest {
     private ResourceFactoryService factory;
     private PermissionFactoryService permissionFactory;
     private PermissionRepositoryService permissionRepository;
+    private PrincipalRepository principalRepository;
     private ResourceEntity entity;
 
     @Before
@@ -45,6 +46,7 @@ public class ResourceEntityTest {
         factory = mock(ResourceFactoryService.class);
         permissionFactory = mock(PermissionFactoryService.class);
         permissionRepository = mock(PermissionRepositoryService.class);
+        principalRepository = mock(PrincipalRepository.class);
         createEntity();
     }
 
@@ -63,8 +65,8 @@ public class ResourceEntityTest {
     public void testGetParent() {
         String parentKey = "parentKey";
         when(objectSegment.getParentKey()).thenReturn(parentKey);
-        Resource parentResource = mock(Resource.class);
-        when(application.fetchResourceByKey(parentKey)).thenReturn(parentResource);
+        ResourceEntity parentResource = mock(ResourceEntity.class);
+        when(factory.loadParent(application, parentKey)).thenReturn(parentResource);
         parent = null;
         createEntity();
         Resource foundParent = entity.getParent();
@@ -80,7 +82,7 @@ public class ResourceEntityTest {
     @Test
     public void testGetParent_NoParentResource() {
         when(objectSegment.getParentKey()).thenReturn(null);
-        when(application.fetchResourceByKey(null)).thenReturn(null);
+        when(factory.loadParent(application, null)).thenReturn(null);
         parent = null;
         createEntity();
         Resource foundParent = entity.getParent();
@@ -92,7 +94,7 @@ public class ResourceEntityTest {
         Principal principal = mock(Principal.class);
         String principalId = "principalId";
         when(objectSegment.getPrincipalId()).thenReturn(principalId);
-        when(application.fetchPrincipalById(principalId)).thenReturn(principal);
+        when(principalRepository.findById(application, principalId)).thenReturn(principal);
         owner = null;
         createEntity();
         Principal foundOwner = entity.getOwner();

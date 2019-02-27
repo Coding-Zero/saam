@@ -1,9 +1,7 @@
 package com.codingzero.saam.domain;
 
-import com.codingzero.saam.common.OAuthPlatform;
-import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierEntity;
-import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierFactoryService;
 import com.codingzero.saam.domain.application.OAuthIdentifierPolicyEntity;
+import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierFactoryService;
 import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierRepositoryService;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
 import org.junit.Before;
@@ -79,83 +77,6 @@ public class OAuthIdentifierPolicyEntityTest {
         when(objectSegment.isActive()).thenReturn(false);
         entity.setActive(false);
         assertEquals(false, entity.isDirty());
-    }
-
-    @Test
-    public void testAddIdentifier() {
-        OAuthIdentifierEntity identifier = mock(OAuthIdentifierEntity.class);
-        when(objectSegment.getPlatform()).thenReturn(OAuthPlatform.GOOGLE);
-        when(identifier.getPolicy()).thenReturn(entity);
-        when(identifierFactory.generate(entity, null, null, null)).thenReturn(identifier);
-        entity.addIdentifier(null, null, null);
-        assertEquals(1, entity.getDirtyIdentifiers().size());
-        assertEquals(identifier, entity.getDirtyIdentifiers().get(0));
-    }
-
-    @Test
-    public void testUpdateIdentifier() {
-        OAuthIdentifierEntity identifier = mock(OAuthIdentifierEntity.class);
-        when(objectSegment.getPlatform()).thenReturn(OAuthPlatform.GOOGLE);
-        when(identifier.getPolicy()).thenReturn(entity);
-        entity.updateIdentifier(identifier);
-        assertEquals(1, entity.getDirtyIdentifiers().size());
-        assertEquals(identifier, entity.getDirtyIdentifiers().get(0));
-    }
-
-    @Test
-    public void testUpdateIdentifier_MultipleCall() {
-        OAuthIdentifierEntity identifier = mock(OAuthIdentifierEntity.class);
-        when(objectSegment.getPlatform()).thenReturn(OAuthPlatform.GOOGLE);
-        when(identifier.getPolicy()).thenReturn(entity);
-        entity.updateIdentifier(identifier);
-        entity.updateIdentifier(identifier);
-        assertEquals(1, entity.getDirtyIdentifiers().size());
-        assertEquals(identifier, entity.getDirtyIdentifiers().get(0));
-    }
-
-    @Test
-    public void testRemoveIdentifier() {
-        OAuthIdentifierEntity identifier = mock(OAuthIdentifierEntity.class);
-        when(objectSegment.getPlatform()).thenReturn(OAuthPlatform.GOOGLE);
-        when(identifier.getPolicy()).thenReturn(entity);
-        entity.removeIdentifier(identifier);
-        verify(identifier, times(1)).markAsVoid();
-        assertEquals(1, entity.getDirtyIdentifiers().size());
-        assertEquals(identifier, entity.getDirtyIdentifiers().get(0));
-    }
-
-    @Test
-    public void testFetchIdentifierByUserAndId() {
-        String content = "oauth-1234567890";
-        OAuthIdentifierEntity identifier = mock(OAuthIdentifierEntity.class);
-        User user = mock(User.class);
-        when(user.getId()).thenReturn("userid");
-        when(identifier.getUser()).thenReturn(user);
-        when(identifierRepository.findByContent(entity, content)).thenReturn(identifier);
-        OAuthIdentifier foundIdentifier = entity.fetchIdentifierByUserAndId(user, content);
-        assertEquals(identifier, foundIdentifier);
-    }
-
-    @Test
-    public void testFetchIdentifierByUserAndId_NullContent() {
-        String content = null;
-        User user = mock(User.class);
-        OAuthIdentifier foundIdentifier = entity.fetchIdentifierByUserAndId(user, content);
-        assertEquals(null, foundIdentifier);
-    }
-
-    @Test
-    public void testFetchIdentifierByUserAndId_NotSameUser() {
-        String content = "oauth-1234567890";
-        OAuthIdentifierEntity identifier = mock(OAuthIdentifierEntity.class);
-        User user = mock(User.class);
-        when(user.getId()).thenReturn("userid");
-        when(identifier.getUser()).thenReturn(user);
-        when(identifierRepository.findByContent(entity, content)).thenReturn(identifier);
-        User user2 = mock(User.class);
-        when(user2.getId()).thenReturn("userid-2");
-        OAuthIdentifier foundIdentifier = entity.fetchIdentifierByUserAndId(user2, content);
-        assertEquals(null, foundIdentifier);
     }
 
 }

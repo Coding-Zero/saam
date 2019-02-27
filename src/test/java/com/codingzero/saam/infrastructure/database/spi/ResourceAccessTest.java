@@ -64,7 +64,7 @@ public abstract class ResourceAccessTest {
         String applicationId = getApplicationId();
         String key = getResourceKey();
         String principalId = getPrincipalId(applicationId, PrincipalType.USER);
-        ResourceOS os = createObjectSegment(applicationId, principalId, key);
+        ResourceOS os = createObjectSegment(applicationId, principalId, key, null);
         access.insert(os);
 
         String applicationId2 = getApplicationId();
@@ -95,11 +95,11 @@ public abstract class ResourceAccessTest {
     @Test
     public void testIsDuplicateKey_ParentKey_Duplicate() {
         String applicationId = getApplicationId();
-        String key = getResourceKey();
-        key = getResourceKey(key);
-        key = getResourceKey(key);
+        String parentKey = getResourceKey();
+        parentKey = getResourceKey(parentKey);
+        String key = getResourceKey(parentKey);
         String principalId = getPrincipalId(applicationId, PrincipalType.USER);
-        ResourceOS os = createObjectSegment(applicationId, principalId, key);
+        ResourceOS os = createObjectSegment(applicationId, principalId, key, parentKey);
         access.insert(os);
 
         boolean isDuplicate = access.isDuplicateKey(applicationId, key);
@@ -120,12 +120,12 @@ public abstract class ResourceAccessTest {
         String applicationId = getApplicationId();
         String key = getResourceKey();
         String principalId = getPrincipalId(applicationId, PrincipalType.USER);
-        ResourceOS os = createObjectSegment(applicationId, principalId, key);
+        ResourceOS os = createObjectSegment(applicationId, principalId, key, null);
         access.insert(os);
 
         String applicationId2 = getApplicationId();
         String principalId2 = getPrincipalId(applicationId2, PrincipalType.ROLE);
-        ResourceOS os2 = createObjectSegment(applicationId2, principalId2, key);
+        ResourceOS os2 = createObjectSegment(applicationId2, principalId2, key, null);
         access.insert(os2);
 
         ResourceOS actualOS = access.selectByKey(applicationId, key);
@@ -139,11 +139,11 @@ public abstract class ResourceAccessTest {
         String applicationId = getApplicationId();
         String key = getResourceKey();
         String principalId = getPrincipalId(applicationId, PrincipalType.USER);
-        ResourceOS os = createObjectSegment(applicationId, principalId, key);
+        ResourceOS os = createObjectSegment(applicationId, principalId, key, null);
         access.insert(os);
 
         String principalId2 = getPrincipalId(applicationId, PrincipalType.USER);
-        ResourceOS os2 = createObjectSegment(applicationId, principalId2, key);
+        ResourceOS os2 = createObjectSegment(applicationId, principalId2, key, null);
 
         thrown.expect(Exception.class);
         access.insert(os2);
@@ -184,7 +184,7 @@ public abstract class ResourceAccessTest {
         String applicationId = getApplicationId();
         String key = getResourceKey();
         String principalId = getPrincipalId(applicationId, PrincipalType.USER);
-        ResourceOS os = createObjectSegment(applicationId, principalId, key);
+        ResourceOS os = createObjectSegment(applicationId, principalId, key, null);
         access.insert(os);
 
         String roleId = getPrincipalId(applicationId, PrincipalType.ROLE);
@@ -204,7 +204,7 @@ public abstract class ResourceAccessTest {
         String applicationId = getApplicationId();
         String key = getResourceKey();
         String principalId = getPrincipalId(applicationId, PrincipalType.USER);
-        ResourceOS os = createObjectSegment(applicationId, principalId, key);
+        ResourceOS os = createObjectSegment(applicationId, principalId, key, null);
         access.insert(os);
 
         String roleId = getPrincipalId(applicationId, PrincipalType.ROLE);
@@ -226,7 +226,7 @@ public abstract class ResourceAccessTest {
         String applicationId = getApplicationId();
         String key = getResourceKey();
         String principalId = getPrincipalId(applicationId, PrincipalType.USER);
-        ResourceOS os = createObjectSegment(applicationId, principalId, key);
+        ResourceOS os = createObjectSegment(applicationId, principalId, key, null);
         access.insert(os);
 
         String roleId = getPrincipalId(applicationId, PrincipalType.ROLE);
@@ -516,7 +516,7 @@ public abstract class ResourceAccessTest {
         List<ResourceOS> osList = new ArrayList<>(size);
         for (int i = 0; i < size; i ++) {
             String key = getResourceKey();
-            osList.add(createObjectSegment(applicationId, principalId, key));
+            osList.add(createObjectSegment(applicationId, principalId, key, null));
         }
         return osList;
     }
@@ -526,7 +526,7 @@ public abstract class ResourceAccessTest {
         for (int i = 0; i < size; i ++) {
             String key = getResourceKey(parentKey);
             String principalId = getPrincipalId(applicationId, PrincipalType.USER);
-            osList.add(createObjectSegment(applicationId, principalId, key));
+            osList.add(createObjectSegment(applicationId, principalId, key, parentKey));
         }
         return osList;
     }
@@ -535,7 +535,7 @@ public abstract class ResourceAccessTest {
         List<ResourceOS> osList = new ArrayList<>(size);
         for (int i = 0; i < size; i ++) {
             String key = getResourceKey(parentKey);
-            osList.add(createObjectSegment(applicationId, principalId, key));
+            osList.add(createObjectSegment(applicationId, principalId, key, parentKey));
         }
         return osList;
     }
@@ -545,13 +545,14 @@ public abstract class ResourceAccessTest {
         String applicationId = getApplicationId();
         String principalId = getPrincipalId(applicationId, PrincipalType.USER);
         String key = getResourceKey();
-        return createObjectSegment(applicationId, principalId, key);
+        return createObjectSegment(applicationId, principalId, key, null);
     }
 
-    private ResourceOS createObjectSegment(String applicationId, String principalId, String key) {
+    private ResourceOS createObjectSegment(String applicationId, String principalId, String key, String parentKey) {
         ResourceOS os = new ResourceOS(
                 applicationId,
                 key,
+                parentKey,
                 principalId,
                 new Date());
         generatedObjectSegments.add(os);

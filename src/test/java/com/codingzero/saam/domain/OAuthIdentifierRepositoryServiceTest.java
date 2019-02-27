@@ -1,11 +1,12 @@
 package com.codingzero.saam.domain;
 
+import com.codingzero.saam.common.OAuthIdentifierKey;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierEntity;
 import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierFactoryService;
 import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierRepositoryService;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierOS;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierOS;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultPage;
@@ -78,15 +79,16 @@ public class OAuthIdentifierRepositoryServiceTest {
         OAuthPlatform platform = OAuthPlatform.GOOGLE;
         String content = "content";
         String applicationId = "application-id";
+        OAuthIdentifierKey key = new OAuthIdentifierKey(applicationId, platform, content);
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
         OAuthIdentifierPolicy policy = mock(OAuthIdentifierPolicy.class);
         when(policy.getApplication()).thenReturn(application);
         when(policy.getPlatform()).thenReturn(platform);
         OAuthIdentifierOS os = mock(OAuthIdentifierOS.class);
-        when(access.selectByKey(applicationId)).thenReturn(os);
-        service.findByContent(policy, content);
-        verify(factory, times(1)).reconstitute(os, policy, null);
+        when(access.selectByKey(key)).thenReturn(os);
+        service.findByKey(policy, content);
+        verify(factory, times(1)).reconstitute(os, application, null);
     }
 
     @Test
@@ -104,8 +106,8 @@ public class OAuthIdentifierRepositoryServiceTest {
         OAuthIdentifierOS os = mock(OAuthIdentifierOS.class);
         List<OAuthIdentifierOS> osList = Arrays.asList(os);
         when(access.selectByUserId(applicationId, userId)).thenReturn(osList);
-        service.findByPolicyAndUser(policy, user);
-        verify(factory, times(osList.size())).reconstitute(os, policy, user);
+        service.findByUser(application, user);
+        verify(factory, times(osList.size())).reconstitute(os, application, user);
     }
 
     @Test
@@ -128,7 +130,7 @@ public class OAuthIdentifierRepositoryServiceTest {
 
         PaginatedResult<List<OAuthIdentifier>> result = service.findByPolicy(policy);
         result.start(page).getResult();
-        verify(factory, times(osList.size())).reconstitute(os, policy, null);
+        verify(factory, times(osList.size())).reconstitute(os, application, null);
     }
 
 }

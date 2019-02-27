@@ -1,5 +1,6 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
+import com.codingzero.saam.common.PrincipalId;
 import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.infrastructure.database.RoleAccess;
 import com.codingzero.saam.infrastructure.database.RoleOS;
@@ -154,7 +155,7 @@ public abstract class RoleAccessTest {
         RoleOS actualOS = access.selectByPrincipalOS(os);
         assertOS(os, actualOS);
 
-        actualOS = access.selectByName(os.getApplicationId(), name);
+        actualOS = access.selectByName(os.getId().getApplicationId(), name);
         assertNull(actualOS);
     }
 
@@ -179,7 +180,7 @@ public abstract class RoleAccessTest {
         RoleOS actualOS = access.selectByPrincipalOS(os);
         assertOS(os, actualOS);
 
-        actualOS = access.selectByName(os.getApplicationId(), name);
+        actualOS = access.selectByName(os.getId().getApplicationId(), name);
         assertNull(actualOS);
     }
 
@@ -194,7 +195,7 @@ public abstract class RoleAccessTest {
         RoleOS os = createObjectSegment(applicationId, id, name);
         access.insert(os);
 
-        RoleOS oldOS = access.selectByName(os.getApplicationId(), name);
+        RoleOS oldOS = access.selectByName(os.getId().getApplicationId(), name);
 
         String name2 = generateName();
         os.setName(name2);
@@ -206,7 +207,7 @@ public abstract class RoleAccessTest {
         RoleOS actualOS = access.selectByPrincipalOS(os);
         assertOS(oldOS, actualOS);
 
-        actualOS = access.selectByName(os.getApplicationId(), name2);
+        actualOS = access.selectByName(os.getId().getApplicationId(), name2);
         assertNull(actualOS);
     }
 
@@ -339,7 +340,7 @@ public abstract class RoleAccessTest {
     }
 
     private void assertOS(RoleOS expectedOS, RoleOS actualOS) {
-        assertEquals(expectedOS.getApplicationId(), actualOS.getApplicationId());
+        assertEquals(expectedOS.getId().getApplicationId(), actualOS.getId().getApplicationId());
         assertEquals(expectedOS.getId(), actualOS.getId());
         assertEquals(expectedOS.getCreationTime(), actualOS.getCreationTime());
         assertEquals(expectedOS.getName(), actualOS.getName());
@@ -364,8 +365,7 @@ public abstract class RoleAccessTest {
 
     private RoleOS createObjectSegment(String applicationId, String id, String name) {
         RoleOS os = new RoleOS(
-                applicationId,
-                id,
+                new PrincipalId(applicationId, id),
                 new Date(),
                 name);
         generatedObjectSegments.add(os);

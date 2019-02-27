@@ -1,8 +1,7 @@
 package com.codingzero.saam.domain;
 
-import com.codingzero.saam.domain.identifier.IdentifierEntity;
-import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
 import com.codingzero.saam.domain.application.IdentifierPolicyEntity;
+import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
 import com.codingzero.saam.domain.identifier.IdentifierRepositoryService;
 import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
 import com.codingzero.utilities.error.BusinessError;
@@ -129,83 +128,6 @@ public class IdentifierPolicyEntityTest {
         when(objectSegment.getMaxLength()).thenReturn(5);
         thrown.expect(BusinessError.class);
         entity.check("abcdefg");
-    }
-
-    @Test
-    public void testAddIdentifier() {
-        String content = "id1234567890";
-        IdentifierEntity identifier = mock(IdentifierEntity.class);
-        when(identifier.getContent()).thenReturn(content);
-        when(identifierFactory.generate(entity, null, null)).thenReturn(identifier);
-        entity.addIdentifier(null, null);
-        assertEquals(1, entity.getDirtyIdentifiers().size());
-        assertEquals(identifier, entity.getDirtyIdentifiers().get(0));
-    }
-
-    @Test
-    public void testUpdateIdentifier() {
-        String content = "id1234567890";
-        IdentifierEntity identifier = mock(IdentifierEntity.class);
-        when(identifier.getContent()).thenReturn(content);
-        entity.updateIdentifier(identifier);
-        assertEquals(1, entity.getDirtyIdentifiers().size());
-        assertEquals(identifier, entity.getDirtyIdentifiers().get(0));
-    }
-
-    @Test
-    public void testUpdateIdentifier_MultipleCall() {
-        String content = "id1234567890";
-        IdentifierEntity identifier = mock(IdentifierEntity.class);
-        when(identifier.getContent()).thenReturn(content);
-        entity.updateIdentifier(identifier);
-        entity.updateIdentifier(identifier);
-        assertEquals(1, entity.getDirtyIdentifiers().size());
-        assertEquals(identifier, entity.getDirtyIdentifiers().get(0));
-    }
-
-    @Test
-    public void testRemoveIdentifier() {
-        String content = "id1234567890";
-        IdentifierEntity identifier = mock(IdentifierEntity.class);
-        when(identifier.getContent()).thenReturn(content);
-        entity.removeIdentifier(identifier);
-        verify(identifier, times(1)).markAsVoid();
-        assertEquals(1, entity.getDirtyIdentifiers().size());
-        assertEquals(identifier, entity.getDirtyIdentifiers().get(0));
-    }
-
-    @Test
-    public void testFetchIdentifierByUserAndId() {
-        String content = "id1234567890";
-        IdentifierEntity identifier = mock(IdentifierEntity.class);
-        User user = mock(User.class);
-        when(user.getId()).thenReturn("userid");
-        when(identifier.getUser()).thenReturn(user);
-        when(identifierRepository.findByContent(entity, content)).thenReturn(identifier);
-        Identifier foundIdentifier = entity.fetchIdentifierByUserAndContent(user, content);
-        assertEquals(identifier, foundIdentifier);
-    }
-
-    @Test
-    public void testFetchIdentifierByUserAndId_NullContent() {
-        String content = null;
-        User user = mock(User.class);
-        Identifier foundIdentifier = entity.fetchIdentifierByUserAndContent(user, content);
-        assertEquals(null, foundIdentifier);
-    }
-
-    @Test
-    public void testFetchIdentifierByUserAndId_NotSameUser() {
-        String content = "id1234567890";
-        IdentifierEntity identifier = mock(IdentifierEntity.class);
-        User user = mock(User.class);
-        when(user.getId()).thenReturn("userid");
-        when(identifier.getUser()).thenReturn(user);
-        when(identifierRepository.findByContent(entity, content)).thenReturn(identifier);
-        User user2 = mock(User.class);
-        when(user2.getId()).thenReturn("userid-2");
-        Identifier foundIdentifier = entity.fetchIdentifierByUserAndContent(user2, content);
-        assertEquals(null, foundIdentifier);
     }
 
     private class IdentifierPolicyEntityImpl extends IdentifierPolicyEntity {

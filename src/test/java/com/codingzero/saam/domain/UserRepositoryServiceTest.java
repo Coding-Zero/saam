@@ -3,10 +3,13 @@ package com.codingzero.saam.domain;
 import com.codingzero.saam.domain.principal.user.UserEntity;
 import com.codingzero.saam.domain.principal.user.UserFactoryService;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
-import com.codingzero.saam.infrastructure.database.PrincipalOS;
-import com.codingzero.saam.infrastructure.database.UserOS;
+import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
+import com.codingzero.saam.infrastructure.database.IdentifierAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
 import com.codingzero.saam.infrastructure.database.PrincipalAccess;
+import com.codingzero.saam.infrastructure.database.PrincipalOS;
 import com.codingzero.saam.infrastructure.database.UserAccess;
+import com.codingzero.saam.infrastructure.database.UserOS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,6 +30,9 @@ public class UserRepositoryServiceTest {
     private UserAccess access;
     private PrincipalAccess principalAccess;
     private UserFactoryService factory;
+    private IdentifierAccess identifierAccess;
+    private OAuthIdentifierAccess oAuthIdentifierAccess;
+    private ApplicationStatusVerifier applicationStatusVerifier;
     private UserRepositoryService service;
 
     @Before
@@ -34,10 +40,16 @@ public class UserRepositoryServiceTest {
         access = mock(UserAccess.class);
         principalAccess = mock(PrincipalAccess.class);
         factory = mock(UserFactoryService.class);
+        identifierAccess = mock(IdentifierAccess.class);
+        oAuthIdentifierAccess = mock(OAuthIdentifierAccess.class);
+        applicationStatusVerifier = mock(ApplicationStatusVerifier.class);
         service = new UserRepositoryService(
                 access,
                 principalAccess,
-                identifierAccess, oAuthIdentifierAccess, factory, applicationStatusVerifier);
+                identifierAccess,
+                oAuthIdentifierAccess,
+                factory,
+                applicationStatusVerifier);
     }
 
     @Test

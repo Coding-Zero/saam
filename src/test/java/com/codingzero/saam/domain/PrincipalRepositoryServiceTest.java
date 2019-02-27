@@ -1,18 +1,17 @@
 package com.codingzero.saam.domain;
 
 import com.codingzero.saam.common.PrincipalType;
+import com.codingzero.saam.domain.principal.PrincipalRepositoryService;
 import com.codingzero.saam.domain.principal.apikey.APIKeyEntity;
 import com.codingzero.saam.domain.principal.apikey.APIKeyRepositoryService;
-import com.codingzero.saam.domain.principal.PrincipalEntity;
-import com.codingzero.saam.domain.principal.PrincipalRepositoryService;
 import com.codingzero.saam.domain.principal.role.RoleEntity;
 import com.codingzero.saam.domain.principal.role.RoleRepositoryService;
 import com.codingzero.saam.domain.principal.user.UserEntity;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
 import com.codingzero.saam.infrastructure.database.APIKeyOS;
+import com.codingzero.saam.infrastructure.database.PrincipalAccess;
 import com.codingzero.saam.infrastructure.database.RoleOS;
 import com.codingzero.saam.infrastructure.database.UserOS;
-import com.codingzero.saam.infrastructure.database.PrincipalAccess;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -158,7 +157,7 @@ public class PrincipalRepositoryServiceTest {
         service.removeAll(application);
         verify(userRepository, times(1)).removeByApplication(application);
         verify(roleRepository, times(1)).removeByApplication(application);
-        verify(apiKeyRepository, times(1)).removeAll(application);
+        verify(apiKeyRepository, times(1)).removeByApplication(application);
     }
 
     @Test
@@ -207,7 +206,7 @@ public class PrincipalRepositoryServiceTest {
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
         when(access.selectById(applicationId, id)).thenReturn(null);
-        PrincipalEntity entity = service.findById(application, id);
+        Principal entity = service.findById(application, id);
         assertNull(entity);
     }
 

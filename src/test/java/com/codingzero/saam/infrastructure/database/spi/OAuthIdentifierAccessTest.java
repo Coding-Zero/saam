@@ -1,5 +1,6 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
+import com.codingzero.saam.common.OAuthIdentifierKey;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierOS;
@@ -56,8 +57,7 @@ public abstract class OAuthIdentifierAccessTest {
     public void testIsDuplicateContent() {
         OAuthIdentifierOS os = createObjectSegment();
         access.insert(os);
-        boolean isDuplicate = access.isDuplicateContent(
-                os.getApplicationId(), os.getPlatform(), getIdentifierContent());
+        boolean isDuplicate = access.isDuplicateKey(os.getKey());
         assertFalse(isDuplicate);
     }
 
@@ -65,8 +65,7 @@ public abstract class OAuthIdentifierAccessTest {
     public void testIsDuplicateName_Duplicate() {
         OAuthIdentifierOS os = createObjectSegment();
         access.insert(os);
-        boolean isDuplicate = access.isDuplicateContent(
-                os.getApplicationId(), os.getPlatform(), os.getContent());
+        boolean isDuplicate = access.isDuplicateKey(os.getKey());
         assertTrue(isDuplicate);
     }
 
@@ -74,8 +73,7 @@ public abstract class OAuthIdentifierAccessTest {
     public void testInsert() {
         OAuthIdentifierOS os = createObjectSegment();
         access.insert(os);
-        OAuthIdentifierOS actualOS = access.selectByKey(
-                os.getApplicationId());
+        OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
         assertOS(os, actualOS);
     }
 
@@ -97,8 +95,7 @@ public abstract class OAuthIdentifierAccessTest {
         access.insert(os);
         manager.commit();
 
-        OAuthIdentifierOS actualOS = access.selectByKey(
-                os.getApplicationId());
+        OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
         assertOS(os, actualOS);
     }
 
@@ -112,8 +109,7 @@ public abstract class OAuthIdentifierAccessTest {
         access.insert(os);
         manager.rollback();
 
-        OAuthIdentifierOS actualOS = access.selectByKey(
-                os.getApplicationId());
+        OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
         assertEquals(null, actualOS);
     }
 
@@ -128,8 +124,7 @@ public abstract class OAuthIdentifierAccessTest {
         os.setUpdateTime(new Date());
         access.update(os);
 
-        OAuthIdentifierOS actualOS = access.selectByKey(
-                os.getApplicationId());
+        OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
         assertOS(os, actualOS);
     }
 
@@ -150,8 +145,7 @@ public abstract class OAuthIdentifierAccessTest {
         access.update(os);
         manager.commit();
 
-        OAuthIdentifierOS actualOS = access.selectByKey(
-                os.getApplicationId());
+        OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
         assertOS(os, actualOS);
     }
 
@@ -163,8 +157,7 @@ public abstract class OAuthIdentifierAccessTest {
         OAuthIdentifierOS os = createObjectSegment();
         access.insert(os);
 
-        OAuthIdentifierOS originalOS = access.selectByKey(
-                os.getApplicationId());
+        OAuthIdentifierOS originalOS = access.selectByKey(os.getKey());
 
         Map<String, Object> properties = new HashMap<>();
         properties.put("key1", "value1");
@@ -175,8 +168,7 @@ public abstract class OAuthIdentifierAccessTest {
         access.update(os);
         manager.rollback();
 
-        OAuthIdentifierOS actualOS = access.selectByKey(
-                os.getApplicationId());
+        OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
         assertOS(originalOS, actualOS);
     }
 
@@ -185,8 +177,7 @@ public abstract class OAuthIdentifierAccessTest {
         OAuthIdentifierOS os = createObjectSegment();
         access.insert(os);
         access.delete(os);
-        OAuthIdentifierOS actualOS = access.selectByKey(
-                os.getApplicationId());
+        OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
         assertNull(actualOS);
     }
 
@@ -202,8 +193,7 @@ public abstract class OAuthIdentifierAccessTest {
         access.delete(os);
         manager.commit();
 
-        OAuthIdentifierOS actualOS = access.selectByKey(
-                os.getApplicationId());
+        OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
         assertNull(actualOS);
     }
 
@@ -219,8 +209,7 @@ public abstract class OAuthIdentifierAccessTest {
         access.delete(os);
         manager.rollback();
 
-        OAuthIdentifierOS actualOS = access.selectByKey(
-                os.getApplicationId());
+        OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
         assertOS(os, actualOS);
     }
 
@@ -240,14 +229,12 @@ public abstract class OAuthIdentifierAccessTest {
         access.deleteByPlatform(applicationId, OAuthPlatform.GOOGLE);
 
         for (OAuthIdentifierOS os: googleIds) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertNull(actualOS);
         }
 
         for (OAuthIdentifierOS os: facebookIds) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertOS(os, actualOS);
         }
     }
@@ -273,14 +260,12 @@ public abstract class OAuthIdentifierAccessTest {
         manager.commit();
 
         for (OAuthIdentifierOS os: googleIds) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertNull(actualOS);
         }
 
         for (OAuthIdentifierOS os: facebookIds) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertOS(os, actualOS);
         }
     }
@@ -306,20 +291,18 @@ public abstract class OAuthIdentifierAccessTest {
         manager.rollback();
 
         for (OAuthIdentifierOS os: googleIds) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertOS(os, actualOS);
         }
 
         for (OAuthIdentifierOS os: facebookIds) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertOS(os, actualOS);
         }
     }
 
     @Test
-    public void testDeleteByPlatformAndUserId() {
+    public void testDeleteByUserId() {
         String applicationId = getApplicationId();
         String userId1 = getUserId(applicationId);
         List<OAuthIdentifierOS> googleIds1 = createObjectSegments(applicationId, userId1, OAuthPlatform.GOOGLE, 3);
@@ -333,23 +316,21 @@ public abstract class OAuthIdentifierAccessTest {
             access.insert(os);
         }
 
-        access.deleteByPlatformAndUserId(applicationId, OAuthPlatform.GOOGLE, userId1);
+        access.deleteByUserId(applicationId, userId1);
 
         for (OAuthIdentifierOS os: googleIds1) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertNull(actualOS);
         }
 
         for (OAuthIdentifierOS os: googleIds2) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertOS(os, actualOS);
         }
     }
 
     @Test
-    public void testDeleteByPlatformAndUserId_Transaction_Commit() {
+    public void testDeleteByUserId_Transaction_Commit() {
         TransactionManager manager = TransactionManagerBuilder.create().build();
         manager.register("oauth-identifier-access", access);
 
@@ -367,24 +348,22 @@ public abstract class OAuthIdentifierAccessTest {
         }
 
         manager.start();
-        access.deleteByPlatformAndUserId(applicationId, OAuthPlatform.GOOGLE, userId1);
+        access.deleteByUserId(applicationId, userId1);
         manager.commit();
 
         for (OAuthIdentifierOS os: googleIds1) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertNull(actualOS);
         }
 
         for (OAuthIdentifierOS os: googleIds2) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertOS(os, actualOS);
         }
     }
 
     @Test
-    public void testDeleteByPlatformAndUserId_Transaction_Rollback() {
+    public void testDeleteByUserId_Transaction_Rollback() {
         TransactionManager manager = TransactionManagerBuilder.create().build();
         manager.register("oauth-identifier-access", access);
 
@@ -402,18 +381,16 @@ public abstract class OAuthIdentifierAccessTest {
         }
 
         manager.start();
-        access.deleteByPlatformAndUserId(applicationId, OAuthPlatform.GOOGLE, userId1);
+        access.deleteByUserId(applicationId, userId1);
         manager.rollback();
 
         for (OAuthIdentifierOS os: googleIds1) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertOS(os, actualOS);
         }
 
         for (OAuthIdentifierOS os: googleIds2) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertOS(os, actualOS);
         }
     }
@@ -436,14 +413,12 @@ public abstract class OAuthIdentifierAccessTest {
         access.deleteByApplicationId(applicationId);
 
         for (OAuthIdentifierOS os: googleIds) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertNull(actualOS);
         }
 
         for (OAuthIdentifierOS os: facebookIds) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertNull(actualOS);
         }
     }
@@ -471,14 +446,12 @@ public abstract class OAuthIdentifierAccessTest {
         manager.commit();
 
         for (OAuthIdentifierOS os: googleIds) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertNull(actualOS);
         }
 
         for (OAuthIdentifierOS os: facebookIds) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertNull(actualOS);
         }
     }
@@ -506,14 +479,12 @@ public abstract class OAuthIdentifierAccessTest {
         manager.rollback();
 
         for (OAuthIdentifierOS os: googleIds) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertOS(os, actualOS);
         }
 
         for (OAuthIdentifierOS os: facebookIds) {
-            OAuthIdentifierOS actualOS = access.selectByKey(
-                    os.getApplicationId());
+            OAuthIdentifierOS actualOS = access.selectByKey(os.getKey());
             assertOS(os, actualOS);
         }
     }
@@ -539,7 +510,7 @@ public abstract class OAuthIdentifierAccessTest {
         assertEquals(3, actualGoogleIds1.size());
         for (OAuthIdentifierOS os: googleIds1) {
             for (OAuthIdentifierOS actualOS: actualGoogleIds1) {
-                if (os.getContent().equalsIgnoreCase(actualOS.getContent())) {
+                if (os.getKey().getContent().equalsIgnoreCase(actualOS.getKey().getContent())) {
                     assertOS(os, actualOS);
                 }
             }
@@ -550,7 +521,7 @@ public abstract class OAuthIdentifierAccessTest {
         assertEquals(2, actualGoogleIds2.size());
         for (OAuthIdentifierOS os: googleId2) {
             for (OAuthIdentifierOS actualOS: actualGoogleIds2) {
-                if (os.getContent().equalsIgnoreCase(actualOS.getContent())) {
+                if (os.getKey().getContent().equalsIgnoreCase(actualOS.getKey().getContent())) {
                     assertOS(os, actualOS);
                 }
             }
@@ -579,7 +550,7 @@ public abstract class OAuthIdentifierAccessTest {
         assertEquals(3, actualGoogleIds.size());
         for (OAuthIdentifierOS os: googleIds) {
             for (OAuthIdentifierOS actualOS: actualGoogleIds) {
-                if (os.getContent().equalsIgnoreCase(actualOS.getContent())) {
+                if (os.getKey().getContent().equalsIgnoreCase(actualOS.getKey().getContent())) {
                     assertOS(os, actualOS);
                 }
             }
@@ -592,7 +563,7 @@ public abstract class OAuthIdentifierAccessTest {
         assertEquals(2, actualFacebookIds.size());
         for (OAuthIdentifierOS os: facebookIds) {
             for (OAuthIdentifierOS actualOS: actualFacebookIds) {
-                if (os.getContent().equalsIgnoreCase(actualOS.getContent())) {
+                if (os.getKey().getContent().equalsIgnoreCase(actualOS.getKey().getContent())) {
                     assertOS(os, actualOS);
                 }
             }
@@ -634,7 +605,8 @@ public abstract class OAuthIdentifierAccessTest {
     private OAuthIdentifierOS createObjectSegment(String applicationId, String userId,
                                                   OAuthPlatform platform, String content) {
         OAuthIdentifierOS os = new OAuthIdentifierOS(
-                key, userId,
+                new OAuthIdentifierKey(applicationId, platform, content),
+                userId,
                 Collections.emptyMap(),
                 new Date(),
                 new Date());
@@ -643,9 +615,9 @@ public abstract class OAuthIdentifierAccessTest {
     }
 
     private void assertOS(OAuthIdentifierOS expectedOS, OAuthIdentifierOS actualOS) {
-        assertEquals(expectedOS.getApplicationId(), actualOS.getApplicationId());
-        assertEquals(expectedOS.getPlatform(), actualOS.getPlatform());
-        assertEquals(expectedOS.getContent(), actualOS.getContent());
+        assertEquals(expectedOS.getKey().getApplicationId(), actualOS.getKey().getApplicationId());
+        assertEquals(expectedOS.getKey().getPlatform(), actualOS.getKey().getPlatform());
+        assertEquals(expectedOS.getKey().getContent(), actualOS.getKey().getContent());
         assertEquals(expectedOS.getUserId(), actualOS.getUserId());
         assertEquals(expectedOS.getProperties(), actualOS.getProperties());
         assertEquals(expectedOS.getCreationTime(), actualOS.getCreationTime());

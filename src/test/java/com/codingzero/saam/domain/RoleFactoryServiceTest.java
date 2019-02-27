@@ -3,9 +3,10 @@ package com.codingzero.saam.domain;
 import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.domain.principal.role.RoleEntity;
 import com.codingzero.saam.domain.principal.role.RoleFactoryService;
-import com.codingzero.saam.infrastructure.database.RoleOS;
+import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
 import com.codingzero.saam.infrastructure.database.PrincipalAccess;
 import com.codingzero.saam.infrastructure.database.RoleAccess;
+import com.codingzero.saam.infrastructure.database.RoleOS;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,6 +24,7 @@ public class RoleFactoryServiceTest {
 
     private RoleAccess access;
     private PrincipalAccess principalAccess;
+    private ApplicationStatusVerifier applicationStatusVerifier;
     private RoleFactoryService service;
 
     @Before
@@ -31,7 +33,8 @@ public class RoleFactoryServiceTest {
         principalAccess = mock(PrincipalAccess.class);
         service = new RoleFactoryService(
                 access,
-                principalAccess, applicationStatusVerifier);
+                principalAccess,
+                applicationStatusVerifier);
     }
 
     @Test

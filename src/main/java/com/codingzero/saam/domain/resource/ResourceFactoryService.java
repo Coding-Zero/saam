@@ -64,13 +64,13 @@ public class ResourceFactoryService implements ResourceFactory {
         return key.substring(position + 1);
     }
 
-    public ResourceEntity loadParent(Application application, String key, Principal owner) {
+    public ResourceEntity loadParent(Application application, String key) {
         String parentKey = readParentKey(key);
         if (null == parentKey) {
             return null;
         }
         ResourceOS objectSegment = access.selectByKey(application.getId(), parentKey);
-        return reconstitute(objectSegment, application, owner, null);
+        return reconstitute(objectSegment, application, null, null);
     }
 
     private void checkForIllegalParent(Application application, String parentKey) {
@@ -86,7 +86,7 @@ public class ResourceFactoryService implements ResourceFactory {
         }
     }
 
-    private String readParentKey(String key) {
+    public String readParentKey(String key) {
         int position = key.lastIndexOf(ResourceKeySeparator.VALUE);
         if (-1 == position) {
             return null;

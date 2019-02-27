@@ -4,8 +4,10 @@ import com.codingzero.saam.domain.resource.PermissionRepositoryService;
 import com.codingzero.saam.domain.resource.ResourceEntity;
 import com.codingzero.saam.domain.resource.ResourceFactoryService;
 import com.codingzero.saam.domain.resource.ResourceRepositoryService;
-import com.codingzero.saam.infrastructure.database.ResourceOS;
+import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
+import com.codingzero.saam.infrastructure.database.PermissionResourceIndexAccess;
 import com.codingzero.saam.infrastructure.database.ResourceAccess;
+import com.codingzero.saam.infrastructure.database.ResourceOS;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultPage;
@@ -30,6 +32,8 @@ public class ResourceRepositoryServiceTest {
     private ResourceAccess access;
     private ResourceFactoryService factory;
     private PermissionRepositoryService permissionRepository;
+    private PermissionResourceIndexAccess permissionResourceIndexAccess;
+    private ApplicationStatusVerifier applicationStatusVerifier;
     private ResourceRepositoryService service;
 
     @Before
@@ -37,10 +41,14 @@ public class ResourceRepositoryServiceTest {
         access = mock(ResourceAccess.class);
         factory = mock(ResourceFactoryService.class);
         permissionRepository = mock(PermissionRepositoryService.class);
+        permissionResourceIndexAccess = mock(PermissionResourceIndexAccess.class);
+        applicationStatusVerifier = mock(ApplicationStatusVerifier.class);
         service = new ResourceRepositoryService(
                 access,
-                permissionResourceIndexAccess, factory,
-                permissionRepository, applicationStatusVerifier);
+                permissionResourceIndexAccess,
+                factory,
+                permissionRepository,
+                applicationStatusVerifier);
     }
 
     @Test

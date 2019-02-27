@@ -1,7 +1,5 @@
 package com.codingzero.saam.domain;
 
-import com.codingzero.saam.common.OAuthPlatform;
-
 import java.util.Date;
 import java.util.Map;
 
@@ -9,7 +7,7 @@ public interface OAuthIdentifier {
 
     Application getApplication();
 
-    OAuthPlatform getPlatform();
+    OAuthIdentifierPolicy getPolicy();
 
     String getContent();
 

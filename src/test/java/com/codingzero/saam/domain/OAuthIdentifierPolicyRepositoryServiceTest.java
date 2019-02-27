@@ -4,9 +4,9 @@ import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.domain.application.OAuthIdentifierPolicyEntity;
 import com.codingzero.saam.domain.application.OAuthIdentifierPolicyFactoryService;
 import com.codingzero.saam.domain.application.OAuthIdentifierPolicyRepositoryService;
-import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierRepositoryService;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
 import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,18 +27,18 @@ public class OAuthIdentifierPolicyRepositoryServiceTest {
 
     private OAuthIdentifierPolicyAccess access;
     private OAuthIdentifierPolicyFactoryService factory;
-    private OAuthIdentifierRepositoryService oAuthIdentifierRepository;
+    private OAuthIdentifierAccess oAuthIdentifierAccess;
     private OAuthIdentifierPolicyRepositoryService service;
 
     @Before
     public void setUp() {
         access = mock(OAuthIdentifierPolicyAccess.class);
         factory = mock(OAuthIdentifierPolicyFactoryService.class);
-        oAuthIdentifierRepository = mock(OAuthIdentifierRepositoryService.class);
+        oAuthIdentifierAccess = mock(OAuthIdentifierAccess.class);
         service = new OAuthIdentifierPolicyRepositoryService(
                 access,
                 factory,
-                oAuthIdentifierRepository);
+                oAuthIdentifierAccess);
     }
 
     @Test
@@ -51,7 +51,6 @@ public class OAuthIdentifierPolicyRepositoryServiceTest {
         service.store(entity);
         verify(access, times(1)).insert(os);
         verify(access, times(0)).update(os);
-        verify(entity, times(1)).getDirtyIdentifiers();
     }
 
     @Test
@@ -64,7 +63,6 @@ public class OAuthIdentifierPolicyRepositoryServiceTest {
         service.store(entity);
         verify(access, times(0)).insert(os);
         verify(access, times(1)).update(os);
-        verify(entity, times(1)).getDirtyIdentifiers();
     }
 
     @Test

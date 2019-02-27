@@ -1,10 +1,11 @@
 package com.codingzero.saam.domain;
 
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
+import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
 import com.codingzero.saam.domain.usersession.UserSessionEntity;
 import com.codingzero.saam.domain.usersession.UserSessionFactoryService;
-import com.codingzero.saam.infrastructure.database.UserSessionOS;
 import com.codingzero.saam.infrastructure.database.UserSessionAccess;
+import com.codingzero.saam.infrastructure.database.UserSessionOS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,15 +25,18 @@ public class UserSessionFactoryServiceTest {
 
     private UserSessionAccess access;
     private UserRepositoryService userRepository;
+    private ApplicationStatusVerifier applicationStatusVerifier;
     private UserSessionFactoryService service;
 
     @Before
     public void setUp() {
         access = mock(UserSessionAccess.class);
         userRepository = mock(UserRepositoryService.class);
+        applicationStatusVerifier = mock(ApplicationStatusVerifier.class);
         service = new UserSessionFactoryService(
                 access,
-                userRepository, applicationStatusVerifier);
+                userRepository,
+                applicationStatusVerifier);
     }
 
     @Test
@@ -49,12 +53,11 @@ public class UserSessionFactoryServiceTest {
         long currentTimestamp = System.currentTimeMillis();
         String key = "key";
         when(access.generateKey(applicationId)).thenReturn(key);
-        UserSessionEntity entity = service.generate(user, details, timeout);
+        UserSession entity = service.generate(application, user, details, timeout);
         assertEquals(application, entity.getApplication());
         assertEquals(user, entity.getUser());
         assertEquals(details, entity.getDetails());
         assertEquals(true, (entity.getExpirationTime().getTime() - currentTimestamp >= timeout));
-        assertEquals(true, entity.isNew());
     }
 
     @Test

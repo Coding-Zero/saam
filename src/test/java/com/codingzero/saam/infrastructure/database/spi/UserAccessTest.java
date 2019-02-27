@@ -1,6 +1,7 @@
 package com.codingzero.saam.infrastructure.database.spi;
 
 import com.codingzero.saam.common.PasswordResetCode;
+import com.codingzero.saam.common.PrincipalId;
 import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.infrastructure.database.UserAccess;
 import com.codingzero.saam.infrastructure.database.UserOS;
@@ -297,7 +298,7 @@ public abstract class UserAccessTest {
     }
 
     private void assertOS(UserOS expectedOS, UserOS actualOS) {
-        assertEquals(expectedOS.getApplicationId(), actualOS.getApplicationId());
+        assertEquals(expectedOS.getId().getApplicationId(), actualOS.getId().getApplicationId());
         assertEquals(expectedOS.getId(), actualOS.getId());
         assertEquals(expectedOS.getCreationTime(), actualOS.getCreationTime());
         assertEquals(expectedOS.getPassword(), actualOS.getPassword());
@@ -322,8 +323,7 @@ public abstract class UserAccessTest {
 
     private UserOS createObjectSegment(String applicationId, String principalId) {
         UserOS os = new UserOS(
-                applicationId,
-                principalId,
+                new PrincipalId(applicationId, principalId),
                 new Date(),
                 null,
                 null,

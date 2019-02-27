@@ -100,6 +100,15 @@ public class ResourceRepositoryService implements ResourceRepository {
         return new PaginatedResult<>(request -> _findAll(request), application, parent);
     }
 
+    public ResourceEntity loadParent(Application application, String key, Principal owner) {
+        String parentKey = factory.readParentKey(key);
+        if (null == parentKey) {
+            return null;
+        }
+        ResourceOS objectSegment = access.selectByKey(application.getId(), parentKey);
+        return factory.reconstitute(objectSegment, application, owner, null);
+    }
+
     private List<Resource> _findByOwner(ResultFetchRequest request) {
         Application application = (Application) request.getArguments()[0];
         Principal owner = (Principal) request.getArguments()[1];

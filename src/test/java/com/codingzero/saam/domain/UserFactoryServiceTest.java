@@ -4,9 +4,10 @@ import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.domain.principal.role.RoleRepositoryService;
 import com.codingzero.saam.domain.principal.user.UserEntity;
 import com.codingzero.saam.domain.principal.user.UserFactoryService;
-import com.codingzero.saam.infrastructure.database.UserOS;
+import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
 import com.codingzero.saam.infrastructure.database.PasswordHelper;
 import com.codingzero.saam.infrastructure.database.PrincipalAccess;
+import com.codingzero.saam.infrastructure.database.UserOS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,6 +25,7 @@ public class UserFactoryServiceTest {
     private PrincipalAccess principalAccess;
     private RoleRepositoryService roleRepository;
     private PasswordHelper passwordHelper;
+    private ApplicationStatusVerifier applicationStatusVerifier;
     private UserFactoryService service;
 
     @Before
@@ -31,10 +33,12 @@ public class UserFactoryServiceTest {
         principalAccess = mock(PrincipalAccess.class);
         roleRepository = mock(RoleRepositoryService.class);
         passwordHelper = mock(PasswordHelper.class);
+        applicationStatusVerifier = mock(ApplicationStatusVerifier.class);
         service = new UserFactoryService(
                 principalAccess,
                 roleRepository,
-                passwordHelper, applicationStatusVerifier);
+                passwordHelper,
+                applicationStatusVerifier);
     }
 
     @Test

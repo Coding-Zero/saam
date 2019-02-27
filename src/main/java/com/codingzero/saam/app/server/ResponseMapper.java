@@ -148,7 +148,7 @@ public class ResponseMapper {
         for (OAuthIdentifier identifier: identifiers) {
             responses.add(
                     new UserResponse.OAuthIdentifier(
-                            identifier.getPlatform(),
+                            identifier.getPolicy().getPlatform(),
                             identifier.getContent(),
                             identifier.getProperties(),
                             identifier.getCreationTime()));

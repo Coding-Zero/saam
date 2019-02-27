@@ -1,10 +1,11 @@
 package com.codingzero.saam.domain;
 
+import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
 import com.codingzero.saam.domain.usersession.UserSessionEntity;
 import com.codingzero.saam.domain.usersession.UserSessionFactoryService;
 import com.codingzero.saam.domain.usersession.UserSessionRepositoryService;
-import com.codingzero.saam.infrastructure.database.UserSessionOS;
 import com.codingzero.saam.infrastructure.database.UserSessionAccess;
+import com.codingzero.saam.infrastructure.database.UserSessionOS;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultPage;
@@ -28,12 +29,14 @@ public class UserSessionRepositoryServiceTest {
 
     private UserSessionAccess access;
     private UserSessionFactoryService factory;
+    private ApplicationStatusVerifier applicationStatusVerifier;
     private UserSessionRepositoryService service;
 
     @Before
     public void setUp() {
         access = mock(UserSessionAccess.class);
         factory = mock(UserSessionFactoryService.class);
+        applicationStatusVerifier = mock(ApplicationStatusVerifier.class);
         service = new UserSessionRepositoryService(
                 access,
                 factory, applicationStatusVerifier);
@@ -77,7 +80,7 @@ public class UserSessionRepositoryServiceTest {
         String applicationId = "application-id";
         Application application = mock(Application.class);
         when(application.getId()).thenReturn(applicationId);
-        service.removeAll(application);
+        service.removeByApplication(application);
         verify(access, times(1)).deleteByApplicationId(applicationId);
     }
 

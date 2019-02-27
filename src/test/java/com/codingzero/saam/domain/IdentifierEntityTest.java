@@ -29,8 +29,10 @@ public class IdentifierEntityTest {
     private IdentifierOS objectSegment;
     private IdentifierPolicy policy;
     private User user;
+    private Application application;
     private IdentifierVerificationCodeGenerator verificationCodeGenerator;
     private UserRepositoryService userRepository;
+    private ApplicationRepository applicationRepository;
     private IdentifierEntity entity;
 
     @Before
@@ -38,13 +40,17 @@ public class IdentifierEntityTest {
         objectSegment = mock(IdentifierOS.class);
         policy = mock(IdentifierPolicy.class);
         user = mock(User.class);
+        application = mock(Application.class);
         verificationCodeGenerator = mock(IdentifierVerificationCodeGenerator.class);
         userRepository = mock(UserRepositoryService.class);
+        applicationRepository = mock(ApplicationRepository.class);
         entity = new IdentifierEntity(
                 objectSegment,
-                application, user,
+                application,
+                user,
                 verificationCodeGenerator,
-                userRepository, applicationRepository);
+                userRepository,
+                applicationRepository);
     }
 
     @Test
@@ -82,7 +88,7 @@ public class IdentifierEntityTest {
     public void testGetPolicy() {
         IdentifierPolicy policy = mock(IdentifierPolicy.class);
         Application application = mock(Application.class);
-        when(objectSegment.getIdentifierType()).thenReturn(IdentifierType.USERNAME);
+        when(objectSegment.getType()).thenReturn(IdentifierType.USERNAME);
         when(user.getApplication()).thenReturn(application);
         when(application.fetchIdentifierPolicy(IdentifierType.USERNAME)).thenReturn(policy);
         entity = new IdentifierEntity(
