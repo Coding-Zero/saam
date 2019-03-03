@@ -3,9 +3,9 @@ package com.codingzero.saam.domain.application;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.OAuthIdentifierPolicy;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyAccess;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierAccess;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierPolicyOS;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,8 +7,8 @@ import com.codingzero.saam.domain.APIKey;
 import com.codingzero.saam.domain.Principal;
 import com.codingzero.saam.domain.Resource;
 import com.codingzero.saam.domain.principal.PrincipalRepositoryService;
-import com.codingzero.saam.infrastructure.database.PermissionOS;
-import com.codingzero.saam.infrastructure.database.PermissionAccess;
+import com.codingzero.saam.infrastructure.data.PermissionAccess;
+import com.codingzero.saam.infrastructure.data.PermissionOS;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.ArrayList;

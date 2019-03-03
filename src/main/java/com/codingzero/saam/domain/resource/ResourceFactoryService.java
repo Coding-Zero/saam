@@ -10,8 +10,8 @@ import com.codingzero.saam.domain.PrincipalRepository;
 import com.codingzero.saam.domain.Resource;
 import com.codingzero.saam.domain.ResourceFactory;
 import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
-import com.codingzero.saam.infrastructure.database.ResourceAccess;
-import com.codingzero.saam.infrastructure.database.ResourceOS;
+import com.codingzero.saam.infrastructure.data.ResourceAccess;
+import com.codingzero.saam.infrastructure.data.ResourceOS;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.Date;

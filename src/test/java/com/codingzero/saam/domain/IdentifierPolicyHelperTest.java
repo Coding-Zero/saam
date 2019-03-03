@@ -2,7 +2,7 @@ package com.codingzero.saam.domain;
 
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.domain.services.IdentifierPolicyHelper;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.data.IdentifierPolicyAccess;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;

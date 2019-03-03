@@ -7,9 +7,9 @@ import com.codingzero.saam.domain.Role;
 import com.codingzero.saam.domain.UserFactory;
 import com.codingzero.saam.domain.principal.role.RoleRepositoryService;
 import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
-import com.codingzero.saam.infrastructure.database.UserOS;
-import com.codingzero.saam.infrastructure.database.PasswordHelper;
-import com.codingzero.saam.infrastructure.database.PrincipalAccess;
+import com.codingzero.saam.infrastructure.data.PasswordHelper;
+import com.codingzero.saam.infrastructure.data.PrincipalAccess;
+import com.codingzero.saam.infrastructure.data.UserOS;
 
 import java.util.ArrayList;
 import java.util.Collections;

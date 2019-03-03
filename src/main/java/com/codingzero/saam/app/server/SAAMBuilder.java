@@ -1,8 +1,8 @@
 package com.codingzero.saam.app.server;
 
 import com.codingzero.saam.app.SAAM;
-import com.codingzero.saam.app.server.base.IdentifierVerificationCodeGeneratorImpl;
-import com.codingzero.saam.app.server.base.password.PasswordHelperImpl;
+import com.codingzero.saam.app.server.infrastructure.IdentifierVerificationCodeGeneratorImpl;
+import com.codingzero.saam.app.server.infrastructure.password.PasswordHelperImpl;
 import com.codingzero.saam.domain.ApplicationRepository;
 import com.codingzero.saam.domain.application.ApplicationFactoryService;
 import com.codingzero.saam.domain.application.ApplicationRepositoryService;
@@ -29,27 +29,27 @@ import com.codingzero.saam.domain.resource.PermissionRepositoryService;
 import com.codingzero.saam.domain.resource.ResourceFactoryService;
 import com.codingzero.saam.domain.resource.ResourceRepositoryService;
 import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
+import com.codingzero.saam.domain.services.IdentifierPolicyHelper;
 import com.codingzero.saam.domain.services.UserAuthenticator;
 import com.codingzero.saam.domain.usersession.UserSessionFactoryService;
 import com.codingzero.saam.domain.usersession.UserSessionRepositoryService;
-import com.codingzero.saam.infrastructure.database.APIKeyAccess;
-import com.codingzero.saam.infrastructure.database.ApplicationAccess;
-import com.codingzero.saam.infrastructure.database.EmailPolicyAccess;
-import com.codingzero.saam.infrastructure.database.IdentifierAccess;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
-import com.codingzero.saam.infrastructure.database.IdentifierVerificationCodeGenerator;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyAccess;
-import com.codingzero.saam.infrastructure.database.OAuthPlatformAgent;
-import com.codingzero.saam.infrastructure.database.PasswordHelper;
-import com.codingzero.saam.infrastructure.database.PermissionAccess;
-import com.codingzero.saam.infrastructure.database.PermissionResourceIndexAccess;
-import com.codingzero.saam.infrastructure.database.PrincipalAccess;
-import com.codingzero.saam.infrastructure.database.ResourceAccess;
-import com.codingzero.saam.infrastructure.database.RoleAccess;
-import com.codingzero.saam.infrastructure.database.UserAccess;
-import com.codingzero.saam.infrastructure.database.UserSessionAccess;
-import com.codingzero.saam.infrastructure.database.UsernamePolicyAccess;
+import com.codingzero.saam.infrastructure.data.APIKeyAccess;
+import com.codingzero.saam.infrastructure.data.ApplicationAccess;
+import com.codingzero.saam.infrastructure.data.EmailPolicyAccess;
+import com.codingzero.saam.infrastructure.data.IdentifierAccess;
+import com.codingzero.saam.infrastructure.data.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.data.IdentifierVerificationCodeGenerator;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierAccess;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.data.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.data.PasswordHelper;
+import com.codingzero.saam.infrastructure.data.PermissionAccess;
+import com.codingzero.saam.infrastructure.data.PrincipalAccess;
+import com.codingzero.saam.infrastructure.data.ResourceAccess;
+import com.codingzero.saam.infrastructure.data.RoleAccess;
+import com.codingzero.saam.infrastructure.data.UserAccess;
+import com.codingzero.saam.infrastructure.data.UserSessionAccess;
+import com.codingzero.saam.infrastructure.data.UsernamePolicyAccess;
 import com.codingzero.utilities.transaction.TransactionManager;
 
 public class SAAMBuilder {
@@ -100,17 +100,7 @@ public class SAAMBuilder {
     private OAuthPlatformAgent oAuthPlatformAgent;
     private ResponseMapper responseMapper;
     private ApplicationStatusVerifier applicationStatusVerifier;
-    private PermissionResourceIndexAccess permissionResourceIndexAccess;
-
-    public PermissionResourceIndexAccess getPermissionResourceIndexAccess() {
-        checkForMissedValue(permissionResourceIndexAccess, PermissionResourceIndexAccess.class);
-        return permissionResourceIndexAccess;
-    }
-
-    public SAAMBuilder setPermissionResourceIndexAccess(PermissionResourceIndexAccess permissionResourceIndexAccess) {
-        this.permissionResourceIndexAccess = permissionResourceIndexAccess;
-        return this;
-    }
+    private IdentifierPolicyHelper identifierPolicyHelper;
 
     public ApplicationStatusVerifier getApplicationStatusVerifier() {
         if (null == applicationStatusVerifier) {
@@ -465,7 +455,7 @@ public class SAAMBuilder {
     public UsernamePolicyFactoryService getUsernamePolicyFactory() {
         if (null == usernamePolicyFactory) {
             usernamePolicyFactory = new UsernamePolicyFactoryService(
-                    getIdentifierPolicyAccess(), getIdentifierFactory(), getIdentifierRepository());
+                    getIdentifierPolicyHelper());
         }
         return usernamePolicyFactory;
     }
@@ -491,9 +481,8 @@ public class SAAMBuilder {
     public EmailPolicyFactoryService getEmailPolicyFactory() {
         if (null == emailPolicyFactory) {
             emailPolicyFactory = new EmailPolicyFactoryService(
-                    getIdentifierPolicyAccess(),
-                    getIdentifierFactory(),
-                    getIdentifierRepository());
+                    getIdentifierPolicyHelper()
+            );
         }
         return emailPolicyFactory;
     }
@@ -564,9 +553,8 @@ public class SAAMBuilder {
     public OAuthIdentifierPolicyFactoryService getOAuthIdentifierPolicyFactory() {
         if (null == oAuthIdentifierPolicyFactory) {
             oAuthIdentifierPolicyFactory = new OAuthIdentifierPolicyFactoryService(
-                    getOAuthIdentifierPolicyAccess(),
-                    getoAuthIdentifierFactory(),
-                    getOAuthIdentifierRepository());
+                    getOAuthIdentifierPolicyAccess()
+            );
         }
         return oAuthIdentifierPolicyFactory;
     }
@@ -639,7 +627,7 @@ public class SAAMBuilder {
         if (null == resourceRepository) {
             resourceRepository = new ResourceRepositoryService(
                     getResourceAccess(),
-                    getPermissionResourceIndexAccess(),
+                    permissionAccess,
                     getResourceFactory(),
                     getPermissionRepository(),
                     getApplicationStatusVerifier());
@@ -661,18 +649,7 @@ public class SAAMBuilder {
                     getIdentifierPolicyRepository(),
                     getOAuthIdentifierPolicyFactory(),
                     getOAuthIdentifierPolicyRepository(),
-                    getPrincipalRepository(),
-                    getUserFactory(),
-                    getUserRepository(),
-                    getApiKeyFactory(),
-                    getApiKeyRepository(),
-                    getUserSessionFactory(),
-                    getUserSessionRepository(),
-                    getRoleFactory(),
-                    getRoleRepository(),
-                    getResourceFactory(),
-                    getResourceRepository(),
-                    applicationStatusVerifier);
+                    getApplicationStatusVerifier());
         }
         return applicationFactory;
     }
@@ -688,11 +665,8 @@ public class SAAMBuilder {
                     getApplicationAccess(),
                     getApplicationFactory(),
                     getIdentifierPolicyRepository(),
-                    getOAuthIdentifierPolicyRepository(),
-                    getPrincipalRepository(),
-                    getResourceRepository(),
-                    getPermissionRepository(),
-                    getUserSessionRepository());
+                    getOAuthIdentifierPolicyRepository()
+            );
         }
         return applicationRepository;
     }
@@ -745,6 +719,18 @@ public class SAAMBuilder {
 
     public SAAMBuilder setResponseMapper(ResponseMapper responseMapper) {
         this.responseMapper = responseMapper;
+        return this;
+    }
+
+    public IdentifierPolicyHelper getIdentifierPolicyHelper() {
+        if (null == identifierPolicyHelper) {
+            identifierPolicyHelper = new IdentifierPolicyHelper(getIdentifierPolicyAccess());
+        }
+        return identifierPolicyHelper;
+    }
+
+    public SAAMBuilder setIdentifierPolicyHelper(IdentifierPolicyHelper identifierPolicyHelper) {
+        this.identifierPolicyHelper = identifierPolicyHelper;
         return this;
     }
 

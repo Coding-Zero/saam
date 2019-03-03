@@ -3,7 +3,7 @@ package com.codingzero.saam.domain;
 import com.codingzero.saam.domain.application.OAuthIdentifierPolicyEntity;
 import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierFactoryService;
 import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierRepositoryService;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierPolicyOS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,9 +39,8 @@ public class OAuthIdentifierPolicyEntityTest {
         identifierRepository = mock(OAuthIdentifierRepositoryService.class);
         entity = new OAuthIdentifierPolicyEntity(
                 objectSegment,
-                application,
-                identifierFactory,
-                identifierRepository);
+                application
+        );
     }
 
     @Test

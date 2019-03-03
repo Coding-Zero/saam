@@ -11,7 +11,7 @@ import com.codingzero.saam.domain.PrincipalRepository;
 import com.codingzero.saam.domain.Resource;
 import com.codingzero.saam.domain.Role;
 import com.codingzero.saam.domain.User;
-import com.codingzero.saam.infrastructure.database.ResourceOS;
+import com.codingzero.saam.infrastructure.data.ResourceOS;
 import com.codingzero.utilities.ddd.EntityObject;
 import com.codingzero.utilities.pagination.PaginatedResult;
 

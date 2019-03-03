@@ -5,7 +5,7 @@ import com.codingzero.saam.domain.resource.PermissionEntity;
 import com.codingzero.saam.domain.resource.PermissionFactoryService;
 import com.codingzero.saam.domain.principal.PrincipalEntity;
 import com.codingzero.saam.domain.principal.PrincipalRepositoryService;
-import com.codingzero.saam.infrastructure.database.PermissionOS;
+import com.codingzero.saam.infrastructure.data.PermissionOS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

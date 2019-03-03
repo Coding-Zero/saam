@@ -1,11 +1,11 @@
 package com.codingzero.saam.domain.resource;
 
-import com.codingzero.saam.domain.principal.PrincipalRepositoryService;
-import com.codingzero.saam.infrastructure.database.PermissionOS;
 import com.codingzero.saam.common.Action;
 import com.codingzero.saam.domain.Permission;
 import com.codingzero.saam.domain.Principal;
 import com.codingzero.saam.domain.Resource;
+import com.codingzero.saam.domain.principal.PrincipalRepositoryService;
+import com.codingzero.saam.infrastructure.data.PermissionOS;
 import com.codingzero.utilities.ddd.EntityObject;
 
 import java.util.Date;

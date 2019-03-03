@@ -3,10 +3,8 @@ package com.codingzero.saam.domain.application;
 import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.domain.Application;
-import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierFactoryService;
-import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierRepositoryService;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierPolicyOS;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.Date;
@@ -15,15 +13,9 @@ import java.util.Map;
 public class OAuthIdentifierPolicyFactoryService {
 
     private OAuthIdentifierPolicyAccess access;
-    private OAuthIdentifierFactoryService oAuthIdentifierFactory;
-    private OAuthIdentifierRepositoryService oAuthIdentifierRepository;
 
-    public OAuthIdentifierPolicyFactoryService(OAuthIdentifierPolicyAccess access,
-                                               OAuthIdentifierFactoryService oAuthIdentifierFactory,
-                                               OAuthIdentifierRepositoryService oAuthIdentifierRepository) {
+    public OAuthIdentifierPolicyFactoryService(OAuthIdentifierPolicyAccess access) {
         this.access = access;
-        this.oAuthIdentifierFactory = oAuthIdentifierFactory;
-        this.oAuthIdentifierRepository = oAuthIdentifierRepository;
     }
 
     public OAuthIdentifierPolicyEntity generate(Application application,
@@ -52,7 +44,7 @@ public class OAuthIdentifierPolicyFactoryService {
         if (null == os) {
             return null;
         }
-        return new OAuthIdentifierPolicyEntity(os, application, oAuthIdentifierFactory, oAuthIdentifierRepository);
+        return new OAuthIdentifierPolicyEntity(os, application);
     }
 
 }

@@ -4,9 +4,7 @@ import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.common.UsernameFormat;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.UsernamePolicy;
-import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
-import com.codingzero.saam.domain.identifier.IdentifierRepositoryService;
-import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
+import com.codingzero.saam.infrastructure.data.UsernamePolicyOS;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.regex.Pattern;
@@ -18,10 +16,8 @@ public class UsernamePolicyEntity
     private static final Pattern URL_SAFE_PATTERN = Pattern.compile(URL_SAFE_PATTERN_STRING);
 
     public UsernamePolicyEntity(UsernamePolicyOS objectSegment,
-                                Application application,
-                                IdentifierFactoryService identifierFactory,
-                                IdentifierRepositoryService identifierRepository) {
-        super(objectSegment, application, identifierFactory, identifierRepository);
+                                Application application) {
+        super(objectSegment, application);
     }
 
     @Override

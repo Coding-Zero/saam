@@ -8,8 +8,8 @@ import com.codingzero.saam.domain.Identifier;
 import com.codingzero.saam.domain.IdentifierPolicy;
 import com.codingzero.saam.domain.User;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
-import com.codingzero.saam.infrastructure.database.IdentifierOS;
-import com.codingzero.saam.infrastructure.database.IdentifierVerificationCodeGenerator;
+import com.codingzero.saam.infrastructure.data.IdentifierOS;
+import com.codingzero.saam.infrastructure.data.IdentifierVerificationCodeGenerator;
 import com.codingzero.utilities.ddd.EntityObject;
 import com.codingzero.utilities.error.BusinessError;
 

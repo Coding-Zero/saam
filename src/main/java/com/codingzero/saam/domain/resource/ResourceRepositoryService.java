@@ -5,10 +5,10 @@ import com.codingzero.saam.domain.Principal;
 import com.codingzero.saam.domain.Resource;
 import com.codingzero.saam.domain.ResourceRepository;
 import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
-import com.codingzero.saam.infrastructure.database.PermissionResourceIndex;
-import com.codingzero.saam.infrastructure.database.PermissionResourceIndexAccess;
-import com.codingzero.saam.infrastructure.database.ResourceAccess;
-import com.codingzero.saam.infrastructure.database.ResourceOS;
+import com.codingzero.saam.infrastructure.data.PermissionAccess;
+import com.codingzero.saam.infrastructure.data.PermissionOS;
+import com.codingzero.saam.infrastructure.data.ResourceAccess;
+import com.codingzero.saam.infrastructure.data.ResourceOS;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultFetchRequest;
 
@@ -19,18 +19,18 @@ import java.util.List;
 public class ResourceRepositoryService implements ResourceRepository {
 
     private ResourceAccess access;
-    private PermissionResourceIndexAccess permissionResourceIndexAccess;
+    private PermissionAccess permissionAccess;
     private ResourceFactoryService factory;
     private PermissionRepositoryService permissionRepository;
     private ApplicationStatusVerifier applicationStatusVerifier;
 
     public ResourceRepositoryService(ResourceAccess access,
-                                     PermissionResourceIndexAccess permissionResourceIndexAccess,
+                                     PermissionAccess permissionAccess,
                                      ResourceFactoryService factory,
                                      PermissionRepositoryService permissionRepository,
                                      ApplicationStatusVerifier applicationStatusVerifier) {
         this.access = access;
-        this.permissionResourceIndexAccess = permissionResourceIndexAccess;
+        this.permissionAccess = permissionAccess;
         this.factory = factory;
         this.permissionRepository = permissionRepository;
         this.applicationStatusVerifier = applicationStatusVerifier;
@@ -140,11 +140,11 @@ public class ResourceRepositoryService implements ResourceRepository {
     private List<Resource> _findPermissionAssignedResources(ResultFetchRequest request) {
         Principal principal = (Principal) request.getArguments()[1];
         Application application = principal.getApplication();
-        PaginatedResult<List<PermissionResourceIndex>> result = permissionResourceIndexAccess.selectByPrincipalId(
+        PaginatedResult<List<PermissionOS>> result = permissionAccess.selectByPrincipalId(
                 application.getId(), principal.getId());
-        List<PermissionResourceIndex> indexes = result.start(request.getPage(), request.getSorting()).getResult();
+        List<PermissionOS> indexes = result.start(request.getPage(), request.getSorting()).getResult();
         List<Resource> entities = new ArrayList<>(indexes.size());
-        for (PermissionResourceIndex index: indexes) {
+        for (PermissionOS index: indexes) {
             Resource resource = findByKey(application, index.getResourceKey());
             entities.add(resource);
         }

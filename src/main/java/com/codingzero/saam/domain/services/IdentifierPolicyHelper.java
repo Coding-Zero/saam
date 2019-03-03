@@ -3,7 +3,7 @@ package com.codingzero.saam.domain.services;
 import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.domain.Application;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.data.IdentifierPolicyAccess;
 import com.codingzero.utilities.error.BusinessError;
 
 public class IdentifierPolicyHelper {

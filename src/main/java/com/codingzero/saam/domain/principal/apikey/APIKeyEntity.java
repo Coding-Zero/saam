@@ -5,7 +5,7 @@ import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.User;
 import com.codingzero.saam.domain.principal.PrincipalEntity;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
-import com.codingzero.saam.infrastructure.database.APIKeyOS;
+import com.codingzero.saam.infrastructure.data.APIKeyOS;
 
 public class APIKeyEntity extends PrincipalEntity<APIKeyOS> implements APIKey {
 

@@ -1,9 +1,9 @@
 package com.codingzero.saam.domain.application;
 
 import com.codingzero.saam.domain.Application;
-import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
-import com.codingzero.saam.infrastructure.database.EmailPolicyAccess;
+import com.codingzero.saam.infrastructure.data.EmailPolicyAccess;
+import com.codingzero.saam.infrastructure.data.EmailPolicyOS;
+import com.codingzero.saam.infrastructure.data.IdentifierPolicyOS;
 
 public class EmailPolicyRepositoryService {
 

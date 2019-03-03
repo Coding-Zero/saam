@@ -9,23 +9,8 @@ import com.codingzero.saam.domain.EmailPolicy;
 import com.codingzero.saam.domain.IdentifierPolicy;
 import com.codingzero.saam.domain.OAuthIdentifierPolicy;
 import com.codingzero.saam.domain.UsernamePolicy;
-import com.codingzero.saam.domain.principal.apikey.APIKeyFactoryService;
-import com.codingzero.saam.domain.principal.apikey.APIKeyRepositoryService;
-import com.codingzero.saam.domain.principal.PrincipalEntity;
-import com.codingzero.saam.domain.principal.PrincipalRepositoryService;
-import com.codingzero.saam.domain.resource.ResourceEntity;
-import com.codingzero.saam.domain.resource.ResourceFactoryService;
-import com.codingzero.saam.domain.resource.ResourceRepositoryService;
-import com.codingzero.saam.domain.principal.role.RoleFactoryService;
-import com.codingzero.saam.domain.principal.role.RoleRepositoryService;
 import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
-import com.codingzero.saam.domain.usersession.UserSessionEntity;
-import com.codingzero.saam.domain.usersession.UserSessionFactoryService;
-import com.codingzero.saam.domain.usersession.UserSessionRepositoryService;
-import com.codingzero.saam.domain.principal.user.UserEntity;
-import com.codingzero.saam.domain.principal.user.UserFactoryService;
-import com.codingzero.saam.domain.principal.user.UserRepositoryService;
-import com.codingzero.saam.infrastructure.database.ApplicationOS;
+import com.codingzero.saam.infrastructure.data.ApplicationOS;
 import com.codingzero.utilities.ddd.EntityObject;
 
 import java.util.ArrayList;
@@ -43,23 +28,12 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
     private EmailPolicyFactoryService emailIdentifierPolicyFactory;
     private OAuthIdentifierPolicyFactoryService oAuthIdentifierPolicyFactory;
     private OAuthIdentifierPolicyRepositoryService oAuthIdentifierPolicyRepository;
-    private PrincipalRepositoryService principalRepository;
-    private UserFactoryService userFactory;
-    private UserRepositoryService userRepository;
-    private APIKeyFactoryService apiKeyFactory;
-    private APIKeyRepositoryService apiKeyRepository;
-    private UserSessionFactoryService userSessionFactory;
-    private UserSessionRepositoryService userSessionRepository;
-    private RoleFactoryService roleFactory;
-    private RoleRepositoryService roleRepository;
-    private ResourceFactoryService resourceFactory;
-    private ResourceRepositoryService resourceRepository;
     private Map<IdentifierType, IdentifierPolicyEntity> dirtyIdentifierPolicies;
     private Map<OAuthPlatform, OAuthIdentifierPolicyEntity> dirtyOAuthIdentifierPolicies;
-    private Map<String, PrincipalEntity> dirtyPrincipals;
-    private Map<String, UserSessionEntity> dirtyUserSessions;
-    private Map<String, UserEntity> removingUserSessions;
-    private Map<String, ResourceEntity> dirtyResources;
+//    private Map<String, PrincipalEntity> dirtyPrincipals;
+//    private Map<String, UserSessionEntity> dirtyUserSessions;
+//    private Map<String, UserEntity> removingUserSessions;
+//    private Map<String, ResourceEntity> dirtyResources;
     private ApplicationStatusVerifier statusVerifier;
 
     public ApplicationRoot(ApplicationOS objectSegment,
@@ -69,17 +43,7 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
                            EmailPolicyFactoryService emailIdentifierPolicyFactory,
                            OAuthIdentifierPolicyFactoryService oAuthIdentifierPolicyFactory,
                            OAuthIdentifierPolicyRepositoryService oAuthIdentifierPolicyRepository,
-                           PrincipalRepositoryService principalRepository,
-                           UserFactoryService userFactory,
-                           UserRepositoryService userRepository,
-                           APIKeyFactoryService apiKeyFactory,
-                           APIKeyRepositoryService apiKeyRepository,
-                           UserSessionFactoryService userSessionFactory,
-                           UserSessionRepositoryService userSessionRepository,
-                           RoleFactoryService roleFactory,
-                           RoleRepositoryService roleRepository,
-                           ResourceFactoryService resourceFactory,
-                           ResourceRepositoryService resourceRepository, ApplicationStatusVerifier statusVerifier) {
+                           ApplicationStatusVerifier statusVerifier) {
         super(objectSegment);
         this.factory = factory;
         this.identifierPolicyRepository = identifierPolicyRepository;
@@ -87,24 +51,13 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
         this.emailIdentifierPolicyFactory = emailIdentifierPolicyFactory;
         this.oAuthIdentifierPolicyFactory = oAuthIdentifierPolicyFactory;
         this.oAuthIdentifierPolicyRepository = oAuthIdentifierPolicyRepository;
-        this.principalRepository = principalRepository;
-        this.userFactory = userFactory;
-        this.userRepository = userRepository;
-        this.apiKeyFactory = apiKeyFactory;
-        this.apiKeyRepository = apiKeyRepository;
-        this.userSessionFactory = userSessionFactory;
-        this.userSessionRepository = userSessionRepository;
-        this.roleFactory = roleFactory;
-        this.roleRepository = roleRepository;
-        this.resourceFactory = resourceFactory;
-        this.resourceRepository = resourceRepository;
         this.statusVerifier = statusVerifier;
         this.dirtyIdentifierPolicies = new HashMap<>();
         this.dirtyOAuthIdentifierPolicies = new HashMap<>();
-        this.dirtyPrincipals = new HashMap<>();
-        this.dirtyUserSessions = new HashMap<>();
-        this.removingUserSessions = new HashMap<>();
-        this.dirtyResources = new HashMap<>();
+//        this.dirtyPrincipals = new HashMap<>();
+//        this.dirtyUserSessions = new HashMap<>();
+//        this.removingUserSessions = new HashMap<>();
+//        this.dirtyResources = new HashMap<>();
     }
 
     public List<IdentifierPolicyEntity> getDirtyIdentifierPolicies() {
@@ -115,21 +68,21 @@ public class ApplicationRoot extends EntityObject<ApplicationOS> implements Appl
         return Collections.unmodifiableList(new ArrayList<>(dirtyOAuthIdentifierPolicies.values()));
     }
 
-    public List<PrincipalEntity> getDirtyPrincipals() {
-        return Collections.unmodifiableList(new ArrayList<>(dirtyPrincipals.values()));
-    }
-
-    public List<UserSessionEntity> getDirtyUserSessions() {
-        return Collections.unmodifiableList(new ArrayList<>(dirtyUserSessions.values()));
-    }
-
-    public List<UserEntity> getRemovingUserSessions() {
-        return Collections.unmodifiableList(new ArrayList<>(removingUserSessions.values()));
-    }
-
-    public List<ResourceEntity> getDirtyResources() {
-        return Collections.unmodifiableList(new ArrayList<>(dirtyResources.values()));
-    }
+//    public List<PrincipalEntity> getDirtyPrincipals() {
+//        return Collections.unmodifiableList(new ArrayList<>(dirtyPrincipals.values()));
+//    }
+//
+//    public List<UserSessionEntity> getDirtyUserSessions() {
+//        return Collections.unmodifiableList(new ArrayList<>(dirtyUserSessions.values()));
+//    }
+//
+//    public List<UserEntity> getRemovingUserSessions() {
+//        return Collections.unmodifiableList(new ArrayList<>(removingUserSessions.values()));
+//    }
+//
+//    public List<ResourceEntity> getDirtyResources() {
+//        return Collections.unmodifiableList(new ArrayList<>(dirtyResources.values()));
+//    }
 
     @Override
     public String getId() {

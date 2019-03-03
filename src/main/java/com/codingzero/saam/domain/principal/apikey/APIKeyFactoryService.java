@@ -8,9 +8,9 @@ import com.codingzero.saam.domain.APIKeyFactory;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.User;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
-import com.codingzero.saam.infrastructure.database.APIKeyOS;
-import com.codingzero.saam.infrastructure.database.APIKeyAccess;
-import com.codingzero.saam.infrastructure.database.PrincipalAccess;
+import com.codingzero.saam.infrastructure.data.APIKeyAccess;
+import com.codingzero.saam.infrastructure.data.APIKeyOS;
+import com.codingzero.saam.infrastructure.data.PrincipalAccess;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.Date;

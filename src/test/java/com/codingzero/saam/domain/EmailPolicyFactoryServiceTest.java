@@ -6,8 +6,8 @@ import com.codingzero.saam.domain.application.EmailPolicyFactoryService;
 import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
 import com.codingzero.saam.domain.services.IdentifierPolicyHelper;
 import com.codingzero.saam.domain.identifier.IdentifierRepositoryService;
-import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.data.EmailPolicyOS;
+import com.codingzero.saam.infrastructure.data.IdentifierPolicyAccess;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,9 +40,8 @@ public class EmailPolicyFactoryServiceTest {
         identifierFactory = mock(IdentifierFactoryService.class);
         identifierRepository = mock(IdentifierRepositoryService.class);
         service = new EmailPolicyFactoryService(
-                identifierPolicyHelper,
-                identifierFactory,
-                identifierRepository);
+                identifierPolicyHelper
+        );
     }
 
     @Test

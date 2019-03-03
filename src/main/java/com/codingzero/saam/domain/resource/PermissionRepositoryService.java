@@ -5,8 +5,8 @@ import com.codingzero.saam.domain.Permission;
 import com.codingzero.saam.domain.Principal;
 import com.codingzero.saam.domain.Resource;
 import com.codingzero.saam.domain.principal.PrincipalEntity;
-import com.codingzero.saam.infrastructure.database.PermissionOS;
-import com.codingzero.saam.infrastructure.database.PermissionAccess;
+import com.codingzero.saam.infrastructure.data.PermissionAccess;
+import com.codingzero.saam.infrastructure.data.PermissionOS;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.PaginatedResultMapper;
 

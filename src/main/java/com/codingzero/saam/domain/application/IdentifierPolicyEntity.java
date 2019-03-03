@@ -4,34 +4,23 @@ import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.IdentifierPolicy;
-import com.codingzero.saam.domain.identifier.IdentifierEntity;
-import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
-import com.codingzero.saam.domain.identifier.IdentifierRepositoryService;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
+import com.codingzero.saam.infrastructure.data.IdentifierPolicyOS;
 import com.codingzero.utilities.ddd.EntityObject;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class IdentifierPolicyEntity<T extends IdentifierPolicyOS>
         extends EntityObject<T> implements IdentifierPolicy {
 
     private Application application;
-    private IdentifierFactoryService identifierFactory;
-    private IdentifierRepositoryService identifierRepository;
-    private Map<String, IdentifierEntity> dirtyIdentifiers;
+//    private Map<String, IdentifierEntity> dirtyIdentifiers;
 
     public IdentifierPolicyEntity(T objectSegment,
-                                  Application application,
-                                  IdentifierFactoryService identifierFactory,
-                                  IdentifierRepositoryService identifierRepository) {
+                                  Application application) {
         super(objectSegment);
         this.application = application;
-        this.identifierFactory = identifierFactory;
-        this.identifierRepository = identifierRepository;
-        this.dirtyIdentifiers = new HashMap<>();
+//        this.dirtyIdentifiers = new HashMap<>();
     }
 
 //    public List<IdentifierEntity> getDirtyIdentifiers() {

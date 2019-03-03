@@ -6,8 +6,8 @@ import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.Identifier;
 import com.codingzero.saam.domain.IdentifierRepository;
 import com.codingzero.saam.domain.User;
-import com.codingzero.saam.infrastructure.database.IdentifierOS;
-import com.codingzero.saam.infrastructure.database.IdentifierAccess;
+import com.codingzero.saam.infrastructure.data.IdentifierAccess;
+import com.codingzero.saam.infrastructure.data.IdentifierOS;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.PaginatedResultMapper;
 
@@ -92,8 +92,8 @@ public class IdentifierRepositoryService implements IdentifierRepository {
     }
 
     private List<Identifier> _toResult(List<IdentifierOS> source, Object[] arguments) {
-        Application application = (Application) arguments[1];
-        User user = (User) arguments[2];
+        Application application = (Application) arguments[0];
+        User user = (User) arguments[1];
         List<Identifier> entities = new ArrayList<>(source.size());
         for (IdentifierOS os: source) {
             entities.add(factory.reconstitute(os, application, user));

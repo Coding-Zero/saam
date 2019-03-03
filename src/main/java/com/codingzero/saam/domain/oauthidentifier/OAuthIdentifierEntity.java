@@ -5,7 +5,7 @@ import com.codingzero.saam.domain.OAuthIdentifier;
 import com.codingzero.saam.domain.OAuthIdentifierPolicy;
 import com.codingzero.saam.domain.User;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierOS;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierOS;
 import com.codingzero.utilities.ddd.EntityObject;
 
 import java.util.Date;

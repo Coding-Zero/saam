@@ -16,8 +16,8 @@ import com.codingzero.saam.domain.resource.ResourceRepositoryService;
 import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
 import com.codingzero.saam.domain.usersession.UserSessionFactoryService;
 import com.codingzero.saam.domain.usersession.UserSessionRepositoryService;
-import com.codingzero.saam.infrastructure.database.ApplicationAccess;
-import com.codingzero.saam.infrastructure.database.ApplicationOS;
+import com.codingzero.saam.infrastructure.data.ApplicationAccess;
+import com.codingzero.saam.infrastructure.data.ApplicationOS;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.Date;
@@ -35,17 +35,6 @@ public class ApplicationFactoryService implements ApplicationFactory {
     private IdentifierPolicyRepositoryService identifierPolicyRepository;
     private OAuthIdentifierPolicyFactoryService ssoIdentifierPolicyFactory;
     private OAuthIdentifierPolicyRepositoryService ssoIdentifierPolicyRepository;
-    private PrincipalRepositoryService principalRepository;
-    private UserFactoryService userFactory;
-    private UserRepositoryService userRepository;
-    private APIKeyFactoryService apiKeyFactory;
-    private APIKeyRepositoryService apiKeyRepository;
-    private UserSessionFactoryService userSessionFactory;
-    private UserSessionRepositoryService userSessionRepository;
-    private RoleFactoryService roleFactory;
-    private RoleRepositoryService roleRepository;
-    private ResourceFactoryService resourceFactory;
-    private ResourceRepositoryService resourceRepository;
     private ApplicationStatusVerifier applicationStatusVerifier;
 
     public ApplicationFactoryService(ApplicationAccess access,
@@ -54,17 +43,6 @@ public class ApplicationFactoryService implements ApplicationFactory {
                                      IdentifierPolicyRepositoryService identifierPolicyRepository,
                                      OAuthIdentifierPolicyFactoryService ssoIdentifierPolicyFactory,
                                      OAuthIdentifierPolicyRepositoryService ssoIdentifierPolicyRepository,
-                                     PrincipalRepositoryService principalRepository,
-                                     UserFactoryService userFactory,
-                                     UserRepositoryService userRepository,
-                                     APIKeyFactoryService apiKeyFactory,
-                                     APIKeyRepositoryService apiKeyRepository,
-                                     UserSessionFactoryService userSessionFactory,
-                                     UserSessionRepositoryService userSessionRepository,
-                                     RoleFactoryService roleFactory,
-                                     RoleRepositoryService roleRepository,
-                                     ResourceFactoryService resourceFactory,
-                                     ResourceRepositoryService resourceRepository,
                                      ApplicationStatusVerifier applicationStatusVerifier) {
         this.access = access;
         this.usernamePolicyFactory = usernamePolicyFactory;
@@ -72,17 +50,6 @@ public class ApplicationFactoryService implements ApplicationFactory {
         this.identifierPolicyRepository = identifierPolicyRepository;
         this.ssoIdentifierPolicyFactory = ssoIdentifierPolicyFactory;
         this.ssoIdentifierPolicyRepository = ssoIdentifierPolicyRepository;
-        this.principalRepository = principalRepository;
-        this.userFactory = userFactory;
-        this.userRepository = userRepository;
-        this.apiKeyFactory = apiKeyFactory;
-        this.apiKeyRepository = apiKeyRepository;
-        this.userSessionFactory = userSessionFactory;
-        this.userSessionRepository = userSessionRepository;
-        this.roleFactory = roleFactory;
-        this.roleRepository = roleRepository;
-        this.resourceFactory = resourceFactory;
-        this.resourceRepository = resourceRepository;
         this.applicationStatusVerifier = applicationStatusVerifier;
     }
 
@@ -149,17 +116,6 @@ public class ApplicationFactoryService implements ApplicationFactory {
                 emailPolicyFactory,
                 ssoIdentifierPolicyFactory,
                 ssoIdentifierPolicyRepository,
-                principalRepository,
-                userFactory,
-                userRepository,
-                apiKeyFactory,
-                apiKeyRepository,
-                userSessionFactory,
-                userSessionRepository,
-                roleFactory,
-                roleRepository,
-                resourceFactory,
-                resourceRepository,
                 applicationStatusVerifier);
     }
 }

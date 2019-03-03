@@ -3,7 +3,7 @@ package com.codingzero.saam.domain;
 import com.codingzero.saam.domain.application.IdentifierPolicyEntity;
 import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
 import com.codingzero.saam.domain.identifier.IdentifierRepositoryService;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
+import com.codingzero.saam.infrastructure.data.IdentifierPolicyOS;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
@@ -133,7 +133,7 @@ public class IdentifierPolicyEntityTest {
     private class IdentifierPolicyEntityImpl extends IdentifierPolicyEntity {
 
         public IdentifierPolicyEntityImpl(IdentifierPolicyOS objectSegment, Application application, IdentifierFactoryService identifierFactory, IdentifierRepositoryService identifierRepository) {
-            super(objectSegment, application, identifierFactory, identifierRepository);
+            super(objectSegment, application);
         }
     }
 

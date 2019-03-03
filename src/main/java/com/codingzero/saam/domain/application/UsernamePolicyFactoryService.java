@@ -3,11 +3,8 @@ package com.codingzero.saam.domain.application;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.UsernameFormat;
 import com.codingzero.saam.domain.Application;
-import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
-import com.codingzero.saam.domain.identifier.IdentifierRepositoryService;
 import com.codingzero.saam.domain.services.IdentifierPolicyHelper;
-import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.data.UsernamePolicyOS;
 
 import java.util.Date;
 
@@ -17,21 +14,9 @@ public class UsernamePolicyFactoryService {
     public static final int MAX_LENGTH = 45;
 
     private IdentifierPolicyHelper identifierPolicyHelper;
-    private IdentifierFactoryService identifierFactory;
-    private IdentifierRepositoryService identifierRepository;
 
-    public UsernamePolicyFactoryService(IdentifierPolicyAccess access,
-                                        IdentifierFactoryService identifierFactory,
-                                        IdentifierRepositoryService identifierRepository) {
-        this(new IdentifierPolicyHelper(access), identifierFactory, identifierRepository);
-    }
-
-    public UsernamePolicyFactoryService(IdentifierPolicyHelper identifierPolicyHelper,
-                                        IdentifierFactoryService identifierFactory,
-                                        IdentifierRepositoryService identifierRepository) {
+    public UsernamePolicyFactoryService(IdentifierPolicyHelper identifierPolicyHelper) {
         this.identifierPolicyHelper = identifierPolicyHelper;
-        this.identifierFactory = identifierFactory;
-        this.identifierRepository = identifierRepository;
     }
 
     public UsernamePolicyEntity generate(Application application) {
@@ -55,7 +40,7 @@ public class UsernamePolicyFactoryService {
         if (null == os) {
             return null;
         }
-        return new UsernamePolicyEntity(os, application, identifierFactory, identifierRepository);
+        return new UsernamePolicyEntity(os, application);
     }
 
 }

@@ -2,8 +2,8 @@ package com.codingzero.saam.app;
 
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.infrastructure.OAuthAccessToken;
-import com.codingzero.saam.infrastructure.database.mysql.Helper;
-import com.codingzero.saam.infrastructure.database.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.data.mysql.Helper;
+import com.codingzero.saam.infrastructure.data.OAuthPlatformAgent;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 

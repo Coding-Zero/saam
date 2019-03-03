@@ -1,10 +1,10 @@
 package com.codingzero.saam.domain.usersession;
 
 import com.codingzero.saam.domain.Application;
+import com.codingzero.saam.domain.User;
 import com.codingzero.saam.domain.UserSession;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
-import com.codingzero.saam.infrastructure.database.UserSessionOS;
-import com.codingzero.saam.domain.User;
+import com.codingzero.saam.infrastructure.data.UserSessionOS;
 import com.codingzero.utilities.ddd.EntityObject;
 
 import java.util.Date;

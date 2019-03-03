@@ -4,7 +4,7 @@ import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
 import com.codingzero.saam.domain.identifier.IdentifierRepositoryService;
 import com.codingzero.saam.domain.application.UsernamePolicyEntity;
 import com.codingzero.saam.domain.application.UsernamePolicyFactoryService;
-import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
+import com.codingzero.saam.infrastructure.data.UsernamePolicyOS;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,9 +33,8 @@ public class UsernamePolicyEntityTest {
         identifierRepository = mock(IdentifierRepositoryService.class);
         entity = new UsernamePolicyEntity(
                 objectSegment,
-                application,
-                identifierFactory,
-                identifierRepository);
+                application
+        );
     }
 
     @Test

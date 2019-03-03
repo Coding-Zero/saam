@@ -3,7 +3,7 @@ package com.codingzero.saam.domain.principal.role;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.Role;
 import com.codingzero.saam.domain.principal.PrincipalEntity;
-import com.codingzero.saam.infrastructure.database.RoleOS;
+import com.codingzero.saam.infrastructure.data.RoleOS;
 
 public class RoleEntity extends PrincipalEntity<RoleOS> implements Role {
 

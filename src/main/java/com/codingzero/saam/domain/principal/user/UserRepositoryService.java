@@ -5,12 +5,12 @@ import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.User;
 import com.codingzero.saam.domain.UserRepository;
 import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
-import com.codingzero.saam.infrastructure.database.IdentifierAccess;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
-import com.codingzero.saam.infrastructure.database.PrincipalAccess;
-import com.codingzero.saam.infrastructure.database.PrincipalOS;
-import com.codingzero.saam.infrastructure.database.UserAccess;
-import com.codingzero.saam.infrastructure.database.UserOS;
+import com.codingzero.saam.infrastructure.data.IdentifierAccess;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierAccess;
+import com.codingzero.saam.infrastructure.data.PrincipalAccess;
+import com.codingzero.saam.infrastructure.data.PrincipalOS;
+import com.codingzero.saam.infrastructure.data.UserAccess;
+import com.codingzero.saam.infrastructure.data.UserOS;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultFetchRequest;
 

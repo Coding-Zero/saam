@@ -20,7 +20,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <dropwizard.version>1.2.2</dropwizard.version>
-        <mainClass>com.codingzero.saam.presentation.SAAMApplication</mainClass>
+        <mainClass>com.codingzero.saam.protocol.rest.SAAMApplication</mainClass>
     </properties>
 
     <dependencyManagement>

@@ -4,7 +4,7 @@ import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierEntity;
 import com.codingzero.saam.domain.principal.user.UserEntity;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierOS;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierOS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

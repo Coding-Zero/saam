@@ -19,8 +19,8 @@ import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
 import com.codingzero.saam.domain.usersession.UserSessionFactoryService;
 import com.codingzero.saam.domain.usersession.UserSessionRepositoryService;
 import com.codingzero.saam.domain.application.UsernamePolicyFactoryService;
-import com.codingzero.saam.infrastructure.database.ApplicationOS;
-import com.codingzero.saam.infrastructure.database.ApplicationAccess;
+import com.codingzero.saam.infrastructure.data.ApplicationOS;
+import com.codingzero.saam.infrastructure.data.ApplicationAccess;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
@@ -83,17 +83,6 @@ public class ApplicationFactoryServiceTest {
                 identifierPolicyRepository,
                 ssoIdentifierPolicyFactory,
                 ssoIdentifierPolicyRepository,
-                principalRepository,
-                userFactory,
-                userRepository,
-                apiKeyFactory,
-                apiKeyRepository,
-                userSessionFactory,
-                userSessionRepository,
-                roleFactory,
-                roleRepository,
-                resourceFactory,
-                resourceRepository,
                 applicationStatusVerifier);
     }
 

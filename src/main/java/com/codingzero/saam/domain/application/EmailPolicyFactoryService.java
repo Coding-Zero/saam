@@ -3,11 +3,8 @@ package com.codingzero.saam.domain.application;
 import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.domain.Application;
-import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
-import com.codingzero.saam.domain.identifier.IdentifierRepositoryService;
 import com.codingzero.saam.domain.services.IdentifierPolicyHelper;
-import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.data.EmailPolicyOS;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.ArrayList;
@@ -24,21 +21,9 @@ public class EmailPolicyFactoryService {
     private static final Pattern DOMAIN_PATTERN = Pattern.compile("^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
 
     private IdentifierPolicyHelper identifierPolicyHelper;
-    private IdentifierFactoryService identifierFactory;
-    private IdentifierRepositoryService identifierRepository;
 
-    public EmailPolicyFactoryService(IdentifierPolicyAccess identifierPolicyAccess,
-                                     IdentifierFactoryService identifierFactory,
-                                     IdentifierRepositoryService identifierRepository) {
-        this(new IdentifierPolicyHelper(identifierPolicyAccess), identifierFactory, identifierRepository);
-    }
-
-    public EmailPolicyFactoryService(IdentifierPolicyHelper identifierPolicyHelper,
-                                     IdentifierFactoryService identifierFactory,
-                                     IdentifierRepositoryService identifierRepository) {
+    public EmailPolicyFactoryService(IdentifierPolicyHelper identifierPolicyHelper) {
         this.identifierPolicyHelper = identifierPolicyHelper;
-        this.identifierFactory = identifierFactory;
-        this.identifierRepository = identifierRepository;
     }
 
     public EmailPolicyEntity generate(
@@ -88,7 +73,7 @@ public class EmailPolicyFactoryService {
         if (null == os) {
             return null;
         }
-        return new EmailPolicyEntity(os, application, this, identifierFactory, identifierRepository);
+        return new EmailPolicyEntity(os, application, this);
     }
 
 }

@@ -3,33 +3,23 @@ package com.codingzero.saam.domain.application;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.OAuthIdentifierPolicy;
-import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierEntity;
-import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierFactoryService;
-import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierRepositoryService;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierPolicyOS;
 import com.codingzero.utilities.ddd.EntityObject;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 public class OAuthIdentifierPolicyEntity extends EntityObject<OAuthIdentifierPolicyOS>
         implements OAuthIdentifierPolicy {
 
     private Application application;
-    private OAuthIdentifierFactoryService oAuthIdentifierFactory;
-    private OAuthIdentifierRepositoryService oAuthIdentifierRepository;
-    private Map<OAuthPlatform, OAuthIdentifierEntity> dirtyIdentifiers;
+//    private Map<OAuthPlatform, OAuthIdentifierEntity> dirtyIdentifiers;
 
     public OAuthIdentifierPolicyEntity(OAuthIdentifierPolicyOS objectSegment,
-                                       Application application,
-                                       OAuthIdentifierFactoryService oAuthIdentifierFactory,
-                                       OAuthIdentifierRepositoryService oAuthIdentifierRepository) {
+                                       Application application) {
         super(objectSegment);
         this.application = application;
-        this.oAuthIdentifierFactory = oAuthIdentifierFactory;
-        this.oAuthIdentifierRepository = oAuthIdentifierRepository;
-        this.dirtyIdentifiers = new HashMap<>();
+//        this.dirtyIdentifiers = new HashMap<>();
     }
 
 //    public List<OAuthIdentifierEntity> getDirtyIdentifiers() {

@@ -3,9 +3,7 @@ package com.codingzero.saam.domain.application;
 import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.EmailPolicy;
-import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
-import com.codingzero.saam.domain.identifier.IdentifierRepositoryService;
-import com.codingzero.saam.infrastructure.database.EmailPolicyOS;
+import com.codingzero.saam.infrastructure.data.EmailPolicyOS;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.Date;
@@ -22,10 +20,8 @@ public class EmailPolicyEntity
 
     public EmailPolicyEntity(EmailPolicyOS objectSegment,
                              Application application,
-                             EmailPolicyFactoryService factory,
-                             IdentifierFactoryService identifierFactory,
-                             IdentifierRepositoryService identifierRepository) {
-        super(objectSegment, application, identifierFactory, identifierRepository);
+                             EmailPolicyFactoryService factory) {
+        super(objectSegment, application);
         this.factory = factory;
     }
 

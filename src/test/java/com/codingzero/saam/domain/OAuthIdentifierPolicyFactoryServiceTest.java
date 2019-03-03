@@ -5,8 +5,8 @@ import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierFactoryService;
 import com.codingzero.saam.domain.application.OAuthIdentifierPolicyEntity;
 import com.codingzero.saam.domain.application.OAuthIdentifierPolicyFactoryService;
 import com.codingzero.saam.domain.oauthidentifier.OAuthIdentifierRepositoryService;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyOS;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierPolicyOS;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierPolicyAccess;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,9 +36,8 @@ public class OAuthIdentifierPolicyFactoryServiceTest {
         identifierFactory = mock(OAuthIdentifierFactoryService.class);
         identifierRepository = mock(OAuthIdentifierRepositoryService.class);
         service = new OAuthIdentifierPolicyFactoryService(
-                access,
-                identifierFactory,
-                identifierRepository);
+                access
+        );
     }
 
     @Test

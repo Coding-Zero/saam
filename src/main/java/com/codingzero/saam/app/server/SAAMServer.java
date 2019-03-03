@@ -85,7 +85,7 @@ import com.codingzero.saam.domain.UserSessionRepository;
 import com.codingzero.saam.domain.UsernamePolicy;
 import com.codingzero.saam.domain.services.UserAuthenticator;
 import com.codingzero.saam.infrastructure.OAuthAccessToken;
-import com.codingzero.saam.infrastructure.database.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.data.OAuthPlatformAgent;
 import com.codingzero.utilities.error.BusinessError;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.PaginatedResultMapper;

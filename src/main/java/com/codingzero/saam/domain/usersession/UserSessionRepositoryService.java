@@ -5,8 +5,8 @@ import com.codingzero.saam.domain.User;
 import com.codingzero.saam.domain.UserSession;
 import com.codingzero.saam.domain.UserSessionRepository;
 import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
-import com.codingzero.saam.infrastructure.database.UserSessionOS;
-import com.codingzero.saam.infrastructure.database.UserSessionAccess;
+import com.codingzero.saam.infrastructure.data.UserSessionAccess;
+import com.codingzero.saam.infrastructure.data.UserSessionOS;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.PaginatedResultMapper;
 

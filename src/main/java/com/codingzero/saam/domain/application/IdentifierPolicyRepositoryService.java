@@ -3,9 +3,9 @@ package com.codingzero.saam.domain.application;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.IdentifierPolicy;
-import com.codingzero.saam.infrastructure.database.IdentifierAccess;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
+import com.codingzero.saam.infrastructure.data.IdentifierAccess;
+import com.codingzero.saam.infrastructure.data.IdentifierPolicyAccess;
+import com.codingzero.saam.infrastructure.data.IdentifierPolicyOS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public class IdentifierPolicyRepositoryService {
 //    }
 
     public void remove(IdentifierPolicyEntity entity) {
-        checkForUnremovableStatus(entity);
+        checkForUnremoveableStatus(entity);
         access.delete((IdentifierPolicyOS) entity.getObjectSegment());
         if (entity.getType() == IdentifierType.USERNAME) {
             usernameIdentifierPolicyRepository.remove((UsernamePolicyEntity) entity);
@@ -66,7 +66,7 @@ public class IdentifierPolicyRepositoryService {
         }
     }
 
-    private void checkForUnremovableStatus(IdentifierPolicyEntity entity) {
+    private void checkForUnremoveableStatus(IdentifierPolicyEntity entity) {
         if (identifierAccess.countByType(entity.getApplication().getId(), entity.getType()) > 0) {
             throw new IllegalStateException(
                     "Identifier policy " + entity.getType() + " cannot be removed before removing existing identifiers.");

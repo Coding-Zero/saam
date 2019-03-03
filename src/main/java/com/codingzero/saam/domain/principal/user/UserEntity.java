@@ -8,8 +8,8 @@ import com.codingzero.saam.domain.Role;
 import com.codingzero.saam.domain.User;
 import com.codingzero.saam.domain.principal.PrincipalEntity;
 import com.codingzero.saam.domain.principal.role.RoleRepositoryService;
-import com.codingzero.saam.infrastructure.database.UserOS;
-import com.codingzero.saam.infrastructure.database.PasswordHelper;
+import com.codingzero.saam.infrastructure.data.PasswordHelper;
+import com.codingzero.saam.infrastructure.data.UserOS;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.ArrayList;

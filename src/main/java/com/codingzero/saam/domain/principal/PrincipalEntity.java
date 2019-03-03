@@ -3,7 +3,7 @@ package com.codingzero.saam.domain.principal;
 import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.Principal;
-import com.codingzero.saam.infrastructure.database.PrincipalOS;
+import com.codingzero.saam.infrastructure.data.PrincipalOS;
 import com.codingzero.utilities.ddd.EntityObject;
 
 import java.util.Date;

@@ -20,7 +20,7 @@ import com.codingzero.saam.domain.resource.ResourceRepositoryService;
 import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
 import com.codingzero.saam.domain.usersession.UserSessionFactoryService;
 import com.codingzero.saam.domain.usersession.UserSessionRepositoryService;
-import com.codingzero.saam.infrastructure.database.ApplicationOS;
+import com.codingzero.saam.infrastructure.data.ApplicationOS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -89,17 +89,6 @@ public class ApplicationRootTest {
                 emailIdentifierPolicyFactory,
                 oAuthIdentifierPolicyFactory,
                 oAuthIdentifierPolicyRepository,
-                principalRepository,
-                userFactory,
-                userRepository,
-                apiKeyFactory,
-                apiKeyRepository,
-                userSessionFactory,
-                userSessionRepository,
-                roleFactory,
-                roleRepository,
-                resourceFactory,
-                resourceRepository,
                 applicationStatusVerifier);
     }
 

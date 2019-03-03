@@ -10,8 +10,8 @@ import com.codingzero.saam.domain.principal.role.RoleEntity;
 import com.codingzero.saam.domain.principal.role.RoleRepositoryService;
 import com.codingzero.saam.domain.principal.user.UserEntity;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
-import com.codingzero.saam.infrastructure.database.PrincipalOS;
-import com.codingzero.saam.infrastructure.database.PrincipalAccess;
+import com.codingzero.saam.infrastructure.data.PrincipalAccess;
+import com.codingzero.saam.infrastructure.data.PrincipalOS;
 
 public class PrincipalRepositoryService implements PrincipalRepository {
 

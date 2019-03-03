@@ -2,16 +2,8 @@ package com.codingzero.saam.domain.application;
 
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.ApplicationRepository;
-import com.codingzero.saam.domain.principal.PrincipalEntity;
-import com.codingzero.saam.domain.principal.PrincipalRepositoryService;
-import com.codingzero.saam.domain.resource.PermissionRepositoryService;
-import com.codingzero.saam.domain.resource.ResourceEntity;
-import com.codingzero.saam.domain.resource.ResourceRepositoryService;
-import com.codingzero.saam.domain.usersession.UserSessionEntity;
-import com.codingzero.saam.domain.usersession.UserSessionRepositoryService;
-import com.codingzero.saam.domain.principal.user.UserEntity;
-import com.codingzero.saam.infrastructure.database.ApplicationOS;
-import com.codingzero.saam.infrastructure.database.ApplicationAccess;
+import com.codingzero.saam.infrastructure.data.ApplicationAccess;
+import com.codingzero.saam.infrastructure.data.ApplicationOS;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.PaginatedResultMapper;
 
@@ -25,27 +17,15 @@ public class ApplicationRepositoryService implements ApplicationRepository {
     private ApplicationFactoryService factory;
     private IdentifierPolicyRepositoryService identifierPolicyRepository;
     private OAuthIdentifierPolicyRepositoryService oAuthIdentifierPolicyRepository;
-    private PrincipalRepositoryService principalRepository;
-    private ResourceRepositoryService resourceRepository;
-    private PermissionRepositoryService permissionRepository;
-    private UserSessionRepositoryService userSessionRepository;
 
     public ApplicationRepositoryService(ApplicationAccess access,
                                         ApplicationFactoryService factory,
                                         IdentifierPolicyRepositoryService identifierPolicyRepository,
-                                        OAuthIdentifierPolicyRepositoryService oAuthIdentifierPolicyRepository,
-                                        PrincipalRepositoryService principalRepository,
-                                        ResourceRepositoryService resourceRepository,
-                                        PermissionRepositoryService permissionRepository,
-                                        UserSessionRepositoryService userSessionRepository) {
+                                        OAuthIdentifierPolicyRepositoryService oAuthIdentifierPolicyRepository) {
         this.access = access;
         this.factory = factory;
         this.identifierPolicyRepository = identifierPolicyRepository;
         this.oAuthIdentifierPolicyRepository = oAuthIdentifierPolicyRepository;
-        this.principalRepository = principalRepository;
-        this.resourceRepository = resourceRepository;
-        this.permissionRepository = permissionRepository;
-        this.userSessionRepository = userSessionRepository;
     }
 
     @Override
@@ -58,10 +38,10 @@ public class ApplicationRepositoryService implements ApplicationRepository {
         }
         flushDirtyIdentifierPolicies(entity);
         flushDirtyOAuthIdentifierPolicies(entity);
-        flushDirtyPrincipals(entity);
-        flushDirtyUserSessions(entity);
-        flushRemovingUserSessions(entity);
-        flushDirtyResources(entity);
+//        flushDirtyPrincipals(entity);
+//        flushDirtyUserSessions(entity);
+//        flushRemovingUserSessions(entity);
+//        flushDirtyResources(entity);
         return factory.reconstitute(entity.getObjectSegment());
     }
 
@@ -87,56 +67,56 @@ public class ApplicationRepositoryService implements ApplicationRepository {
         }
     }
 
-    private void flushDirtyPrincipals(ApplicationRoot application) {
-        List<PrincipalEntity> entities = application.getDirtyPrincipals();
-        for (PrincipalEntity entity: entities) {
-            if (entity.isVoid()) {
-                principalRepository.remove(entity);
-                permissionRepository.remove(entity);
-            } else {
-                principalRepository.store(entity);
-            }
-        }
-    }
+//    private void flushDirtyPrincipals(ApplicationRoot application) {
+//        List<PrincipalEntity> entities = application.getDirtyPrincipals();
+//        for (PrincipalEntity entity: entities) {
+//            if (entity.isVoid()) {
+//                principalRepository.remove(entity);
+//                permissionRepository.remove(entity);
+//            } else {
+//                principalRepository.store(entity);
+//            }
+//        }
+//    }
 
-    private void flushDirtyUserSessions(ApplicationRoot application) {
-        List<UserSessionEntity> entities = application.getDirtyUserSessions();
-        for (UserSessionEntity entity: entities) {
-            if (entity.isVoid()) {
-                userSessionRepository.remove(entity);
-            } else {
-                userSessionRepository.store(entity);
-            }
-        }
-    }
+//    private void flushDirtyUserSessions(ApplicationRoot application) {
+//        List<UserSessionEntity> entities = application.getDirtyUserSessions();
+//        for (UserSessionEntity entity: entities) {
+//            if (entity.isVoid()) {
+//                userSessionRepository.remove(entity);
+//            } else {
+//                userSessionRepository.store(entity);
+//            }
+//        }
+//    }
 
-    private void flushRemovingUserSessions(ApplicationRoot application) {
-        List<UserEntity> entities = application.getRemovingUserSessions();
-        for (UserEntity entity: entities) {
-            userSessionRepository.removeByUser(entity);
-        }
-    }
+//    private void flushRemovingUserSessions(ApplicationRoot application) {
+//        List<UserEntity> entities = application.getRemovingUserSessions();
+//        for (UserEntity entity: entities) {
+//            userSessionRepository.removeByUser(entity);
+//        }
+//    }
 
-    private void flushDirtyResources(ApplicationRoot application) {
-        List<ResourceEntity> entities = application.getDirtyResources();
-        for (ResourceEntity entity: entities) {
-            if (entity.isVoid()) {
-                resourceRepository.remove(entity);
-                permissionRepository.remove(entity);
-            } else {
-                resourceRepository.store(entity);
-            }
-        }
-    }
+//    private void flushDirtyResources(ApplicationRoot application) {
+//        List<ResourceEntity> entities = application.getDirtyResources();
+//        for (ResourceEntity entity: entities) {
+//            if (entity.isVoid()) {
+//                resourceRepository.remove(entity);
+//                permissionRepository.remove(entity);
+//            } else {
+//                resourceRepository.store(entity);
+//            }
+//        }
+//    }
 
     @Override
     public void remove(Application application) {
         ApplicationRoot entity = (ApplicationRoot) application;
         identifierPolicyRepository.removeAll(entity);
         oAuthIdentifierPolicyRepository.removeAll(entity);
-        userSessionRepository.removeByApplication(entity);
-        resourceRepository.removeByApplication(entity);
-        principalRepository.removeAll(entity);
+//        userSessionRepository.removeByApplication(entity);
+//        resourceRepository.removeByApplication(entity);
+//        principalRepository.removeAll(entity);
         access.delete(entity.getObjectSegment());
     }
 

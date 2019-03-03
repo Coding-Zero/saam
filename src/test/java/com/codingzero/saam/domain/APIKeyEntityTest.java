@@ -4,7 +4,7 @@ import com.codingzero.saam.domain.principal.apikey.APIKeyEntity;
 import com.codingzero.saam.domain.principal.apikey.APIKeyFactoryService;
 import com.codingzero.saam.domain.principal.user.UserEntity;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
-import com.codingzero.saam.infrastructure.database.APIKeyOS;
+import com.codingzero.saam.infrastructure.data.APIKeyOS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

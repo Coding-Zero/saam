@@ -6,9 +6,9 @@ import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.RoleFactory;
 import com.codingzero.saam.domain.services.ApplicationStatusVerifier;
-import com.codingzero.saam.infrastructure.database.RoleOS;
-import com.codingzero.saam.infrastructure.database.PrincipalAccess;
-import com.codingzero.saam.infrastructure.database.RoleAccess;
+import com.codingzero.saam.infrastructure.data.PrincipalAccess;
+import com.codingzero.saam.infrastructure.data.RoleAccess;
+import com.codingzero.saam.infrastructure.data.RoleOS;
 import com.codingzero.utilities.error.BusinessError;
 
 import java.util.Date;

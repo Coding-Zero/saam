@@ -1,9 +1,9 @@
 package com.codingzero.saam.domain.application;
 
 import com.codingzero.saam.domain.Application;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyOS;
-import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
-import com.codingzero.saam.infrastructure.database.UsernamePolicyAccess;
+import com.codingzero.saam.infrastructure.data.IdentifierPolicyOS;
+import com.codingzero.saam.infrastructure.data.UsernamePolicyOS;
+import com.codingzero.saam.infrastructure.data.UsernamePolicyAccess;
 
 public class UsernamePolicyRepositoryService {
 

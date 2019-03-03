@@ -4,15 +4,14 @@ import com.codingzero.saam.domain.APIKey;
 import com.codingzero.saam.domain.APIKeyRepository;
 import com.codingzero.saam.domain.Application;
 import com.codingzero.saam.domain.User;
-import com.codingzero.saam.infrastructure.database.APIKeyAccess;
-import com.codingzero.saam.infrastructure.database.APIKeyOS;
-import com.codingzero.saam.infrastructure.database.PrincipalAccess;
-import com.codingzero.saam.infrastructure.database.PrincipalOS;
+import com.codingzero.saam.infrastructure.data.APIKeyAccess;
+import com.codingzero.saam.infrastructure.data.APIKeyOS;
+import com.codingzero.saam.infrastructure.data.PrincipalAccess;
+import com.codingzero.saam.infrastructure.data.PrincipalOS;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 
 public class APIKeyRepositoryService implements APIKeyRepository {
 

@@ -2,12 +2,10 @@ package com.codingzero.saam.domain;
 
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.UsernameFormat;
-import com.codingzero.saam.domain.identifier.IdentifierFactoryService;
-import com.codingzero.saam.domain.identifier.IdentifierRepositoryService;
 import com.codingzero.saam.domain.application.UsernamePolicyEntity;
 import com.codingzero.saam.domain.application.UsernamePolicyFactoryService;
-import com.codingzero.saam.infrastructure.database.UsernamePolicyOS;
-import com.codingzero.saam.infrastructure.database.IdentifierPolicyAccess;
+import com.codingzero.saam.domain.services.IdentifierPolicyHelper;
+import com.codingzero.saam.infrastructure.data.UsernamePolicyOS;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,20 +20,15 @@ public class UsernamePolicyFactoryServiceTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private IdentifierPolicyAccess identifierPolicyAccess;
-    private IdentifierFactoryService identifierFactory;
-    private IdentifierRepositoryService identifierRepository;
+    private IdentifierPolicyHelper identifierPolicyHelper;
     private UsernamePolicyFactoryService service;
 
     @Before
     public void setUp() {
-        identifierPolicyAccess = mock(IdentifierPolicyAccess.class);
-        identifierFactory = mock(IdentifierFactoryService.class);
-        identifierRepository = mock(IdentifierRepositoryService.class);
+        identifierPolicyHelper = mock(IdentifierPolicyHelper.class);
         service = new UsernamePolicyFactoryService(
-                identifierPolicyAccess,
-                identifierFactory,
-                identifierRepository);
+                identifierPolicyHelper
+        );
     }
 
     @Test

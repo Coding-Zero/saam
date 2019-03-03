@@ -7,8 +7,8 @@ import com.codingzero.saam.domain.OAuthIdentifier;
 import com.codingzero.saam.domain.OAuthIdentifierPolicy;
 import com.codingzero.saam.domain.OAuthIdentifierRepository;
 import com.codingzero.saam.domain.User;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierOS;
-import com.codingzero.saam.infrastructure.database.OAuthIdentifierAccess;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierAccess;
+import com.codingzero.saam.infrastructure.data.OAuthIdentifierOS;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.PaginatedResultMapper;
 
@@ -85,8 +85,8 @@ public class OAuthIdentifierRepositoryService implements OAuthIdentifierReposito
     }
 
     private List<OAuthIdentifier> _toResult(List<OAuthIdentifierOS> source, Object[] arguments) {
-        Application application = (Application) arguments[1];
-        User user = (User) arguments[2];
+        Application application = (Application) arguments[0];
+        User user = (User) arguments[1];
         List<OAuthIdentifier> entities = new ArrayList<>(source.size());
         for (OAuthIdentifierOS os: source) {
             entities.add(factory.reconstitute(os, application, user));

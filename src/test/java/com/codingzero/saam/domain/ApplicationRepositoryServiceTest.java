@@ -9,8 +9,8 @@ import com.codingzero.saam.domain.principal.PrincipalRepositoryService;
 import com.codingzero.saam.domain.resource.PermissionRepositoryService;
 import com.codingzero.saam.domain.resource.ResourceRepositoryService;
 import com.codingzero.saam.domain.usersession.UserSessionRepositoryService;
-import com.codingzero.saam.infrastructure.database.ApplicationAccess;
-import com.codingzero.saam.infrastructure.database.ApplicationOS;
+import com.codingzero.saam.infrastructure.data.ApplicationAccess;
+import com.codingzero.saam.infrastructure.data.ApplicationOS;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.ResultPage;
@@ -56,11 +56,8 @@ public class ApplicationRepositoryServiceTest {
                 access,
                 factory,
                 identifierPolicyRepository,
-                oAuthIdentifierPolicyRepository,
-                principalRepository,
-                resourceRepository,
-                permissionRepository,
-                userSessionRepository);
+                oAuthIdentifierPolicyRepository
+        );
     }
 
     @Test
@@ -79,9 +76,6 @@ public class ApplicationRepositoryServiceTest {
     private void verifyFlushDirtyEntities(ApplicationRoot entity) {
         verify(entity, times(1)).getDirtyIdentifierPolicies();
         verify(entity, times(1)).getDirtyOAuthIdentifierPolicies();
-        verify(entity, times(1)).getDirtyPrincipals();
-        verify(entity, times(1)).getDirtyUserSessions();
-        verify(entity, times(1)).getDirtyResources();
     }
 
     @Test
