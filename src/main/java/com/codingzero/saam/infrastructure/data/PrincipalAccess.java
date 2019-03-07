@@ -16,6 +16,8 @@ public interface PrincipalAccess extends TransactionalService {
 
     void delete(PrincipalOS os);
 
+    void deleteByApplicationIdAndType(String id, PrincipalType type);
+
     void deleteByApplicationId(String id);
 
     PrincipalOS selectById(String applicationId, String id);

@@ -30,7 +30,7 @@ public class PrincipalRepositoryService implements PrincipalRepository {
         this.apiKeyRepository = apiKeyRepository;
     }
 
-    public void store(Principal principal) {
+    private void store(Principal principal) {
         PrincipalEntity entity = (PrincipalEntity) principal;
         if (entity.isNew()) {
             access.insert((PrincipalOS) entity.getObjectSegment());

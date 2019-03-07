@@ -101,7 +101,7 @@ public class PrincipalAccessImplBoth extends AbstractAccess implements Principal
         PreparedStatement stmt = null;
         try {
             String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
-                    PrincipalAccessImpl.TABLE,
+                    TABLE,
                     "application_id, id, type, creation_time",
                     "?, ?, ?, ?");
             stmt = conn.prepareStatement(sql);
@@ -148,6 +148,34 @@ public class PrincipalAccessImplBoth extends AbstractAccess implements Principal
     }
 
     @Override
+    public void deleteByApplicationIdAndType(String id, PrincipalType type) {
+        helper.deleteByApplicationIdAndType(id, type);
+        deleteByApplicationIdAndTypeV1(id, type);
+    }
+
+    private void deleteByApplicationIdAndTypeV1(String id, PrincipalType type) {
+        Connection conn = getConnection();
+        PreparedStatement stmt=null;
+        try {
+            String sql = String.format("DELETE FROM %s"
+                            + " WHERE application_id=? AND type=? LIMIT 1000;",
+                    TABLE);
+            stmt = conn.prepareStatement(sql);
+            stmt.setBytes(1, Key.fromHexString(id).getKey());
+            stmt.setString(2, type.name());
+            int deletedRows = stmt.executeUpdate();
+            while (deletedRows > 0) {
+                deletedRows = stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closePreparedStatement(stmt);
+            closeConnection(conn);
+        }
+    }
+
+    @Override
     public void deleteByApplicationId(String id) {
         helper.deleteByApplicationId(id);
         deleteByApplicationIdV1(id);
@@ -159,8 +187,7 @@ public class PrincipalAccessImplBoth extends AbstractAccess implements Principal
         try {
             String sql = String.format("DELETE FROM %s"
                             + " WHERE application_id=? LIMIT 1000;",
-                    TABLE,
-                    PrincipalAccessImplBoth.TABLE);
+                    TABLE);
             stmt = conn.prepareStatement(sql);
             stmt.setBytes(1, Key.fromHexString(id).getKey());
             int deletedRows = stmt.executeUpdate();

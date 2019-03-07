@@ -30,6 +30,8 @@ import com.codingzero.saam.app.requests.ResourceStoreRequest;
 import com.codingzero.saam.app.requests.RoleAddRequest;
 import com.codingzero.saam.app.requests.RoleUpdateRequest;
 import com.codingzero.saam.app.requests.UserRegisterRequest;
+import com.codingzero.saam.app.requests.UserRegisterWithIdentifierRequest;
+import com.codingzero.saam.app.requests.UserRegisterWithOAuthRequest;
 import com.codingzero.saam.app.requests.UserRoleUpdateRequest;
 import com.codingzero.saam.app.requests.UserSessionCreateRequest;
 import com.codingzero.saam.app.requests.UsernamePolicyAddRequest;
@@ -382,6 +384,22 @@ public class SAAMServer implements SAAM {
     public UserResponse register(UserRegisterRequest request) {
         transactionManager.start();
         User user = null;
+        try {
+            Application application = getEnsuredApplicationById(request.getApplicationId());
+            user = userFactory.generate(application);
+            user.setPlayingRoles(getRoles(application, request.getRoleIds()));
+            user = userRepository.store(user);
+            transactionManager.commit();
+        } catch (RuntimeException e) {
+            transactionManager.rollback();
+        }
+        return responseMapper.toResponse(user, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    }
+
+    @Override
+    public UserResponse registerWithIdentifier(UserRegisterWithIdentifierRequest request) {
+        transactionManager.start();
+        User user = null;
         Application application = null;
         try {
             application = getEnsuredApplicationById(request.getApplicationId());
@@ -390,14 +408,12 @@ public class SAAMServer implements SAAM {
             user.setPlayingRoles(getRoles(application, request.getRoleIds()));
             user = userRepository.store(user);
             setIdentifiers(user, request.getIdentifiers());
-            setOAuthIdentifiers(user, request.getOAuthIdentifiers());
             transactionManager.commit();
         } catch (RuntimeException e) {
             transactionManager.rollback();
         }
         List<Identifier> identifiers = identifierRepository.findByUser(application, user);
-        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
-        return responseMapper.toResponse(user, identifiers, oAuthIdentifiers);
+        return responseMapper.toResponse(user, identifiers, Collections.EMPTY_LIST);
     }
 
     private void setIdentifiers(User user, Map<IdentifierType, String> identifiers) {
@@ -409,9 +425,28 @@ public class SAAMServer implements SAAM {
         }
     }
 
-    private void setOAuthIdentifiers(User user, Map<OAuthPlatform, UserRegisterRequest.OAuthIdentifier> identifiers) {
+    @Override
+    public UserResponse registerWithOAuth(UserRegisterWithOAuthRequest request) {
+        transactionManager.start();
+        User user = null;
+        Application application = null;
+        try {
+            application = getEnsuredApplicationById(request.getApplicationId());
+            user = userFactory.generate(application);
+            user.setPlayingRoles(getRoles(application, request.getRoleIds()));
+            user = userRepository.store(user);
+            setOAuthIdentifiers(user, request.getOAuthIdentifiers());
+            transactionManager.commit();
+        } catch (RuntimeException e) {
+            transactionManager.rollback();
+        }
+        List<OAuthIdentifier> oAuthIdentifiers = oAuthIdentifierRepository.findByUser(application, user);
+        return responseMapper.toResponse(user, Collections.EMPTY_LIST, oAuthIdentifiers);
+    }
+
+    private void setOAuthIdentifiers(User user, Map<OAuthPlatform, UserRegisterWithOAuthRequest.OAuthIdentifier> identifiers) {
         Application application = user.getApplication();
-        for (Map.Entry<OAuthPlatform, UserRegisterRequest.OAuthIdentifier> entry: identifiers.entrySet()) {
+        for (Map.Entry<OAuthPlatform, UserRegisterWithOAuthRequest.OAuthIdentifier> entry: identifiers.entrySet()) {
             OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, entry.getKey());
             OAuthIdentifier identifier = oAuthIdentifierFactory.generate(
                     policy,

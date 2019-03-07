@@ -26,7 +26,7 @@ public class BusinessErrorMapper implements ExceptionMapper<BusinessError> {
     public Response toResponse(BusinessError businessError) {
         exceptions.mark();
         Map<String, Object> errorBody = new HashMap<>();
-        errorBody.put("type", businessError.getType().getName());
+//        errorBody.put("type", businessError.getType().getName());
         errorBody.put("details", businessError.getDetails());
         errorBody.put("message", businessError.getMessage());
         errorBody.put("code", toErrorCode(businessError.getType()));
@@ -44,7 +44,7 @@ public class BusinessErrorMapper implements ExceptionMapper<BusinessError> {
 
     private int toErrorCode(ErrorType type) {
         if (BusinessError.DefaultErrors.NO_SUCH_ENTITY_FOUND == type) {
-            return 400404;
+            return 400000;
         }
         if (Errors.DUPLICATE_ACTION_CODE == type) {
             return 400100;

@@ -29,6 +29,8 @@ import com.codingzero.saam.app.requests.ResourceStoreRequest;
 import com.codingzero.saam.app.requests.RoleAddRequest;
 import com.codingzero.saam.app.requests.RoleUpdateRequest;
 import com.codingzero.saam.app.requests.UserRegisterRequest;
+import com.codingzero.saam.app.requests.UserRegisterWithIdentifierRequest;
+import com.codingzero.saam.app.requests.UserRegisterWithOAuthRequest;
 import com.codingzero.saam.app.requests.UserRoleUpdateRequest;
 import com.codingzero.saam.app.requests.UserSessionCreateRequest;
 import com.codingzero.saam.app.requests.UsernamePolicyAddRequest;
@@ -208,8 +210,7 @@ public abstract class SAAMTest {
     public void testGenerateVerificationCode_WithoutPolicy() {
         ApplicationResponse app = createSimpleApplication();
 
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.EMPTY_LIST));
 
         thrown.expect(BusinessError.class);
         saam.generateVerificationCode(
@@ -220,9 +221,6 @@ public abstract class SAAMTest {
     @Test
     public void testGenerateVerificationCode_NoIdentifierFound() {
         ApplicationResponse app = createApplication();
-
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
 
         thrown.expect(BusinessError.class);
         saam.generateVerificationCode(
@@ -281,8 +279,7 @@ public abstract class SAAMTest {
     @Test
     public void testGenerateResetCode_WithoutPolicy() {
         ApplicationResponse app = createSimpleApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
 
         thrown.expect(BusinessError.class);
         saam.generateResetCode(
@@ -293,8 +290,7 @@ public abstract class SAAMTest {
     @Test
     public void testGenerateResetCode_NoIdentifierFound() {
         ApplicationResponse app = createApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
 
         thrown.expect(BusinessError.class);
         saam.generateResetCode(
@@ -717,7 +713,7 @@ public abstract class SAAMTest {
     @Test
     public void testCreateUser_Plain() {
         ApplicationResponse app = createApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(app.getId()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.EMPTY_LIST));
         assertNotNull(user);
         assertEquals(app.getId(), user.getApplicationId());
         assertEquals(0, user.getIdentifiers().size());
@@ -740,11 +736,11 @@ public abstract class SAAMTest {
         }
 
         List<UserResponse.OAuthIdentifier> oAuthIdentifiers = user.getOAuthIdentifiers();
-        Map<OAuthPlatform, UserRegisterRequest.OAuthIdentifier> newOAuthIdentifiers = new HashMap<>();
+        Map<OAuthPlatform, UserRegisterWithOAuthRequest.OAuthIdentifier> newOAuthIdentifiers = new HashMap<>();
         for (UserResponse.OAuthIdentifier identifier: oAuthIdentifiers) {
             newOAuthIdentifiers.put(
                     identifier.getPlatform(),
-                    new UserRegisterRequest.OAuthIdentifier(identifier.getContent(), identifier.getProperties()));
+                    new UserRegisterWithOAuthRequest.OAuthIdentifier(identifier.getContent(), identifier.getProperties()));
         }
 
         registerUser(app.getId(), newIdentifiers, newOAuthIdentifiers);
@@ -898,8 +894,7 @@ public abstract class SAAMTest {
     @Test
     public void testChangePassword_NoPasswordPolicy() {
         ApplicationResponse app = createSimpleApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
         String oldPassword = null;
         String newPassword = "Password!1";
         thrown.expect(BusinessError.class);
@@ -962,8 +957,7 @@ public abstract class SAAMTest {
         ApplicationResponse app = createApplication();
         Map<IdentifierType, String> identifiers = new HashMap<>();
         identifiers.put(IdentifierType.USERNAME, getUsername());
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), identifiers, Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
         String identifier = getIdentifier(user, IdentifierType.USERNAME).getContent();
         long timeout = 1000;
         PasswordResetCodeResponse resetCode = saam.generateResetCode(
@@ -1047,8 +1041,7 @@ public abstract class SAAMTest {
     public void testAddIdentifier() {
         ApplicationResponse app = createApplication();
         String username = getUsername();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
         UserResponse actualUser = saam.addIdentifier(
                 new IdentifierAddRequest(app.getId(), user.getId(), IdentifierType.USERNAME, username));
         assertEquals(user.getApplicationId(), actualUser.getApplicationId());
@@ -1062,8 +1055,7 @@ public abstract class SAAMTest {
     @Test
     public void testAddIdentifier_InactiveApplication() {
         ApplicationResponse app = createApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
 
         updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
 
@@ -1086,8 +1078,7 @@ public abstract class SAAMTest {
     @Test
     public void testAddIdentifier_WithoutPolicy() {
         ApplicationResponse app = createSimpleApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
 
         String username = getUsername();
         thrown.expect(BusinessError.class);
@@ -1125,8 +1116,7 @@ public abstract class SAAMTest {
     public void testRemoveIdentifier_NotExist() {
         ApplicationResponse app = createApplication();
         String username = getUsername();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
 
         thrown.expect(BusinessError.class);
         saam.removeIdentifier(
@@ -1213,8 +1203,7 @@ public abstract class SAAMTest {
     @Test
     public void testConnectOAuthIdentifier() {
         ApplicationResponse app = createApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
         String googleOAuthIdentifier = getGoogleOAuthIdentifier();
         UserResponse actualUser = saam.connectOAuthIdentifier(
                 new OAuthIdentifierConnectRequest(
@@ -1236,8 +1225,7 @@ public abstract class SAAMTest {
     @Test
     public void testConnectOAuthIdentifier_InactiveApplication() {
         ApplicationResponse app = createApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
         String googleOAuthIdentifier = getGoogleOAuthIdentifier();
 
         updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
@@ -1255,8 +1243,7 @@ public abstract class SAAMTest {
     @Test
     public void testConnectOAuthIdentifier_Duplicate() {
         ApplicationResponse app = createApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
         String googleOAuthIdentifier = getGoogleOAuthIdentifier();
 
         saam.connectOAuthIdentifier(
@@ -1289,8 +1276,7 @@ public abstract class SAAMTest {
     @Test
     public void testConnectOAuthIdentifier_WithoutPolicy() {
         ApplicationResponse app = createSimpleApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
 
         String googleOAuthIdentifier = getGoogleOAuthIdentifier();
 
@@ -1336,8 +1322,7 @@ public abstract class SAAMTest {
     @Test
     public void testDisconnectOAuthIdentifier_NotExist() {
         ApplicationResponse app = createApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
 
         String googleOAuthIdentifier = getGoogleOAuthIdentifier();
 
@@ -1350,8 +1335,7 @@ public abstract class SAAMTest {
     @Test
     public void testAddAPIKey() {
         ApplicationResponse app = createApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
 
         String name = getAPIKeyName();
         APIKeyResponse apiKey = saam.addAPIKey(
@@ -1365,8 +1349,7 @@ public abstract class SAAMTest {
     @Test
     public void testAddAPIKey_InactiveApplication() {
         ApplicationResponse app = createApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
         String name = getAPIKeyName();
 
         updateApplicationStatus(app, ApplicationStatus.DEACTIVE);
@@ -1379,8 +1362,7 @@ public abstract class SAAMTest {
     @Test
     public void testAddAPIKey_NoUserFound() {
         ApplicationResponse app = createApplication();
-        UserResponse user = saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        UserResponse user = saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
         saam.removeUser(app.getId(), user.getId());
 
         thrown.expect(BusinessError.class);
@@ -1612,8 +1594,7 @@ public abstract class SAAMTest {
     @Test
     public void testLogin_Credential_NoPolicyFound() {
         ApplicationResponse app = createSimpleApplication();
-        saam.register(new UserRegisterRequest(
-                app.getId(), Collections.emptyMap(), Collections.emptyMap(), null, Collections.emptyList()));
+        saam.register(new UserRegisterRequest(app.getId(), Collections.emptyList()));
 
         thrown.expect(BusinessError.class);
         saam.login(
@@ -2882,19 +2863,19 @@ public abstract class SAAMTest {
         identifiers.put(IdentifierType.EMAIL, getEmail());
 
         String googleOAuthIdentifier = getGoogleOAuthIdentifier();
-        Map<OAuthPlatform, UserRegisterRequest.OAuthIdentifier> oAuthIdentifiers = new HashMap<>();
+        Map<OAuthPlatform, UserRegisterWithOAuthRequest.OAuthIdentifier> oAuthIdentifiers = new HashMap<>();
         oAuthIdentifiers.put(OAuthPlatform.GOOGLE,
-                new UserRegisterRequest.OAuthIdentifier(googleOAuthIdentifier, Collections.emptyMap()));
+                new UserRegisterWithOAuthRequest.OAuthIdentifier(googleOAuthIdentifier, Collections.emptyMap()));
 
         return registerUser(applicationId, identifiers, oAuthIdentifiers);
     }
 
     private UserResponse registerUser(String applicationId,
                                       Map<IdentifierType, String> identifiers,
-                                      Map<OAuthPlatform, UserRegisterRequest.OAuthIdentifier> oAuthIdentifiers) {
+                                      Map<OAuthPlatform, UserRegisterWithOAuthRequest.OAuthIdentifier> oAuthIdentifiers) {
         String password = "Password!";
-        return saam.register(new UserRegisterRequest(
-                applicationId, identifiers, oAuthIdentifiers, password, Collections.emptyList()));
+        return saam.registerWithIdentifier(new UserRegisterWithIdentifierRequest(
+                applicationId, identifiers, password, Collections.EMPTY_LIST));
     }
 
     private String getUsername() {

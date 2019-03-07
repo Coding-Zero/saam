@@ -29,6 +29,8 @@ import com.codingzero.saam.app.requests.ResourceStoreRequest;
 import com.codingzero.saam.app.requests.RoleAddRequest;
 import com.codingzero.saam.app.requests.RoleUpdateRequest;
 import com.codingzero.saam.app.requests.UserRegisterRequest;
+import com.codingzero.saam.app.requests.UserRegisterWithIdentifierRequest;
+import com.codingzero.saam.app.requests.UserRegisterWithOAuthRequest;
 import com.codingzero.saam.app.requests.UserRoleUpdateRequest;
 import com.codingzero.saam.app.requests.UserSessionCreateRequest;
 import com.codingzero.saam.app.requests.UsernamePolicyAddRequest;
@@ -95,6 +97,10 @@ public interface SAAM {
     /**User**/
 
     UserResponse register(UserRegisterRequest request);
+
+    UserResponse registerWithIdentifier(UserRegisterWithIdentifierRequest request);
+
+    UserResponse registerWithOAuth(UserRegisterWithOAuthRequest request);
 
     void removeUser(String applicationId, String id);
 

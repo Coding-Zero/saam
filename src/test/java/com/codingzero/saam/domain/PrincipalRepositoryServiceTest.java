@@ -47,77 +47,77 @@ public class PrincipalRepositoryServiceTest {
                 apiKeyRepository);
     }
 
-    @Test
-    public void testStore_User_New() {
-        UserEntity entity = mock(UserEntity.class);
-        when(entity.isNew()).thenReturn(true);
-        when(entity.isDirty()).thenReturn(true);
-        when(entity.getType()).thenReturn(PrincipalType.USER);
-        UserOS os = mock(UserOS.class);
-        when(entity.getObjectSegment()).thenReturn(os);
-        service.store(entity);
-        verify(userRepository, times(1)).store(entity);
-    }
-
-    @Test
-    public void testStore_User_Update() {
-        UserEntity entity = mock(UserEntity.class);
-        when(entity.isNew()).thenReturn(false);
-        when(entity.isDirty()).thenReturn(true);
-        when(entity.getType()).thenReturn(PrincipalType.USER);
-        UserOS os = mock(UserOS.class);
-        when(entity.getObjectSegment()).thenReturn(os);
-        service.store(entity);
-        verify(userRepository, times(1)).store(entity);
-    }
-
-    @Test
-    public void testStore_Role_New() {
-        RoleEntity entity = mock(RoleEntity.class);
-        when(entity.isNew()).thenReturn(true);
-        when(entity.isDirty()).thenReturn(true);
-        when(entity.getType()).thenReturn(PrincipalType.ROLE);
-        RoleOS os = mock(RoleOS.class);
-        when(entity.getObjectSegment()).thenReturn(os);
-        service.store(entity);
-        verify(roleRepository, times(1)).store(entity);
-    }
-
-    @Test
-    public void testStore_Role_Update() {
-        RoleEntity entity = mock(RoleEntity.class);
-        when(entity.isNew()).thenReturn(false);
-        when(entity.isDirty()).thenReturn(true);
-        when(entity.getType()).thenReturn(PrincipalType.ROLE);
-        RoleOS os = mock(RoleOS.class);
-        when(entity.getObjectSegment()).thenReturn(os);
-        service.store(entity);
-        verify(roleRepository, times(1)).store(entity);
-    }
-
-    @Test
-    public void testStore_APIKey_New() {
-        APIKeyEntity entity = mock(APIKeyEntity.class);
-        when(entity.isNew()).thenReturn(true);
-        when(entity.isDirty()).thenReturn(true);
-        when(entity.getType()).thenReturn(PrincipalType.API_KEY);
-        APIKeyOS os = mock(APIKeyOS.class);
-        when(entity.getObjectSegment()).thenReturn(os);
-        service.store(entity);
-        verify(apiKeyRepository, times(1)).store(entity);
-    }
-
-    @Test
-    public void testStore_APIKey_Update() {
-        APIKeyEntity entity = mock(APIKeyEntity.class);
-        when(entity.isNew()).thenReturn(false);
-        when(entity.isDirty()).thenReturn(true);
-        when(entity.getType()).thenReturn(PrincipalType.API_KEY);
-        APIKeyOS os = mock(APIKeyOS.class);
-        when(entity.getObjectSegment()).thenReturn(os);
-        service.store(entity);
-        verify(apiKeyRepository, times(1)).store(entity);
-    }
+//    @Test
+//    public void testStore_User_New() {
+//        UserEntity entity = mock(UserEntity.class);
+//        when(entity.isNew()).thenReturn(true);
+//        when(entity.isDirty()).thenReturn(true);
+//        when(entity.getType()).thenReturn(PrincipalType.USER);
+//        UserOS os = mock(UserOS.class);
+//        when(entity.getObjectSegment()).thenReturn(os);
+//        service.store(entity);
+//        verify(userRepository, times(1)).store(entity);
+//    }
+//
+//    @Test
+//    public void testStore_User_Update() {
+//        UserEntity entity = mock(UserEntity.class);
+//        when(entity.isNew()).thenReturn(false);
+//        when(entity.isDirty()).thenReturn(true);
+//        when(entity.getType()).thenReturn(PrincipalType.USER);
+//        UserOS os = mock(UserOS.class);
+//        when(entity.getObjectSegment()).thenReturn(os);
+//        service.store(entity);
+//        verify(userRepository, times(1)).store(entity);
+//    }
+//
+//    @Test
+//    public void testStore_Role_New() {
+//        RoleEntity entity = mock(RoleEntity.class);
+//        when(entity.isNew()).thenReturn(true);
+//        when(entity.isDirty()).thenReturn(true);
+//        when(entity.getType()).thenReturn(PrincipalType.ROLE);
+//        RoleOS os = mock(RoleOS.class);
+//        when(entity.getObjectSegment()).thenReturn(os);
+//        service.store(entity);
+//        verify(roleRepository, times(1)).store(entity);
+//    }
+//
+//    @Test
+//    public void testStore_Role_Update() {
+//        RoleEntity entity = mock(RoleEntity.class);
+//        when(entity.isNew()).thenReturn(false);
+//        when(entity.isDirty()).thenReturn(true);
+//        when(entity.getType()).thenReturn(PrincipalType.ROLE);
+//        RoleOS os = mock(RoleOS.class);
+//        when(entity.getObjectSegment()).thenReturn(os);
+//        service.store(entity);
+//        verify(roleRepository, times(1)).store(entity);
+//    }
+//
+//    @Test
+//    public void testStore_APIKey_New() {
+//        APIKeyEntity entity = mock(APIKeyEntity.class);
+//        when(entity.isNew()).thenReturn(true);
+//        when(entity.isDirty()).thenReturn(true);
+//        when(entity.getType()).thenReturn(PrincipalType.API_KEY);
+//        APIKeyOS os = mock(APIKeyOS.class);
+//        when(entity.getObjectSegment()).thenReturn(os);
+//        service.store(entity);
+//        verify(apiKeyRepository, times(1)).store(entity);
+//    }
+//
+//    @Test
+//    public void testStore_APIKey_Update() {
+//        APIKeyEntity entity = mock(APIKeyEntity.class);
+//        when(entity.isNew()).thenReturn(false);
+//        when(entity.isDirty()).thenReturn(true);
+//        when(entity.getType()).thenReturn(PrincipalType.API_KEY);
+//        APIKeyOS os = mock(APIKeyOS.class);
+//        when(entity.getObjectSegment()).thenReturn(os);
+//        service.store(entity);
+//        verify(apiKeyRepository, times(1)).store(entity);
+//    }
 
     @Test
     public void testRemove_User() {

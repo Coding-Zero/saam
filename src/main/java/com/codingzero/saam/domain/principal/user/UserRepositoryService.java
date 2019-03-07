@@ -46,8 +46,10 @@ public class UserRepositoryService implements UserRepository {
         applicationStatusVerifier.checkForDeactiveStatus(user.getApplication());
         UserEntity entity = (UserEntity) user;
         if (entity.isNew()) {
+            principalAccess.insert(entity.getObjectSegment());
             access.insert(entity.getObjectSegment());
         } else if (entity.isDirty()) {
+            principalAccess.update(entity.getObjectSegment());
             access.update(entity.getObjectSegment());
         }
         return factory.reconstitute(entity.getObjectSegment(), user.getApplication());
@@ -58,6 +60,7 @@ public class UserRepositoryService implements UserRepository {
         applicationStatusVerifier.checkForDeactiveStatus(user.getApplication());
         checkForUnremoveableStatus(user);
         UserEntity entity = (UserEntity) user;
+        principalAccess.delete(entity.getObjectSegment());
         access.delete(entity.getObjectSegment());
     }
 
@@ -74,6 +77,7 @@ public class UserRepositoryService implements UserRepository {
 
     @Override
     public void removeByApplication(Application application) {
+        principalAccess.deleteByApplicationId(application.getId());
         access.deleteByApplicationId(application.getId());
     }
 

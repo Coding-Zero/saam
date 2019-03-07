@@ -2,6 +2,7 @@ package com.codingzero.saam.app.server.infrastructure.mysql;
 
 import com.codingzero.saam.app.server.infrastructure.mysql.commons.AbstractAccess;
 import com.codingzero.saam.app.server.infrastructure.mysql.commons.MySQLQueryBuilder;
+import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.PrincipalType;
 import com.codingzero.saam.infrastructure.data.PrincipalOS;
 import com.codingzero.saam.infrastructure.data.PrincipalAccess;
@@ -74,6 +75,30 @@ public class PrincipalAccessImpl extends AbstractAccess implements PrincipalAcce
             stmt.setBytes(1, Key.fromHexString(os.getId().getApplicationId()).getKey());
             stmt.setBytes(2, Key.fromHexString(os.getId().getId()).getKey());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closePreparedStatement(stmt);
+            closeConnection(conn);
+        }
+    }
+
+    @Override
+    public void deleteByApplicationIdAndType(String id, PrincipalType type) {
+        Connection conn = getConnection();
+        PreparedStatement stmt=null;
+        try {
+            String sql = String.format("DELETE FROM %s"
+                            + " WHERE application_id=? AND type=? LIMIT 1000;",
+                    TABLE,
+                    PrincipalAccessImpl.TABLE);
+            stmt = conn.prepareStatement(sql);
+            stmt.setBytes(1, Key.fromHexString(id).getKey());
+            stmt.setString(2, type.name());
+            int deletedRows = stmt.executeUpdate();
+            while (deletedRows > 0) {
+                deletedRows = stmt.executeUpdate();
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {

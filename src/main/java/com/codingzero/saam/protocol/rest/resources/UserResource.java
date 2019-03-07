@@ -1,6 +1,7 @@
 package com.codingzero.saam.protocol.rest.resources;
 
 import com.codahale.metrics.annotation.Timed;
+import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.requests.IdentifierAddRequest;
 import com.codingzero.saam.app.requests.IdentifierRemoveRequest;
 import com.codingzero.saam.app.requests.IdentifierVerifyRequest;
@@ -8,10 +9,11 @@ import com.codingzero.saam.app.requests.OAuthIdentifierConnectRequest;
 import com.codingzero.saam.app.requests.OAuthIdentifierDisconnectRequest;
 import com.codingzero.saam.app.requests.PasswordChangeRequest;
 import com.codingzero.saam.app.requests.PasswordResetRequest;
-import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.requests.UserRegisterRequest;
-import com.codingzero.saam.app.responses.UserResponse;
+import com.codingzero.saam.app.requests.UserRegisterWithIdentifierRequest;
+import com.codingzero.saam.app.requests.UserRegisterWithOAuthRequest;
 import com.codingzero.saam.app.requests.UserRoleUpdateRequest;
+import com.codingzero.saam.app.responses.UserResponse;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
@@ -44,11 +46,24 @@ public class UserResource extends AbstractResource {
     @POST
     @Timed(name = "user-register")
     public Response register(@PathParam("applicationId") String applicationId,
-                             ObjectNode requestBody) throws IOException {
+                             ObjectNode requestBody,
+                             @QueryParam("type") String type) throws IOException {
         requestBody.put("applicationId", applicationId);
-        UserRegisterRequest request = getObjectMapper().readValue(
-                requestBody.toString(), UserRegisterRequest.class);
-        UserResponse response = getApp().register(request);
+        UserResponse response;
+        if (type.equalsIgnoreCase("Identifier")) {
+            UserRegisterWithIdentifierRequest request = getObjectMapper().readValue(
+                    requestBody.toString(), UserRegisterWithIdentifierRequest.class);
+            response = getApp().registerWithIdentifier(request);
+        } else if (type.equalsIgnoreCase("OAuth")) {
+            UserRegisterWithOAuthRequest request = getObjectMapper().readValue(
+                    requestBody.toString(), UserRegisterWithOAuthRequest.class);
+            response = getApp().registerWithOAuth(request);
+        } else {
+            UserRegisterRequest request = getObjectMapper().readValue(
+                    requestBody.toString(), UserRegisterRequest.class);
+            response = getApp().register(request);
+        }
+
         return created(response);
     }
 

@@ -292,7 +292,7 @@ public class IdentifierAccessImpl extends AbstractAccess implements IdentifierAc
                     TABLE);
             stmt = conn.prepareCall(sql);
             stmt.setBytes(1, Key.fromHexString(key.getApplicationId()).getKey());
-            stmt.setBytes(3, Key.fromHexString(contentHash).getKey());
+            stmt.setBytes(2, Key.fromHexString(contentHash).getKey());
             rs = stmt.executeQuery();
             if (!rs.next()) {
                 return null;
