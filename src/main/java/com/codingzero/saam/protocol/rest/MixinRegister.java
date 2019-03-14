@@ -31,6 +31,7 @@ import com.codingzero.saam.app.requests.UserRegisterWithIdentifierRequest;
 import com.codingzero.saam.app.requests.UserRegisterWithOAuthRequest;
 import com.codingzero.saam.app.requests.UserRoleUpdateRequest;
 import com.codingzero.saam.app.requests.UserSessionCreateRequest;
+import com.codingzero.saam.app.requests.UserSessionLoginRequest;
 import com.codingzero.saam.app.requests.UsernamePolicyAddRequest;
 import com.codingzero.saam.app.requests.UsernamePolicyUpdateRequest;
 import com.codingzero.saam.common.Action;
@@ -73,6 +74,7 @@ import com.codingzero.saam.protocol.rest.mixin.UserRegisterWithOAuthRequestModel
 import com.codingzero.saam.protocol.rest.mixin.UserRegisterRequestOAuthIdentifierModel;
 import com.codingzero.saam.protocol.rest.mixin.UserRoleUpdateRequestModel;
 import com.codingzero.saam.protocol.rest.mixin.UserSessionCreateRequestModel;
+import com.codingzero.saam.protocol.rest.mixin.UserSessionLoginRequestModel;
 import com.codingzero.saam.protocol.rest.mixin.UsernamePolicyAddRequestModel;
 import com.codingzero.saam.protocol.rest.mixin.UsernamePolicyUpdateRequestModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -116,6 +118,7 @@ public class MixinRegister {
         mapper.addMixIn(APIKeyUpdateRequest.class, APIKeyUpdateRequestModel.class);
         mapper.addMixIn(CredentialLoginRequest.class, CredentialLoginRequestModel.class);
         mapper.addMixIn(OAuthLoginRequest.class, OAuthLoginRequestModel.class);
+        mapper.addMixIn(UserSessionLoginRequest.class, UserSessionLoginRequestModel.class);
         mapper.addMixIn(RoleAddRequest.class, RoleAddRequestModel.class);
         mapper.addMixIn(RoleUpdateRequest.class, RoleUpdateRequestModel.class);
         mapper.addMixIn(ResourceStoreRequest.class, ResourceAddRequestModel.class);

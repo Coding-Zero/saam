@@ -33,6 +33,7 @@ import com.codingzero.saam.app.requests.UserRegisterWithIdentifierRequest;
 import com.codingzero.saam.app.requests.UserRegisterWithOAuthRequest;
 import com.codingzero.saam.app.requests.UserRoleUpdateRequest;
 import com.codingzero.saam.app.requests.UserSessionCreateRequest;
+import com.codingzero.saam.app.requests.UserSessionLoginRequest;
 import com.codingzero.saam.app.requests.UsernamePolicyAddRequest;
 import com.codingzero.saam.app.requests.UsernamePolicyUpdateRequest;
 import com.codingzero.saam.app.responses.APIKeyResponse;
@@ -147,6 +148,8 @@ public interface SAAM {
     UserSessionResponse login(CredentialLoginRequest request);
 
     UserSessionResponse login(OAuthLoginRequest request);
+
+    UserSessionResponse login(UserSessionLoginRequest request);
 
     UserSessionResponse createUserSession(UserSessionCreateRequest request);
 

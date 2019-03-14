@@ -1,10 +1,11 @@
 package com.codingzero.saam.protocol.rest.resources;
 
 import com.codahale.metrics.annotation.Timed;
+import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.requests.CredentialLoginRequest;
 import com.codingzero.saam.app.requests.OAuthLoginRequest;
-import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.requests.UserSessionCreateRequest;
+import com.codingzero.saam.app.requests.UserSessionLoginRequest;
 import com.codingzero.saam.app.responses.UserSessionResponse;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -33,36 +35,36 @@ public class UserSessionResource extends AbstractResource {
     }
 
     @POST
-    @Timed(name = "create-user-usersession")
+    @Timed(name = "create-user-session")
     public Response createUserSession(@PathParam("applicationId") String applicationId,
-                                      ObjectNode requestBody) throws IOException {
+                                      ObjectNode requestBody,
+                                      @QueryParam("type") String type) throws IOException {
         requestBody.put("applicationId", applicationId);
-        UserSessionCreateRequest request = getObjectMapper().readValue(
-                requestBody.toString(), UserSessionCreateRequest.class);
-        UserSessionResponse response = getApp().createUserSession(request);
+        UserSessionResponse response;
+        if (type.equalsIgnoreCase("Credential")) {
+            CredentialLoginRequest request = getObjectMapper().readValue(
+                    requestBody.toString(), CredentialLoginRequest.class);
+            response = getApp().login(request);
+        } else if (type.equalsIgnoreCase("OAuth")) {
+            OAuthLoginRequest request = getObjectMapper().readValue(
+                    requestBody.toString(), OAuthLoginRequest.class);
+            response = getApp().login(request);
+        } else {
+            UserSessionCreateRequest request = getObjectMapper().readValue(
+                    requestBody.toString(), UserSessionCreateRequest.class);
+            response = getApp().createUserSession(request);
+        }
         return created(response);
     }
 
-    @POST
-    @Path("/_credential-login")
-    @Timed(name = "credential-login")
-    public Response loginWithCredential(@PathParam("applicationId") String applicationId,
-                                        ObjectNode requestBody) throws IOException {
-        requestBody.put("applicationId", applicationId);
-        CredentialLoginRequest request = getObjectMapper().readValue(
-                requestBody.toString(), CredentialLoginRequest.class);
-        UserSessionResponse response = getApp().login(request);
-        return created(response);
-    }
-
-    @POST
-    @Timed(name = "oauth-login")
-    @Path("/_oauth-login")
-    public Response loginWithOAuth(@PathParam("applicationId") String applicationId,
+    @PUT
+    @Path("/{key}")
+    @Timed(name = "session-login")
+    public Response loginWithSession(@PathParam("applicationId") String applicationId,
                                    ObjectNode requestBody) throws IOException {
         requestBody.put("applicationId", applicationId);
-        OAuthLoginRequest request = getObjectMapper().readValue(
-                requestBody.toString(), OAuthLoginRequest.class);
+        UserSessionLoginRequest request = getObjectMapper().readValue(
+                requestBody.toString(), UserSessionLoginRequest.class);
         UserSessionResponse response = getApp().login(request);
         return created(response);
     }

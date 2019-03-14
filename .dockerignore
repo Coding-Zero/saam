@@ -1,4 +1,0 @@
-*
-!target/universal/*.zip
-!run.sh
-!filebeat.yml

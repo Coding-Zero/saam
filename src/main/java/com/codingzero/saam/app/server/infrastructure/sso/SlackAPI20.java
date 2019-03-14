@@ -1,9 +1,6 @@
 package com.codingzero.saam.app.server.infrastructure.sso;
 
-import com.github.scribejava.apis.google.GoogleJsonTokenExtractor;
 import com.github.scribejava.core.builder.api.DefaultApi20;
-import com.github.scribejava.core.extractors.TokenExtractor;
-import com.github.scribejava.core.model.OAuth2AccessToken;
 
 
 public class SlackAPI20 extends DefaultApi20 {
@@ -29,8 +26,4 @@ public class SlackAPI20 extends DefaultApi20 {
         return "https://slack.com/oauth/authorize";
     }
 
-    @Override
-    public TokenExtractor<OAuth2AccessToken> getAccessTokenExtractor() {
-        return GoogleJsonTokenExtractor.instance();
-    }
 }

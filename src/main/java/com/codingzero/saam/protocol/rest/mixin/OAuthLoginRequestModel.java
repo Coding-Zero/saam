@@ -10,7 +10,7 @@ public abstract class OAuthLoginRequestModel {
     public OAuthLoginRequestModel(@JsonProperty("applicationId") String applicationId,
                                   @JsonProperty("platform") OAuthPlatform platform,
                                   @JsonProperty("identifier") String identifier,
-                                  @JsonProperty("details") Map<String, String> details,
+                                  @JsonProperty("sessionDetails") Map<String, String> sessionDetails,
                                   @JsonProperty("timeout") long timeout) {}
     
 }

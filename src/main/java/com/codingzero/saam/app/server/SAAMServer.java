@@ -34,6 +34,7 @@ import com.codingzero.saam.app.requests.UserRegisterWithIdentifierRequest;
 import com.codingzero.saam.app.requests.UserRegisterWithOAuthRequest;
 import com.codingzero.saam.app.requests.UserRoleUpdateRequest;
 import com.codingzero.saam.app.requests.UserSessionCreateRequest;
+import com.codingzero.saam.app.requests.UserSessionLoginRequest;
 import com.codingzero.saam.app.requests.UsernamePolicyAddRequest;
 import com.codingzero.saam.app.requests.UsernamePolicyUpdateRequest;
 import com.codingzero.saam.app.responses.APIKeyResponse;
@@ -89,6 +90,7 @@ import com.codingzero.saam.domain.services.UserAuthenticator;
 import com.codingzero.saam.infrastructure.OAuthAccessToken;
 import com.codingzero.saam.infrastructure.data.OAuthPlatformAgent;
 import com.codingzero.utilities.error.BusinessError;
+import com.codingzero.utilities.error.ErrorType;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.PaginatedResultMapper;
 import com.codingzero.utilities.transaction.TransactionManager;
@@ -120,7 +122,6 @@ public class SAAMServer implements SAAM {
     private ResourceRepository resourceRepository;
     private PrincipalRepository principalRepository;
     private ResponseMapper responseMapper;
-    private UserAuthenticator userAuthenticator;
 
     public SAAMServer(SAAMBuilder builder) {
         this.transactionManager = builder.getTransactionManager();
@@ -143,7 +144,6 @@ public class SAAMServer implements SAAM {
         this.resourceRepository = builder.getResourceRepository();
         this.principalRepository = builder.getPrincipalRepository();
         this.responseMapper = builder.getResponseMapper();
-        this.userAuthenticator = builder.getUserAuthenticator();
     }
 
     @Override
@@ -410,6 +410,7 @@ public class SAAMServer implements SAAM {
             setIdentifiers(user, request.getIdentifiers());
             transactionManager.commit();
         } catch (RuntimeException e) {
+            e.printStackTrace();
             transactionManager.rollback();
         }
         List<Identifier> identifiers = identifierRepository.findByUser(application, user);
@@ -781,6 +782,21 @@ public class SAAMServer implements SAAM {
         User user = identifier.getUser();
         UserSession session = userSessionFactory.generate(
                 application, user, request.getSessionDetails(), request.getSessionTimeout());
+        session = userSessionRepository.store(session);
+        return responseMapper.toResponse(session);
+    }
+
+    @Override
+    public UserSessionResponse login(UserSessionLoginRequest request) {
+        Application application = getEnsuredApplicationById(request.getApplicationId());
+        UserSession session = userSessionRepository.findByKey(application, request.getSessionKey());
+        if (null == session || session.isExpired()) {
+            throw BusinessError.raise(Errors.AUTHENTICATION_FAILED)
+                    .message("Failed to login.")
+                    .build();
+        }
+        session.setDetails(request.getDetails());
+        session.expendExpirationTime(request.getExtraTimeout());
         session = userSessionRepository.store(session);
         return responseMapper.toResponse(session);
     }

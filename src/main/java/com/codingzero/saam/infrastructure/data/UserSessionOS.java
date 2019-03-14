@@ -40,11 +40,19 @@ public class UserSessionOS {
         return new Date(expirationTime);
     }
 
+    public void setExpirationTime(Date expirationTime) {
+        this.expirationTime = expirationTime.getTime();
+    }
+
     public Date getCreationTime() {
         return new Date(creationTime);
     }
 
     public Map<String, Object> getDetails() {
         return details;
+    }
+
+    public void setDetails(Map<String, Object> details) {
+        this.details = Collections.unmodifiableMap(details);
     }
 }

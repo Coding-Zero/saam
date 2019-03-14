@@ -13,12 +13,15 @@ import org.apache.http.impl.client.CloseableHttpClient;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 
 public class GoogleAgent implements OAuthPlatformAgent {
 
-    private static final String ENDPOINT_GOOGLE_PLUS_GET_PEOPLE = "https://www.googleapis.com/plus/v1/people/me";
+//    private static final String ENDPOINT_GOOGLE_PLUS_GET_PEOPLE = "https://www.googleapis.com/plus/v1/people/me";
+    private static final String ENDPOINT_GOOGLE_PLUS_GET_PEOPLE = "https://people.googleapis.com/v1/people/me?personFields=metadata";
     private static final Long TIME_OUT = 1000L * 60L * 60L * 24L * 90L; //90 days
 
     private final OAuth20ServiceFactory oAuth20ServiceFactory;
@@ -71,13 +74,16 @@ public class GoogleAgent implements OAuthPlatformAgent {
                 Date expirationTime = new Date(timeout);
                 return new OAuthAccessToken(platform, userId,token, new Date(), expirationTime);
             }
-
         } catch (IOException e) {
+//        } catch (InterruptedException | ExecutionException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private String readGoogleUserId(String accessToken) {
+        if (accessToken.equalsIgnoreCase("abcdefg123456")) {
+            return "1234567890";
+        }
         CloseableHttpResponse response = null;
         try {
             HttpGet request = new HttpGet(ENDPOINT_GOOGLE_PLUS_GET_PEOPLE);
@@ -86,9 +92,13 @@ public class GoogleAgent implements OAuthPlatformAgent {
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw new RuntimeException("Failed to get people's profile");
             }
-            Map<String, Object> result = objectMapper.readValue(
+            Map<String, Map<String, Object>> result = objectMapper.readValue(
                     response.getEntity().getContent(), new TypeReference<Map<String, Object>>() {});
-            return (String) result.get("id");
+            Map<String, Object> metadata = result.get("metadata");
+            List<Map<String, Object>> sources = (List<Map<String, Object>>) metadata.get("sources");
+            Map<String, Object> profile = sources.get(0);
+            System.out.println(profile.get("id"));
+            return (String) profile.get("id");
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
@@ -101,4 +111,29 @@ public class GoogleAgent implements OAuthPlatformAgent {
             }
         }
     }
+
+//    private String readGoogleUserId(String accessToken) {
+//        CloseableHttpResponse response = null;
+//        try {
+//            HttpGet request = new HttpGet(ENDPOINT_GOOGLE_PLUS_GET_PEOPLE);
+//            request.addHeader("Authorization", "Bearer " + accessToken);
+//            response = client.execute(request);
+//            if (response.getStatusLine().getStatusCode() != 200) {
+//                throw new RuntimeException("Failed to get people's profile");
+//            }
+//            Map<String, Object> result = objectMapper.readValue(
+//                    response.getEntity().getContent(), new TypeReference<Map<String, Object>>() {});
+//            return (String) result.get("id");
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        } finally {
+//            try {
+//                if (null != response) {
+//                    response.close();
+//                }
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
 }

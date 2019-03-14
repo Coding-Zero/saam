@@ -20,4 +20,11 @@ public class SAAMConfiguration extends Configuration {
     public void setMysql(Map<String, Object> mysql) {
         this.mysql = mysql;
     }
+
+    @Override
+    public String toString() {
+        return "SAAMConfiguration{" +
+                "mysql=" + mysql +
+                '}';
+    }
 }

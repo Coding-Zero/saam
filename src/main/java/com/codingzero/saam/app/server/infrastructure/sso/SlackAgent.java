@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 
 public class SlackAgent implements OAuthPlatformAgent {
@@ -80,8 +81,8 @@ public class SlackAgent implements OAuthPlatformAgent {
                 Date expirationTime = new Date(timeout);
                 return new OAuthAccessToken(platform, accountId, token, new Date(), expirationTime);
             }
-
         } catch (IOException e) {
+//        } catch (IOException | InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }

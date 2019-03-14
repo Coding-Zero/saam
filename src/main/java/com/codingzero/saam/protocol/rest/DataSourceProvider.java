@@ -15,8 +15,8 @@ public class DataSourceProvider {
 
     public DataSource get() {
         String url = (String) configuration.getMysql().get("url");
-        String username = (String) configuration.getMysql().get("username");
-        String password = (String) configuration.getMysql().get("password");
+        String username = String.valueOf(configuration.getMysql().get("username"));
+        String password = String.valueOf(configuration.getMysql().get("password"));
         int connectionMaxPoolSize = (int) configuration.getMysql().get("connectionMaxPoolSize");
         int connectionMinPoolSize = (int) configuration.getMysql().get("connectionMinPoolSize");
 

@@ -21,8 +21,9 @@ public class OAuth20ServiceFactory {
     }
 
     private OAuth20Service generateSlackService(Map<String, Object> configuration) {
+//        return new ServiceBuilder(((String) configuration.get("apiKey")))
         return new ServiceBuilder()
-                .apiKey((String) configuration.get("apiKey"))
+                .apiKey(((String) configuration.get("apiKey")))
                 .apiSecret((String) configuration.get("apiSecret"))
                 .scope((String) configuration.get("scope"))
                 .callback((String) configuration.get("callback"))
@@ -30,11 +31,19 @@ public class OAuth20ServiceFactory {
     }
 
     private OAuth20Service generateGoogleService(Map<String, Object> configuration) {
+//        JDKHttpClientConfig config = new JDKHttpClientConfig();
+//        config.setConnectTimeout(10000);
+//        config.setReadTimeout(10000);
+//        config.setFollowRedirects(false);
+//        return new ServiceBuilder((String) configuration.get("apiKey"))
         return new ServiceBuilder()
                 .apiKey((String) configuration.get("apiKey"))
                 .apiSecret((String) configuration.get("apiSecret"))
                 .scope((String) configuration.get("scope"))
                 .callback((String) configuration.get("callback"))
+//                .httpClientConfig(config)
+//                .debug()
                 .build(GoogleApi20.instance());
     }
+
 }

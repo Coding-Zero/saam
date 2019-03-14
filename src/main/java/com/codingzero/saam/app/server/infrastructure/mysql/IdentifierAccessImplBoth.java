@@ -354,7 +354,7 @@ public class IdentifierAccessImplBoth extends AbstractAccess implements Identifi
             if (!rs.next()) {
                 return null;
             } else {
-                return getObjectSegmentMapper().toIdentifierOS(rs);
+                return getObjectSegmentMapper().toIdentifierOSV1(rs);
             }
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);

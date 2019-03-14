@@ -1,0 +1,11 @@
+logging:
+  level: INFO
+  loggers:
+    com.codingzero.saam: DEBUG
+
+mysql:
+  url: ${MYSQL_URL}
+  username: ${MYSQL_USERNAME}
+  password: ${MYSQL_PASSWORD}
+  connectionMinPoolSize: ${MYSQL_CONNECTION_MIN_POOL_SIZE}
+  connectionMaxPoolSize: ${MYSQL_CONNECTION_MAX_POOL_SIZE}

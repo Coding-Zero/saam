@@ -1,5 +1,6 @@
 package com.codingzero.saam.protocol.rest;
 
+import com.codingzero.saam.protocol.rest.auth.AuthFilter;
 import com.codingzero.saam.protocol.rest.health.SAAMHealthCheck;
 import com.codingzero.saam.protocol.rest.resources.APIKeyResource;
 import com.codingzero.saam.protocol.rest.resources.ApplicationResource;
@@ -47,6 +48,8 @@ public class SAAMApplication extends Application<SAAMConfiguration> {
         DataSource dataSource = new DataSourceProvider(configuration).get();
         CloseableHttpClient httpClient = new HttpClientProvider().get();
         SAAMSupplier saamSupplier = new SAAMSupplier(dataSource, httpClient);
+
+        environment.jersey().register(new AuthFilter());
 
         //register exception mapper
         environment.jersey().register(new BusinessErrorMapper(environment.metrics()));

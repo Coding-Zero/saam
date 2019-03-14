@@ -45,6 +45,15 @@ public class UserSessionEntity extends EntityObject<UserSessionOS> implements Us
     }
 
     @Override
+    public void setDetails(Map<String, Object> details) {
+        if (null == details) {
+            return;
+        }
+        getObjectSegment().setDetails(details);
+        markAsDirty();
+    }
+
+    @Override
     public String getKey() {
         return getObjectSegment().getKey();
     }
@@ -52,6 +61,13 @@ public class UserSessionEntity extends EntityObject<UserSessionOS> implements Us
     @Override
     public Date getExpirationTime() {
         return getObjectSegment().getExpirationTime();
+    }
+
+    @Override
+    public void expendExpirationTime(long millionSeconds) {
+        Date expirationTime = getExpirationTime();
+        getObjectSegment().setExpirationTime(new Date(expirationTime.getTime() + millionSeconds));
+        markAsDirty();
     }
 
     @Override
