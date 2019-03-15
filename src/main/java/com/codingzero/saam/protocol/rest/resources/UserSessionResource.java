@@ -41,11 +41,11 @@ public class UserSessionResource extends AbstractResource {
                                       @QueryParam("type") String type) throws IOException {
         requestBody.put("applicationId", applicationId);
         UserSessionResponse response;
-        if (type.equalsIgnoreCase("Credential")) {
+        if ("Credential".equalsIgnoreCase(type)) {
             CredentialLoginRequest request = getObjectMapper().readValue(
                     requestBody.toString(), CredentialLoginRequest.class);
             response = getApp().login(request);
-        } else if (type.equalsIgnoreCase("OAuth")) {
+        } else if ("OAuth".equalsIgnoreCase(type)) {
             OAuthLoginRequest request = getObjectMapper().readValue(
                     requestBody.toString(), OAuthLoginRequest.class);
             response = getApp().login(request);
@@ -66,7 +66,7 @@ public class UserSessionResource extends AbstractResource {
         UserSessionLoginRequest request = getObjectMapper().readValue(
                 requestBody.toString(), UserSessionLoginRequest.class);
         UserSessionResponse response = getApp().login(request);
-        return created(response);
+        return ok(response);
     }
 
     @DELETE
