@@ -14,6 +14,7 @@ import com.codingzero.saam.app.requests.UsernamePolicyAddRequest;
 import com.codingzero.saam.app.requests.UsernamePolicyUpdateRequest;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
+import com.codingzero.saam.protocol.rest.auth.Auth;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -87,6 +88,7 @@ public class ApplicationResource extends AbstractResource {
 
     @GET
     @Timed(name = "list-applications")
+    @Auth
     public Response list(@QueryParam("start") int start, @QueryParam("size") int size) {
         PaginatedResult<List<ApplicationResponse>> result = getApp().listApplications();
         result = result.start(new OffsetBasedResultPage(start, size));

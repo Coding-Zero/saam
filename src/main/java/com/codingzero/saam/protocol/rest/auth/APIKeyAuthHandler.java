@@ -18,6 +18,6 @@ public class APIKeyAuthHandler implements AuthHandler {
 
     @Override
     public boolean verify(AuthContext ctx) {
-        return false;
+        return ctx.getToken().equals(apiKey);
     }
 }

@@ -3,6 +3,7 @@ logging:
   loggers:
     com.codingzero.saam: DEBUG
 
+apiKey: ${API_KEY:-123456}
 
 mysql:
   url: ${MYSQL_URL:-localhost:3306}

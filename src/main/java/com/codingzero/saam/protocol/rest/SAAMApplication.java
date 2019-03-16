@@ -1,6 +1,9 @@
 package com.codingzero.saam.protocol.rest;
 
+import com.codingzero.saam.protocol.rest.auth.APIKeyAuthHandler;
+import com.codingzero.saam.protocol.rest.auth.AuthFailedExceptionMapper;
 import com.codingzero.saam.protocol.rest.auth.AuthFilter;
+import com.codingzero.saam.protocol.rest.auth.AuthHandlerManager;
 import com.codingzero.saam.protocol.rest.health.SAAMHealthCheck;
 import com.codingzero.saam.protocol.rest.resources.APIKeyResource;
 import com.codingzero.saam.protocol.rest.resources.ApplicationResource;
@@ -18,6 +21,7 @@ import io.dropwizard.setup.Environment;
 import org.apache.http.impl.client.CloseableHttpClient;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 
 public class SAAMApplication extends Application<SAAMConfiguration> {
 
@@ -49,10 +53,16 @@ public class SAAMApplication extends Application<SAAMConfiguration> {
         CloseableHttpClient httpClient = new HttpClientProvider().get();
         SAAMSupplier saamSupplier = new SAAMSupplier(dataSource, httpClient);
 
-        environment.jersey().register(new AuthFilter());
+        environment.jersey().register(new AuthFilter(new AuthHandlerManager(
+                Arrays.asList(
+                        new APIKeyAuthHandler(configuration.getApiKey())
+                )
+        )));
 
         //register exception mapper
         environment.jersey().register(new BusinessErrorMapper(environment.metrics()));
+        environment.jersey().register(new AuthFailedExceptionMapper(environment.metrics()));
+
 
         //register resources
         environment.jersey().register(new ApplicationResource(saamSupplier, environment.getObjectMapper()));

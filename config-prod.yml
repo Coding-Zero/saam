@@ -3,6 +3,8 @@ logging:
   loggers:
     com.codingzero.saam: DEBUG
 
+apiKey: ${API_KEY}
+
 mysql:
   url: ${MYSQL_URL}
   username: ${MYSQL_USERNAME}

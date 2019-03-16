@@ -11,6 +11,9 @@ public class SAAMConfiguration extends Configuration {
     @NotEmpty
     private Map<String, Object> mysql;
 
+    @NotEmpty
+    private String apiKey;
+
     @JsonProperty("mysql")
     public Map<String, Object> getMysql() {
         return mysql;
@@ -21,10 +24,12 @@ public class SAAMConfiguration extends Configuration {
         this.mysql = mysql;
     }
 
-    @Override
-    public String toString() {
-        return "SAAMConfiguration{" +
-                "mysql=" + mysql +
-                '}';
+    public String getApiKey() {
+        return apiKey;
     }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
 }

@@ -6,9 +6,13 @@ import java.util.Map;
 
 public class AuthContext {
 
+    private String token;
+    private String authHandlerName;
     private Map<String, Object> context;
 
-    public AuthContext() {
+    public AuthContext(String token, String authHandlerName) {
+        this.token = token;
+        this.authHandlerName = authHandlerName;
         this.context = new HashMap<>();
     }
 
@@ -22,5 +26,13 @@ public class AuthContext {
 
     public Map<String, Object> listAll() {
         return Collections.unmodifiableMap(context);
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public String getAuthHandlerName() {
+        return authHandlerName;
     }
 }
