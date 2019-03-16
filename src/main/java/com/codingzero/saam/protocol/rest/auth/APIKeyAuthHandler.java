@@ -12,7 +12,7 @@ public class APIKeyAuthHandler implements AuthHandler {
     }
 
     @Override
-    public String getName() {
+    public String getType() {
         return "APIKey";
     }
 

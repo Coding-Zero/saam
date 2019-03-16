@@ -6,6 +6,7 @@ import com.codingzero.saam.app.responses.PermissionCheckResponse;
 import com.codingzero.saam.app.responses.PermissionResponse;
 import com.codingzero.saam.app.requests.PermissionStoreRequest;
 import com.codingzero.saam.app.SAAM;
+import com.codingzero.saam.protocol.rest.auth.Auth;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Supplier;
 
+@Auth("APIKEY")
 @Path("/applications/{applicationId}/resources/{resourceKey}/permissions")
 @Produces(MediaType.APPLICATION_JSON)
 public class PermissionResource extends AbstractResource {

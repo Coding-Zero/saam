@@ -1,5 +1,8 @@
 package com.codingzero.saam.protocol.rest.auth;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.annotation.Priority;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Priorities;
@@ -12,6 +15,8 @@ import java.lang.reflect.Method;
 
 @Priority(Priorities.AUTHENTICATION)
 public class AuthFilter implements ContainerRequestFilter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AuthHandlerManager.class);
 
     @Context
     private ResourceInfo resourceInfo;
@@ -28,15 +33,18 @@ public class AuthFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         final Method method = resourceInfo.getResourceMethod();
-        Auth auth = method.getAnnotation(Auth.class);
+        Auth auth = method.getDeclaringClass().getAnnotation(Auth.class);
+        if (null == auth) {
+            auth = method.getAnnotation(Auth.class);
+        }
         if (null == auth) {
             return;
         }
         String token = AuthHelper.readToken(servletRequest);
-        System.out.println("HERE======>token: " + token);
-        String authHandlerName = auth.name().length == 0 ? null : auth.name()[0];
-        System.out.println("HERE======>authHandlerName: " + authHandlerName);
-        if (!handler.verify(new AuthContext(token, authHandlerName))) {
+        String authHandlerType = auth.value().length == 0 ? null : auth.value()[0];
+        LOG.info("You are trying do " + authHandlerType
+                + " AUTH check for method " + method.getClass().getCanonicalName());
+        if (!handler.verify(new AuthContext(token, authHandlerType))) {
             throw new AuthFailedException(
                     "This action is not authorized to perform!");
         }

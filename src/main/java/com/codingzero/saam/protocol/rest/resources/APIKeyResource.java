@@ -5,6 +5,7 @@ import com.codingzero.saam.app.requests.APIKeyAddRequest;
 import com.codingzero.saam.app.responses.APIKeyResponse;
 import com.codingzero.saam.app.requests.APIKeyUpdateRequest;
 import com.codingzero.saam.app.SAAM;
+import com.codingzero.saam.protocol.rest.auth.Auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Supplier;
 
+@Auth("APIKEY")
 @Path("/applications/{applicationId}/api-keys")
 @Produces(MediaType.APPLICATION_JSON)
 public class APIKeyResource extends AbstractResource {

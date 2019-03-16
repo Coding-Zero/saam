@@ -5,6 +5,7 @@ import com.codingzero.saam.app.requests.RoleAddRequest;
 import com.codingzero.saam.app.responses.RoleResponse;
 import com.codingzero.saam.app.requests.RoleUpdateRequest;
 import com.codingzero.saam.app.SAAM;
+import com.codingzero.saam.protocol.rest.auth.Auth;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Supplier;
 
+@Auth("APIKEY")
 @Path("/applications/{applicationId}/roles")
 @Produces(MediaType.APPLICATION_JSON)
 public class RoleResource extends AbstractResource {

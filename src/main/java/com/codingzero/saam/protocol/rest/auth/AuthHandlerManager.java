@@ -19,37 +19,31 @@ public class AuthHandlerManager implements AuthHandler {
         this.handlers = Collections.unmodifiableList(handlers);
         this.handlerMap = new HashMap<>();
         for (AuthHandler handler: handlers) {
-            if (handlerMap.containsKey(handler.getName().toLowerCase())) {
-                LOG.warn("Auth handler has already exist, " + handler.getName());
+            if (handlerMap.containsKey(handler.getType().toLowerCase())) {
+                LOG.warn("Auth handler has already exist, " + handler.getType());
             }
-            this.handlerMap.put(handler.getName().toLowerCase(), handler);
+            this.handlerMap.put(handler.getType().toLowerCase(), handler);
         }
     }
 
     @Override
-    public String getName() {
+    public String getType() {
         return null;
     }
 
     @Override
     public boolean verify(AuthContext ctx) {
-        if (isRunAllAuthHandler(ctx)) {
-            for (AuthHandler authHandler : handlers) {
-                if (authHandler.verify(ctx)) {
-                    return true;
-                }
-            }
+        if (isNoTypeSpecify(ctx)) {
             return false;
-        } else {
-            AuthHandler handler = handlerMap.get(ctx.getAuthHandlerName().toLowerCase());
-            if (null == handler) {
-                throw new IllegalArgumentException("No such auth handler, \'" + ctx.getAuthHandlerName()+ "\'");
-            }
-            return handler.verify(ctx);
         }
+        AuthHandler handler = handlerMap.get(ctx.getAuthHandlerName().toLowerCase());
+        if (null == handler) {
+            throw new IllegalArgumentException("No such auth handler, \'" + ctx.getAuthHandlerName()+ "\'");
+        }
+        return handler.verify(ctx);
     }
 
-    private boolean isRunAllAuthHandler(AuthContext ctx) {
+    private boolean isNoTypeSpecify(AuthContext ctx) {
         return null == ctx.getAuthHandlerName() || ctx.getAuthHandlerName().trim().length() == 0;
     }
 

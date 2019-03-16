@@ -7,6 +7,7 @@ import com.codingzero.saam.app.requests.OAuthLoginRequest;
 import com.codingzero.saam.app.requests.UserSessionCreateRequest;
 import com.codingzero.saam.app.requests.UserSessionLoginRequest;
 import com.codingzero.saam.app.responses.UserSessionResponse;
+import com.codingzero.saam.protocol.rest.auth.Auth;
 import com.codingzero.utilities.pagination.OffsetBasedResultPage;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Supplier;
 
+@Auth("APIKEY")
 @Path("/applications/{applicationId}/user-sessions")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserSessionResource extends AbstractResource {

@@ -1,17 +1,17 @@
 package com.codingzero.saam.protocol.rest.resources;
 
 import com.codahale.metrics.annotation.Timed;
+import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.requests.ApplicationAddRequest;
-import com.codingzero.saam.app.responses.ApplicationResponse;
 import com.codingzero.saam.app.requests.ApplicationUpdateRequest;
 import com.codingzero.saam.app.requests.EmailPolicyAddRequest;
 import com.codingzero.saam.app.requests.EmailPolicyUpdateRequest;
 import com.codingzero.saam.app.requests.OAuthIdentifierPolicyAddRequest;
 import com.codingzero.saam.app.requests.OAuthIdentifierPolicyUpdateRequest;
 import com.codingzero.saam.app.requests.PasswordPolicySetRequest;
-import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.requests.UsernamePolicyAddRequest;
 import com.codingzero.saam.app.requests.UsernamePolicyUpdateRequest;
+import com.codingzero.saam.app.responses.ApplicationResponse;
 import com.codingzero.saam.common.IdentifierType;
 import com.codingzero.saam.common.OAuthPlatform;
 import com.codingzero.saam.protocol.rest.auth.Auth;
@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Supplier;
 
+@Auth("APIKEY")
 @Path("/applications")
 @Produces(MediaType.APPLICATION_JSON)
 public class ApplicationResource extends AbstractResource {
@@ -88,7 +89,6 @@ public class ApplicationResource extends AbstractResource {
 
     @GET
     @Timed(name = "list-applications")
-    @Auth
     public Response list(@QueryParam("start") int start, @QueryParam("size") int size) {
         PaginatedResult<List<ApplicationResponse>> result = getApp().listApplications();
         result = result.start(new OffsetBasedResultPage(start, size));

@@ -10,6 +10,7 @@ import com.codingzero.saam.app.requests.PasswordResetCodeGenerateRequest;
 import com.codingzero.saam.app.responses.PasswordResetCodeResponse;
 import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.common.OAuthPlatform;
+import com.codingzero.saam.protocol.rest.auth.Auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+@Auth("APIKEY")
 @Path("/applications")
 @Produces(MediaType.APPLICATION_JSON)
 public class OtherResource extends AbstractResource {
