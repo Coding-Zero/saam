@@ -10,6 +10,10 @@ public class OAuthAuthorizationUrlRequest {
 
     private String applicationId;
     private OAuthPlatform platform;
+
+    /**
+     * These parameters will to overwrite what the policy SSO policy setup configurations.
+     */
     private Map<String, Object> parameters;
 
     public OAuthAuthorizationUrlRequest(String applicationId, OAuthPlatform platform, Map<String, Object> parameters) {

@@ -63,7 +63,6 @@ public class SAAMApplication extends Application<SAAMConfiguration> {
         environment.jersey().register(new BusinessErrorMapper(environment.metrics()));
         environment.jersey().register(new AuthFailedExceptionMapper(environment.metrics()));
 
-
         //register resources
         environment.jersey().register(new ApplicationResource(saamSupplier, environment.getObjectMapper()));
         environment.jersey().register(new UserResource(saamSupplier, environment.getObjectMapper()));
