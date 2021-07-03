@@ -80,7 +80,7 @@ public class SlackAgent implements OAuthPlatformAgent {
                 Date expirationTime = new Date(timeout);
                 return new OAuthAccessToken(platform, accountId, token, new Date(), expirationTime);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
 //        } catch (IOException | InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }

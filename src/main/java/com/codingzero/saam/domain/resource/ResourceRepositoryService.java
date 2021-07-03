@@ -10,6 +10,7 @@ import com.codingzero.saam.infrastructure.data.PermissionOS;
 import com.codingzero.saam.infrastructure.data.ResourceAccess;
 import com.codingzero.saam.infrastructure.data.ResourceOS;
 import com.codingzero.utilities.pagination.PaginatedResult;
+import com.codingzero.utilities.pagination.PaginatedResultDelegate;
 import com.codingzero.utilities.pagination.ResultFetchRequest;
 
 import java.util.ArrayList;

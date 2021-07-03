@@ -73,7 +73,7 @@ public class GoogleAgent implements OAuthPlatformAgent {
                 Date expirationTime = new Date(timeout);
                 return new OAuthAccessToken(platform, userId,token, new Date(), expirationTime);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
 //        } catch (InterruptedException | ExecutionException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -98,7 +98,7 @@ public class GoogleAgent implements OAuthPlatformAgent {
             Map<String, Object> profile = sources.get(0);
             System.out.println(profile.get("id"));
             return (String) profile.get("id");
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
             try {

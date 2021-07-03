@@ -22,10 +22,9 @@ public class OAuth20ServiceFactory {
 
     private OAuth20Service generateSlackService(Map<String, Object> configuration) {
 //        return new ServiceBuilder(((String) configuration.get("apiKey")))
-        return new ServiceBuilder()
-                .apiKey(((String) configuration.get("apiKey")))
+        return new ServiceBuilder(((String) configuration.get("apiKey")))
                 .apiSecret((String) configuration.get("apiSecret"))
-                .scope((String) configuration.get("scope"))
+                .defaultScope((String) configuration.get("scope"))
                 .callback((String) configuration.get("callback"))
                 .build(SlackAPI20.instance());
     }
@@ -36,10 +35,9 @@ public class OAuth20ServiceFactory {
 //        config.setReadTimeout(10000);
 //        config.setFollowRedirects(false);
 //        return new ServiceBuilder((String) configuration.get("apiKey"))
-        return new ServiceBuilder()
-                .apiKey((String) configuration.get("apiKey"))
+        return new ServiceBuilder(((String) configuration.get("apiKey")))
                 .apiSecret((String) configuration.get("apiSecret"))
-                .scope((String) configuration.get("scope"))
+                .defaultScope((String) configuration.get("scope"))
                 .callback((String) configuration.get("callback"))
 //                .httpClientConfig(config)
 //                .debug()
