@@ -3,11 +3,12 @@ package com.codingzero.saam.protocol.rest;
 import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.server.SAAMBuilder;
 import com.codingzero.saam.app.server.infrastructure.mysql.commons.MySQLAccessFactory;
+import com.codingzero.saam.app.server.infrastructure.oauth.AppleAgent;
 import com.codingzero.saam.app.server.infrastructure.oauth.GoogleAgent;
 import com.codingzero.saam.app.server.infrastructure.oauth.OAuthPlatformAgentManager;
 import com.codingzero.saam.app.server.infrastructure.oauth.SlackAgent;
 import com.codingzero.saam.common.OAuthPlatform;
-import com.codingzero.saam.infrastructure.data.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.oauth.OAuthPlatformAgent;
 import com.codingzero.utilities.transaction.TransactionManager;
 import com.codingzero.utilities.transaction.manager.TransactionManagerImpl;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -51,13 +52,14 @@ public class SAAMSupplier implements Supplier<SAAM> {
                 .setApiKeyAccess(accessModule.getAPIKeyAccess())
                 .setApplicationAccess(accessModule.getApplicationAccess())
                 .setUserSessionAccess(accessModule.getUserSessionAccess())
-                .setOAuthPlatformAgent(getOAuthPlatformAgent());
+                .setOAuthPlatformAgentManager(getOAuthPlatformAgentManager());
     }
 
-    private OAuthPlatformAgent getOAuthPlatformAgent() {
+    private OAuthPlatformAgentManager getOAuthPlatformAgentManager() {
         Map<OAuthPlatform, OAuthPlatformAgent> agents = new HashMap<>();
         agents.put(OAuthPlatform.GOOGLE, new GoogleAgent(httpClient));
         agents.put(OAuthPlatform.SLACK, new SlackAgent(httpClient));
+        agents.put(OAuthPlatform.APPLE, new AppleAgent());
         return new OAuthPlatformAgentManager(agents);
     }
 }

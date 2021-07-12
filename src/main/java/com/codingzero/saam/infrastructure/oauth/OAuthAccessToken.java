@@ -1,4 +1,4 @@
-package com.codingzero.saam.infrastructure;
+package com.codingzero.saam.infrastructure.oauth;
 
 import com.codingzero.saam.common.OAuthPlatform;
 

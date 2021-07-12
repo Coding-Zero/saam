@@ -6,6 +6,7 @@ import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.oauth.OAuth20Service;
 
 import java.util.Map;
+import java.util.Objects;
 
 
 public class OAuth20ServiceFactory {
@@ -17,11 +18,13 @@ public class OAuth20ServiceFactory {
         if (platform == OAuthPlatform.SLACK) {
             return generateSlackService(configuration);
         }
+        if (platform == OAuthPlatform.APPLE) {
+            return generateAppleService(configuration);
+        }
         throw new IllegalArgumentException("Unsupported platform, " + platform);
     }
 
     private OAuth20Service generateSlackService(Map<String, Object> configuration) {
-//        return new ServiceBuilder(((String) configuration.get("apiKey")))
         return new ServiceBuilder(((String) configuration.get("apiKey")))
                 .apiSecret((String) configuration.get("apiSecret"))
                 .defaultScope((String) configuration.get("scope"))
@@ -30,18 +33,25 @@ public class OAuth20ServiceFactory {
     }
 
     private OAuth20Service generateGoogleService(Map<String, Object> configuration) {
-//        JDKHttpClientConfig config = new JDKHttpClientConfig();
-//        config.setConnectTimeout(10000);
-//        config.setReadTimeout(10000);
-//        config.setFollowRedirects(false);
-//        return new ServiceBuilder((String) configuration.get("apiKey"))
         return new ServiceBuilder(((String) configuration.get("apiKey")))
                 .apiSecret((String) configuration.get("apiSecret"))
                 .defaultScope((String) configuration.get("scope"))
                 .callback((String) configuration.get("callback"))
-//                .httpClientConfig(config)
-//                .debug()
                 .build(GoogleApi20.instance());
+    }
+
+    private OAuth20Service generateAppleService(Map<String, Object> configuration) {
+        ServiceBuilder builder = new ServiceBuilder(((String) configuration.get("apiKey")))
+                .callback((String) configuration.get("callback"));
+        if (configuration.containsKey("apiSecret")
+                && !Objects.isNull(configuration.get("apiSecret"))) {
+            builder.apiSecret((String) configuration.get("apiSecret"));
+        }
+        if (configuration.containsKey("scope")
+                && !Objects.isNull(configuration.get("scope"))) {
+            builder.defaultScope((String) configuration.get("scope"));
+        }
+        return builder.build(AppleApi.instance());
     }
 
 }

@@ -6,7 +6,7 @@ import com.codingzero.saam.domain.identifier.IdentifierEntity;
 import com.codingzero.saam.domain.principal.user.UserEntity;
 import com.codingzero.saam.domain.principal.user.UserRepositoryService;
 import com.codingzero.saam.infrastructure.data.IdentifierOS;
-import com.codingzero.saam.infrastructure.data.IdentifierVerificationCodeGenerator;
+import com.codingzero.saam.infrastructure.identifier.IdentifierVerificationCodeGenerator;
 import com.codingzero.utilities.error.BusinessError;
 import org.junit.Before;
 import org.junit.Rule;

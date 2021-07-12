@@ -7,5 +7,6 @@ public enum OAuthPlatform {
     FACEBOOK,
     GITHUB,
     INSTAGRAM,
-    SLACK
+    SLACK,
+    APPLE
 }

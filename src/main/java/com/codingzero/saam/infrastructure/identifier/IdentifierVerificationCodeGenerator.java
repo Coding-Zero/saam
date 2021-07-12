@@ -1,4 +1,4 @@
-package com.codingzero.saam.infrastructure.data;
+package com.codingzero.saam.infrastructure.identifier;
 
 import com.codingzero.saam.common.IdentifierType;
 

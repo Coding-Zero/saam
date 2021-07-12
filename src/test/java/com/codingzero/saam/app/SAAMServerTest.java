@@ -1,13 +1,15 @@
 package com.codingzero.saam.app;
 
+import com.codingzero.saam.app.server.infrastructure.oauth.OAuthPlatformAgentManager;
 import com.codingzero.saam.common.OAuthPlatform;
-import com.codingzero.saam.infrastructure.OAuthAccessToken;
 import com.codingzero.saam.infrastructure.data.mysql.Helper;
-import com.codingzero.saam.infrastructure.data.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.oauth.OAuthAccessToken;
+import com.codingzero.saam.infrastructure.oauth.OAuthPlatformAgent;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SAAMServerTest extends SAAMTest {
@@ -27,7 +29,9 @@ public class SAAMServerTest extends SAAMTest {
     @Override
     protected SAAM getSAAM() {
         if (null == saam) {
-            saam = Helper.sharedInstance().getSAAM(new OAuthPlatformAgentDouble());
+            Map<OAuthPlatform, OAuthPlatformAgent> agents = new HashMap<>();
+            agents.put(OAuthPlatform.GOOGLE, new OAuthPlatformAgentDouble());
+            saam = Helper.sharedInstance().getSAAM(new OAuthPlatformAgentManager(agents));
         }
         return saam;
     }
@@ -35,19 +39,17 @@ public class SAAMServerTest extends SAAMTest {
     private static class OAuthPlatformAgentDouble implements OAuthPlatformAgent {
 
         @Override
-        public String getAuthorizationUrl(OAuthPlatform platform,
-                                          Map<String, Object> configurations,
+        public String getAuthorizationUrl(Map<String, Object> configurations,
                                           Map<String, Object> parameters) {
-            return "https://www.codingzero.com/saam/int-test/oauth-url/" + platform.name();
+            return "https://www.codingzero.com/saam/int-test/oauth-url/" + OAuthPlatform.GOOGLE.name();
         }
 
         @Override
-        public OAuthAccessToken requestAccessToken(OAuthPlatform platform,
-                                                   Map<String, Object> configurations,
+        public OAuthAccessToken requestAccessToken(Map<String, Object> configurations,
                                                    Map<String, Object> parameters) {
-            return new OAuthAccessToken(platform,
-                    platform.name().toLowerCase() + "-account",
-                    platform.name().toLowerCase() + "-token",
+            return new OAuthAccessToken(OAuthPlatform.GOOGLE,
+                    OAuthPlatform.GOOGLE.name().toLowerCase() + "-account",
+                    OAuthPlatform.GOOGLE.name().toLowerCase() + "-token",
                     new Date(),
                     new Date(System.currentTimeMillis() + 1000));
         }

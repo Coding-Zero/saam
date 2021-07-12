@@ -30,7 +30,7 @@ import com.codingzero.saam.domain.Role;
 import com.codingzero.saam.domain.User;
 import com.codingzero.saam.domain.UserSession;
 import com.codingzero.saam.domain.UsernamePolicy;
-import com.codingzero.saam.infrastructure.OAuthAccessToken;
+import com.codingzero.saam.infrastructure.oauth.OAuthAccessToken;
 
 import java.util.ArrayList;
 import java.util.List;

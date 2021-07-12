@@ -1,8 +1,8 @@
 package com.codingzero.saam.app.server.infrastructure.oauth;
 
 import com.codingzero.saam.common.OAuthPlatform;
-import com.codingzero.saam.infrastructure.OAuthAccessToken;
-import com.codingzero.saam.infrastructure.data.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.oauth.OAuthAccessToken;
+import com.codingzero.saam.infrastructure.oauth.OAuthPlatformAgent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.core.model.OAuth2AccessToken;
@@ -47,12 +47,11 @@ public class SlackAgent implements OAuthPlatformAgent {
     }
 
     @Override
-    public String getAuthorizationUrl(OAuthPlatform platform,
-                                      Map<String, Object> configurations,
+    public String getAuthorizationUrl(Map<String, Object> configurations,
                                       Map<String, Object> parameters) {
         configurations = helper.prepareConfiguration(configurations, parameters);
         Map<String, String> newParameters = helper.prepareParametersForAuthUrl(parameters);
-        OAuth20Service service = oAuth20ServiceFactory.generate(platform, configurations);
+        OAuth20Service service = oAuth20ServiceFactory.generate(OAuthPlatform.SLACK, configurations);
         return service.getAuthorizationUrl(newParameters);
     }
 
@@ -60,9 +59,9 @@ public class SlackAgent implements OAuthPlatformAgent {
 
     @Override
     public OAuthAccessToken requestAccessToken(
-            OAuthPlatform platform, Map<String, Object> configurations, Map<String, Object> parameters) {
+            Map<String, Object> configurations, Map<String, Object> parameters) {
         configurations = helper.prepareConfiguration(configurations, parameters);
-        OAuth20Service service = oAuth20ServiceFactory.generate(platform, configurations);
+        OAuth20Service service = oAuth20ServiceFactory.generate(OAuthPlatform.SLACK, configurations);
         try {
             String token = (String) parameters.get("accessToken");
             if (null == token){
@@ -73,15 +72,14 @@ public class SlackAgent implements OAuthPlatformAgent {
                 if (null !=accessToken.getExpiresIn()) {
                     expirationTime = new Date(System.currentTimeMillis() + accessToken.getExpiresIn() * 1000);
                 }
-                return new OAuthAccessToken(platform, accountId, accessToken.getAccessToken(), new Date(), expirationTime);
+                return new OAuthAccessToken(OAuthPlatform.SLACK, accountId, accessToken.getAccessToken(), new Date(), expirationTime);
             } else {
                 String accountId = readAccountId(token);
                 long timeout = System.currentTimeMillis() + TIME_OUT;
                 Date expirationTime = new Date(timeout);
-                return new OAuthAccessToken(platform, accountId, token, new Date(), expirationTime);
+                return new OAuthAccessToken(OAuthPlatform.SLACK, accountId, token, new Date(), expirationTime);
             }
         } catch (Exception e) {
-//        } catch (IOException | InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }

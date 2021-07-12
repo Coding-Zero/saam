@@ -3,8 +3,9 @@ package com.codingzero.saam.infrastructure.data.mysql;
 import com.codingzero.saam.app.SAAM;
 import com.codingzero.saam.app.server.SAAMBuilder;
 import com.codingzero.saam.app.server.infrastructure.mysql.commons.MySQLAccessFactory;
+import com.codingzero.saam.app.server.infrastructure.oauth.OAuthPlatformAgentManager;
 import com.codingzero.saam.infrastructure.data.SAAMTestApplication;
-import com.codingzero.saam.infrastructure.data.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.oauth.OAuthPlatformAgent;
 import com.codingzero.saam.protocol.rest.DataSourceProvider;
 import com.codingzero.saam.protocol.rest.SAAMConfiguration;
 import com.codingzero.utilities.transaction.TransactionManager;
@@ -89,13 +90,13 @@ public class Helper {
         return mySQLAccessFactory;
     }
 
-    public SAAM getSAAM(OAuthPlatformAgent oAuthPlatformAgent) {
+    public SAAM getSAAM(OAuthPlatformAgentManager oAuthPlatformAgentManager) {
             DataSource dataSource = new DataSourceProvider(SUPPORT.getConfiguration()).get();
-            SAAMBuilder builder = getSAAMBuilder(oAuthPlatformAgent, dataSource);
+            SAAMBuilder builder = getSAAMBuilder(oAuthPlatformAgentManager, dataSource);
             return  builder.build();
     }
 
-    private SAAMBuilder getSAAMBuilder(OAuthPlatformAgent oAuthPlatformAgent, DataSource dataSource) {
+    private SAAMBuilder getSAAMBuilder(OAuthPlatformAgentManager oAuthPlatformAgentManager, DataSource dataSource) {
         TransactionManager transactionManager = new TransactionManagerImpl();
         MySQLAccessFactory accessModule = new MySQLAccessFactory(dataSource);
         return new SAAMBuilder()
@@ -114,7 +115,7 @@ public class Helper {
                 .setApiKeyAccess(accessModule.getAPIKeyAccess())
                 .setApplicationAccess(accessModule.getApplicationAccess())
                 .setUserSessionAccess(accessModule.getUserSessionAccess())
-                .setOAuthPlatformAgent(oAuthPlatformAgent);
+                .setOAuthPlatformAgentManager(oAuthPlatformAgentManager);
     }
 
     private void initDatabase() throws SQLException {

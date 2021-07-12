@@ -1,7 +1,7 @@
-package com.codingzero.saam.app.server.infrastructure;
+package com.codingzero.saam.app.server.infrastructure.identifier;
 
 import com.codingzero.saam.common.IdentifierType;
-import com.codingzero.saam.infrastructure.data.IdentifierVerificationCodeGenerator;
+import com.codingzero.saam.infrastructure.identifier.IdentifierVerificationCodeGenerator;
 import com.codingzero.utilities.key.HMACKey;
 import com.codingzero.utilities.key.RandomKey;
 

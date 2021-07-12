@@ -48,6 +48,7 @@ import com.codingzero.saam.app.responses.ResourceResponse;
 import com.codingzero.saam.app.responses.RoleResponse;
 import com.codingzero.saam.app.responses.UserResponse;
 import com.codingzero.saam.app.responses.UserSessionResponse;
+import com.codingzero.saam.app.server.infrastructure.oauth.OAuthPlatformAgentManager;
 import com.codingzero.saam.common.ApplicationStatus;
 import com.codingzero.saam.common.Errors;
 import com.codingzero.saam.common.IdentifierType;
@@ -86,8 +87,7 @@ import com.codingzero.saam.domain.UserSession;
 import com.codingzero.saam.domain.UserSessionFactory;
 import com.codingzero.saam.domain.UserSessionRepository;
 import com.codingzero.saam.domain.UsernamePolicy;
-import com.codingzero.saam.infrastructure.OAuthAccessToken;
-import com.codingzero.saam.infrastructure.data.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.oauth.OAuthAccessToken;
 import com.codingzero.utilities.error.BusinessError;
 import com.codingzero.utilities.pagination.PaginatedResult;
 import com.codingzero.utilities.pagination.PaginatedResultMapper;
@@ -101,7 +101,7 @@ import java.util.Map;
 public class SAAMServer implements SAAM {
 
     private TransactionManager transactionManager;
-    private OAuthPlatformAgent oAuthPlatformAgent;
+    private OAuthPlatformAgentManager oAuthPlatformAgentManager;
     private ApplicationFactory applicationFactory;
     private ApplicationRepository applicationRepository;
     private IdentifierFactory identifierFactory;
@@ -123,7 +123,7 @@ public class SAAMServer implements SAAM {
 
     public SAAMServer(SAAMBuilder builder) {
         this.transactionManager = builder.getTransactionManager();
-        this.oAuthPlatformAgent = builder.getOAuthPlatformAgent();
+        this.oAuthPlatformAgentManager = builder.getOAuthPlatformAgentManager();
         this.applicationFactory = builder.getApplicationFactory();
         this.applicationRepository = builder.getApplicationRepository();
         this.userFactory = builder.getUserFactory();
@@ -240,8 +240,8 @@ public class SAAMServer implements SAAM {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         checkForApplicationStatus(application, request.getPlatform());
         OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
-        return oAuthPlatformAgent.getAuthorizationUrl(
-                request.getPlatform(), policy.getConfigurations(), request.getParameters());
+        return oAuthPlatformAgentManager.get(request.getPlatform())
+                .getAuthorizationUrl(policy.getConfigurations(), request.getParameters());
     }
 
     @Override
@@ -249,8 +249,9 @@ public class SAAMServer implements SAAM {
         Application application = getEnsuredApplicationById(request.getApplicationId());
         checkForApplicationStatus(application, request.getPlatform());
         OAuthIdentifierPolicy policy = getEnsuredOAuthIdentifierPolicy(application, request.getPlatform());
-        OAuthAccessToken token = oAuthPlatformAgent.requestAccessToken(
-                policy.getPlatform(), policy.getConfigurations(), request.getParameters());
+        OAuthAccessToken token =
+                oAuthPlatformAgentManager.get(request.getPlatform())
+                        .requestAccessToken(policy.getConfigurations(), request.getParameters());
         return responseMapper.toResponse(application, token);
     }
 

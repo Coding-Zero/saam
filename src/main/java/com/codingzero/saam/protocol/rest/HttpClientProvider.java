@@ -46,6 +46,7 @@ public class HttpClientProvider {
                     .setSSLSocketFactory(connectionFactory)
                     .setDefaultCookieStore(cookieStore)
                     .setDefaultRequestConfig(requestConfig)
+//                    .setProxy(HttpHost.create("127.0.0.1:1087")) //uncomment this for local proxy required.
                     .build();
             return httpClient;
         } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {

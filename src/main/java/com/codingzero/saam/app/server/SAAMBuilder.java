@@ -1,7 +1,8 @@
 package com.codingzero.saam.app.server;
 
 import com.codingzero.saam.app.SAAM;
-import com.codingzero.saam.app.server.infrastructure.IdentifierVerificationCodeGeneratorImpl;
+import com.codingzero.saam.app.server.infrastructure.identifier.IdentifierVerificationCodeGeneratorImpl;
+import com.codingzero.saam.app.server.infrastructure.oauth.OAuthPlatformAgentManager;
 import com.codingzero.saam.app.server.infrastructure.password.PasswordHelperImpl;
 import com.codingzero.saam.domain.ApplicationRepository;
 import com.codingzero.saam.domain.application.ApplicationFactoryService;
@@ -38,10 +39,10 @@ import com.codingzero.saam.infrastructure.data.ApplicationAccess;
 import com.codingzero.saam.infrastructure.data.EmailPolicyAccess;
 import com.codingzero.saam.infrastructure.data.IdentifierAccess;
 import com.codingzero.saam.infrastructure.data.IdentifierPolicyAccess;
-import com.codingzero.saam.infrastructure.data.IdentifierVerificationCodeGenerator;
+import com.codingzero.saam.infrastructure.identifier.IdentifierVerificationCodeGenerator;
 import com.codingzero.saam.infrastructure.data.OAuthIdentifierAccess;
 import com.codingzero.saam.infrastructure.data.OAuthIdentifierPolicyAccess;
-import com.codingzero.saam.infrastructure.data.OAuthPlatformAgent;
+import com.codingzero.saam.infrastructure.oauth.OAuthPlatformAgent;
 import com.codingzero.saam.infrastructure.data.PasswordHelper;
 import com.codingzero.saam.infrastructure.data.PermissionAccess;
 import com.codingzero.saam.infrastructure.data.PrincipalAccess;
@@ -97,7 +98,7 @@ public class SAAMBuilder {
     private ApplicationRepository applicationRepository;
     private PasswordHelper passwordHelper;
     private IdentifierVerificationCodeGenerator identifierVerificationCodeGenerator;
-    private OAuthPlatformAgent oAuthPlatformAgent;
+    private OAuthPlatformAgentManager oAuthPlatformAgentManager;
     private ResponseMapper responseMapper;
     private ApplicationStatusVerifier applicationStatusVerifier;
     private IdentifierPolicyHelper identifierPolicyHelper;
@@ -700,13 +701,13 @@ public class SAAMBuilder {
         return this;
     }
 
-    public OAuthPlatformAgent getOAuthPlatformAgent() {
-        checkForMissedValue(oAuthPlatformAgent, OAuthPlatformAgent.class);
-        return oAuthPlatformAgent;
+    public OAuthPlatformAgentManager getOAuthPlatformAgentManager() {
+        checkForMissedValue(oAuthPlatformAgentManager, OAuthPlatformAgentManager.class);
+        return oAuthPlatformAgentManager;
     }
 
-    public SAAMBuilder setOAuthPlatformAgent(OAuthPlatformAgent oAuthPlatformAgent) {
-        this.oAuthPlatformAgent = oAuthPlatformAgent;
+    public SAAMBuilder setOAuthPlatformAgentManager(OAuthPlatformAgentManager oAuthPlatformAgentManager) {
+        this.oAuthPlatformAgentManager = oAuthPlatformAgentManager;
         return this;
     }
 
